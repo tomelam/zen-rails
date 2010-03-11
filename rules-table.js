@@ -1,50 +1,47 @@
     dojo.require("dijit.layout.ContentPane");
 
     zen = {
-	createDijit : function(parm1, parm2) {
-	    console.debug('zen.dojo.createDijit, parm1 => ' + parm1);
-	    dojo.require(parm1);
+	createDijit : function(klass, initParms) {
+	    console.debug('zen.dojo.createDijit, klass => ' + klass);
+	    dojo.require(klass);
 	    console.debug('createNew ...');
-	    widget = createNew(zen.s2f[parm1], {'class':'box'},
-			       dojo.byId('id2'));
+	    //widget = createNew(zen.rule2ref(klass), {'class':'box'},
+	    //	                 dojo.byId('id2'));
+	    widget = createNew(zen.rule2ref(klass), {'class':'box'});
+			       //dojo.byId('id2'));
 	    console.debug('widget => ' + widget);
-	    widget.addToComponent = function() {
-		console.debug('addToComponent: this => ' + this);
-	    };
-	    widget.appendMyselfToParent = function() {
+	    // FIXME: Check whether this works when the parent is a dijit.
+	    // Check the semantics of the addChild method of some dijits.
+	    widget.appendMyselfToParent = function(parent) {
 		console.debug('appendMyselfToParent: this => ' + this);
+		parent.getDomNode().appendChild(this.domNode);
+	    };
+	    widget.getDomNode = function() {
+		return this.domNode;
 	    };
 	    return widget;
 	},
-	// Extend all HTML elements with these methods.
-	DOMMethods : {
-	    appendMyselfToParent : function (element, parent) {
-		console.debug('appendMyselfToParent: element => ' +
-			      element + ', parent => ' + parent);
-		parent.appendChild(element);
-	    }
-	},
 	createSubtree : function(treeSpec) {
-	    var i, r, topComponent, component;
-	    console.debug('rule = > ' + r + ', treeSpec[0] => ' + treeSpec[0]);
-	    r = zen.invertedRulesTable[treeSpec[0]];
-	    console.debug('rule = > ' + r + ', treeSpec[0] => ' + treeSpec[0]);
-	    console.dir(zen.rulesTable);
-	    console.debug('s2f[r] => ' + zen.s2f[r]);
-	    topComponent = zen.s2f[r].call(document, treeSpec[0]);
-	    console.debug('topComponent => ' + topComponent);
-	    for (i=0; i<treeSpec[1].length; i++) {
-		console.debug('component => ' + treeSpec[1][i][0]);
-		console.debug('treeSpec[1][i][0] => ' + treeSpec[1][i][0]);
-		//component = s2f[r].call(document, treeSpec[1][i][0]);
-		component = zen.createSubtree(treeSpec[1][i]);
-		console.dir('component => ' + component);
-		component.appendMyselfToParent(topComponent);
+	    var i, rule, parentCompon, compon, len, constructor,
+		componType = treeSpec[0];
+	    rule = zen.invertedRulesTable[componType];
+	    console.debug('rule = > ' + rule + ', componType => ' + componType);
+	    console.debug('rule2ref(rule) => ' + zen.rule2ref(rule));
+	    constructor = zen.rule2ref(rule);
+	    parentCompon = constructor.call(document, componType);
+	    console.debug('parentCompon => ' + parentCompon);
+	    len = treeSpec[1].length
+	    for (i=0; i<len; i++) {
+		compon = zen.createSubtree(treeSpec[1][i]);
+		console.dir('compon => ' + compon);
+		compon.appendMyselfToParent(parentCompon.getDomNode());
 	    };
-	    return topComponent;
+	    return parentCompon;
 	},
-	// Naming the components that follow a certain rule in an array
-	// saves typing. 
+	// Each property of rulesTable is a rule for creating a kind
+	// of component. The value of each property is the set (an
+	// array) of the kinds of component that can be created using
+	// the rule.
 	rulesTable : {
 	    createElement : [ "div", "table", "tr", "td", "p", "span" ],
 	    createDijit   : [ "dijit.layout.ContentPane",
@@ -56,29 +53,23 @@
 	// anonymous function.
 	invertedRulesTable : {},
 	initIRT : function() {
-	    var components, c, r;
-	    for (r in zen.rulesTable) {
-		components = zen.rulesTable[r];
-		for (c=0; c<components.length; c++) {
-		    zen.invertedRulesTable[components[c]] = r;
+	    var components, c, rule, len;
+	    for (rule in zen.rulesTable) {
+		components = zen.rulesTable[rule];
+		len = components.length
+		for (c=0; c<len; c++) {
+		    zen.invertedRulesTable[components[c]] = rule;
 		};
 	    };
+	},
+	rule2ref : function(rule) {
+	    return zen.refsTable[rule];
 	}
     }
-    // We need references (symbols) to functions for the creation of
-    // components. Unfortunately, 'for (r in rulesTable)', used to
-    // access rulesTable, loops over strings, not symbols. However,
-    // with the following translation table, we can get the symbols we
-    // need. Note that dotted referencs (like document.createElement)
-    // don't get automatically converted to strings, so we have to use
-    // a key that is either a non-dotted reference or a string.
-    //
-    // We add Dojo widgets to this table because they cannot be
-    // specified directly via strings as are arguments to
-    // document.createElement(...), and the array keyed by createDijit
-    // in rulesTable must not include symbols. The translation from
-    // string to symbol must be used when a Dojo widget is made.
-    zen.s2f = {
+    // Here is a table for looking up a dotted reference to a function
+    // given a short name or string as a key. Note that dotted
+    // references cannot be used as references to object properties.
+    zen.refsTable = {
 	'document.createElement' : document.createElement,
 	createElement : document.createElement,
 	'document.createTextNode' : document.createTextNode,
@@ -86,9 +77,19 @@
 	'zen.dojo.createDijit' : zen.createDijit,
 	createDijit : zen.createDijit,
 	'dijit.layout.ContentPane' : dijit.layout.ContentPane
-    }
+    };
 
-    Element.addMethods(zen.DOMMethods);
+    Element.addMethods( // Extend all HTML elements with these methods.
+	{
+	    appendMyselfToParent : function (element, parent) {
+		console.debug('appendMyselfToParent: element => ' +
+			      element + ', parent => ' + parent);
+		parent.appendChild(element);
+	    },
+	    getDomNode : function (element) {
+		return element;
+	    }
+	});
     zen.initIRT();
 
-    init = function() {};
+    init = function() {}; // Unused.

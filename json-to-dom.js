@@ -11,12 +11,15 @@
     var testSubtree = ["div", []];
     var testSubtree2 = ["div", testArray];
     var testSubtree3 = ["div", testArray2];
+    var testSubtree4 = ["div", [["p", []], ["dijit.layout.ContentPane", []]]];
+    var testSubtree5 =
+    ["div", [["p", []],
+	     ["dijit.layout.ContentPane",
+	      [["dijit.layout.ContentPane", [["div", []]]]]]]];
 		
     var newComponent;
     test = function() {
-	//var testSubtree4 = ["div", [[dijit.layout.ContentPane, []]]];
-	var testSubtree4 = ["div", [["p", []], ["dijit.layout.ContentPane", []]]];
-	newComponent = zen.createSubtree(testSubtree4);
+	newComponent = zen.createSubtree(testSubtree5);
 	newComponent.appendMyselfToParent(document.body);
     };
 

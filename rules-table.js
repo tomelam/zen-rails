@@ -4,11 +4,8 @@
 	dojo : {
 	    createDijit : function(parm1, parm2) {
 		console.debug('Entering zen.dojo.createDijit, parm1 => ' + parm1);
-		console.debug('typeof parm1 => ' + (typeof parm1));
-		console.debug('parm1 instanceof Function => ' + (parm1 instanceof Function));
-		console.debug('parm1 instanceof String => ' + (parm1 instanceof String));
 		widget = createNew(s2f[parm1], {'class':'box'}, dojo.byId('id2'));
-		console.debug('returning ' + widget);
+		console.debug('widget => ' + widget);
 		widget.addToComponent = function() {
 		    console.debug('addToComponent: this => ' + this);
 		};

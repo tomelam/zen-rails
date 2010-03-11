@@ -26,21 +26,6 @@
     // e.g. an HTML element node or a Dojo dijit.
     
     var DOMMethods = {
-	addToComponent : function (element, array) {
-	    console.debug('addToComponent');
-	    var i, r, newNode;
-	    console.debug('array => ', array);
-	    for (i=0; i<array.length; i++) {
-		console.debug('component => ' + array[i][0]);
-		r = rulesTable[array[i][0]];
-		console.debug('rule => ' + r);
-		newNode = s2f[r].call(document, array[i][0]);
-		console.debug('newNode => ' + newNode);
-		element.appendChild(newNode);
-		$(newNode).addToComponent(array[i][1]);
-	    }
-	    console.debug('addToComponent');
-	},
 	appendMyselfToParent : function (element, parent) {
 	    console.debug('appendMyselfToParent: element => ' + element +
 			  ', parent => ' + parent);
@@ -76,8 +61,8 @@
     test = function() {
 	//var testSubtree4 = ["div", [[dijit.layout.ContentPane, []]]];
 	var testSubtree4 = ["div", [["p", []], ["dijit.layout.ContentPane", []]]];
-	newComponent = createSubtree(testSubtree4);
-	//newComponent.appendMyselfToParent(document.body);
+	newComponent = createSubtree(testSubtree3);
+	newComponent.appendMyselfToParent(document.body);
     };
 
     var b, cp, tp;

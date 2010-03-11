@@ -12,19 +12,7 @@
     var testSubtree2 = ["div", testArray];
     var testSubtree3 = ["div", testArray2];
 		
-    // Function to create a Dojo dijit. Modelled after
-    // document.createElement and document.createTextNode.
-    // FIXME.
-    // The appendMyselfToParent method should do a different
-    // thing for each different object constructor. The DOM
-    // node of a Dojo widget should be extended with this
-    // method; likewise raw HTML elements should be
-    // extended. But *how* can widgets be extended? Hmm... How
-    // about via zen.dojo.createDijit?
-
-    // The addToComponent method is invoked on a component object,
-    // e.g. an HTML element node or a Dojo dijit.
-    
+    // Extend all HTML elements with the following methods.
     var DOMMethods = {
 	appendMyselfToParent : function (element, parent) {
 	    console.debug('appendMyselfToParent: element => ' + element +
@@ -35,7 +23,8 @@
     
     createSubtree = function(treeSpec) {
 	var i, r, topComponent, component;
-	r = rulesTable[treeSpec[0]];
+	console.debug('rule = > ' + r + ', treeSpec[0] => ' + treeSpec[0]);
+	r = invertedRulesTable[treeSpec[0]];
 	console.debug('rule = > ' + r + ', treeSpec[0] => ' + treeSpec[0]);
 	console.dir(rulesTable);
 	console.debug('s2f[r] => ' + s2f[r]);
@@ -61,7 +50,7 @@
     test = function() {
 	//var testSubtree4 = ["div", [[dijit.layout.ContentPane, []]]];
 	var testSubtree4 = ["div", [["p", []], ["dijit.layout.ContentPane", []]]];
-	newComponent = createSubtree(testSubtree3);
+	newComponent = createSubtree(testSubtree4);
 	newComponent.appendMyselfToParent(document.body);
     };
 

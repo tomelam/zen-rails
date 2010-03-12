@@ -1,26 +1,4 @@
-    dojo.require("dijit.layout.ContentPane");
-
     zen = {
-	createDijit : function(klass, initParms) {
-	    console.debug('zen.dojo.createDijit, klass => ' + klass);
-	    dojo.require(klass);
-	    console.debug('createNew ...');
-	    //widget = createNew(zen.rule2ref(klass), {'class':'box'},
-	    //	                 dojo.byId('id2'));
-	    widget = createNew(zen.rule2ref(klass), {'class':'box'});
-			       //dojo.byId('id2'));
-	    console.debug('widget => ' + widget);
-	    // FIXME: Check whether this works when the parent is a dijit.
-	    // Check the semantics of the addChild method of some dijits.
-	    widget.appendMyselfToParent = function(parent) {
-		console.debug('appendMyselfToParent: this => ' + this);
-		parent.getDomNode().appendChild(this.domNode);
-	    };
-	    widget.getDomNode = function() {
-		return this.domNode;
-	    };
-	    return widget;
-	},
 	createSubtree : function(treeSpec) {
 	    var i, rule, parentCompon, compon, len, constructor,
 		componType = treeSpec[0];
@@ -30,7 +8,7 @@
 	    constructor = zen.rule2ref(rule);
 	    parentCompon = constructor.call(document, componType);
 	    console.debug('parentCompon => ' + parentCompon);
-	    len = treeSpec[1].length
+	    len = treeSpec[1].length;
 	    for (i=0; i<len; i++) {
 		compon = zen.createSubtree(treeSpec[1][i]);
 		console.dir('compon => ' + compon);
@@ -56,27 +34,46 @@
 	    var components, c, rule, len;
 	    for (rule in zen.rulesTable) {
 		components = zen.rulesTable[rule];
-		len = components.length
+		len = components.length;
 		for (c=0; c<len; c++) {
 		    zen.invertedRulesTable[components[c]] = rule;
 		};
 	    };
 	},
 	rule2ref : function(rule) {
-	    return zen.refsTable[rule];
+	    var i;
+	    for (i in zen.shortCutsTable) {
+		if (i == rule) {
+		    return eval(zen.shortCutsTable[rule]);
+		}
+	    }
+	    return eval(rule);
 	}
-    }
-    // Here is a table for looking up a dotted reference to a function
-    // given a short name or string as a key. Note that dotted
-    // references cannot be used as references to object properties.
-    zen.refsTable = {
-	'document.createElement' : document.createElement,
+    };
+    zen.createDijit = function(klass, initParms) {
+	console.debug('zen.dojo.createDijit, klass => ' + klass);
+	dojo.require(klass);
+	console.debug('createNew ...');
+	//widget = createNew(zen.rule2ref(klass), {'class':'box'},
+	//	                 dojo.byId('id2'));
+	widget = createNew(zen.rule2ref(klass), {'class':'box'});
+	//dojo.byId('id2'));
+	console.debug('widget => ' + widget);
+	// FIXME: Check whether this works when the parent is a dijit.
+	// Check the semantics of the addChild method of some dijits.
+	widget.appendMyselfToParent = function(parent) {
+	    console.debug('appendMyselfToParent: this => ' + this);
+	    parent.getDomNode().appendChild(this.domNode);
+	};
+	widget.getDomNode = function() {
+	    return this.domNode;
+	};
+	return widget;
+    };
+    zen.shortCutsTable = {
 	createElement : document.createElement,
-	'document.createTextNode' : document.createTextNode,
 	createTextNode : document.createTextNode,
-	'zen.dojo.createDijit' : zen.createDijit,
-	createDijit : zen.createDijit,
-	'dijit.layout.ContentPane' : dijit.layout.ContentPane
+	createDijit : zen.createDijit
     };
 
     Element.addMethods( // Extend all HTML elements with these methods.

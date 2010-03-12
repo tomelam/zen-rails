@@ -46,10 +46,14 @@
     ["div", [["p", []],
 	     ["dijit.layout.ContentPane",
 	      [["dijit.layout.ContentPane", [["div", []]]]]]]];
+    var testSubtree6 =
+    ["div", [["dijit.layout.AccordionContainer", [["dijit.layout.AccordionPane",
+						   ["div", []]],
+						  ["dijit.layout.AccordionPane", []]]]]];
 		
     var newComponent;
     test = function() {
-	newComponent = zen.createSubtree(testSubtree5);
+	newComponent = zen.createSubtree(testSubtree6);
 	newComponent.appendMyselfToParent(document.body);
     };
 

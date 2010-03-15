@@ -5,15 +5,15 @@
 		initParms = treeSpec[1],
 		subtree = treeSpec[2];
 	    rule = zen.invertedRulesTable[componKind];
-	    console.debug('rule = > ' + rule + ', componKind => ' +
+	    console.debug("rule = > " + rule + ", componKind => " +
 			  componKind);
 	    constructor = zen.rule2ref(rule);
 	    parentCompon = constructor.call(document, componKind, initParms);
-	    console.debug('parentCompon => ' + parentCompon);
+	    console.debug("parentCompon => " + parentCompon);
 	    len = subtree.length;
 	    for (i=0; i<len; i++) {
 		compon = zen.createSubtree(subtree[i]);
-		compon.appendMyselfToParent(parentCompon.getDomNode());
+		compon.appendMyselfToParent(parentCompon);
 	    };
 	    return parentCompon;
 	},
@@ -55,42 +55,49 @@
 	widgets : [],
 	startup : function() {
 	    // Start up all the Dojo widgets. The order is important.
-	    dojo.forEach(this.widgets.reverse(), function(w) { w.startup(); });
+	    dojo.forEach(zen.widgets.reverse(),
+			 function(w) {
+			     console.debug("starting up " + w);
+			     w.startup(); }
+			);
 	},
 	walkTree : function(tree) {
-	    console.debug('tree => ' + tree);
-	    var children = tree.getChildren();
-	    console.debug('children.length => ' + children.length);
+	    console.debug("tree => " + tree);
+	    var children = tree.getChildCompons();
+	    console.debug("children.length => " + children.length);
 	    var i;
 	    for (i=0; i<children.length; i++) {
 		this.walkTree(children[i]);
 	    };
-	    console.debug('pop');
+	    console.debug("pop");
 	},
+	rowNumber : 0,
 	boxCompon : function(component, tbl) {
-	    var row = this.createElement('tr');
-	    var cell = this.createElement('td');
-	    var text = this.createTextNode('' + component);
+	    var row = this.createElement("tr","r"+this.rowNumber);
+	    var cell = this.createElement("td");
+	    var text = this.createTextNode("" + component);
+	    ++this.rowNumber;
 	    tbl.appendChild(row);
 	    row.appendChild(cell);
 	    cell.appendChild(text);
 	    return row;
 	},
 	boxTable : function(componList, tbl) {
-	    var i, len = componList.length, compon, children, row;
-	    console.debug('len => ' + len);
+	    var tbl1, i, len = componList.length, compon, children, row;
+	    console.debug("len => " + len);
 	    for (i=0; i<len; i++) {
 		compon = componList[i];
-		console.debug('compon => ' + compon);
+		console.debug("compon => " + compon);
 		row = this.boxCompon(compon, tbl);
-		children = compon.getChildren();
+		children = compon.getChildCompons();
 		if (children.length > 0) {
-		    cell = this.createElement('td');
+		    cell = this.createElement("td");
+		    console.debug("row => " + row);
 		    row.appendChild(cell);
-		    tbl = this.createElement('table',
-					     {border:'1px solid black'});
-		    cell.appendChild(tbl);
-		    this.boxTable(children, tbl);
+		    tbl1 = this.createElement("table",
+					      {border:"1px solid black"});
+		    cell.appendChild(tbl1);
+		    this.boxTable(children, tbl1);
 		};
 	    };
 	}
@@ -101,29 +108,54 @@
     // top node on the fly. The dijit can be added to a parent
     // component afterwards.
     zen.createDijit = function(klass, initParms) {
-	console.debug('zen.dojo.createDijit, klass => ' + klass);
+	console.debug("zen.dojo.createDijit, klass => " + klass);
 	dojo.require(klass);
-	widget = createNew(zen.rule2ref(klass), initParms);
-	console.debug('widget => ' + widget);
-	widget.children = [];
-	// FIXME: Check whether this works when the parent is a dijit.
-	// Check the semantics of the addChild method of some dijits.
-	widget.appendMyselfToParent = function(parent) {
-	    console.debug('appendMyselfToParent: this => ' + this);
-	    parent.getDomNode().appendChild(this.domNode);
-	};
-	widget.getDomNode = function() {
-	    return this.domNode;
-	};
+	var widget = createNew(zen.rule2ref(klass), initParms);
+	console.debug("widget => " + widget);
 	widget.kind = klass;
+	widget.children = [];
+	widget.getDomNode = function() {
+	    return widget.domNode;
+	};
+	widget.getChildCompons = function() {
+	    return widget.children;
+	};
+	widget.appendMyselfToParent = function(parent) {
+	    console.debug("appendMyselfToParent: widget => " + widget);
+	    if (parent == parent.getDomNode()) {
+		console.debug("element.appendChild(widget.domNode)");
+		return parent.appendChild(widget.domNode); // HTML element
+	    } else {
+		console.debug("widgetp.addChild(widgetc), widgetp => " +
+			      parent + ", widgetc => " + widget);
+		parent.children.push(widget);
+		return parent.addChild(widget);            // Dojo widget
+	    };
+	};
+	widget.appendChild = function(child) {
+	    console.debug("widget.appendChild: child => " + child);
+	    if (child == child.getDomNode()) {
+		console.debug("widget.appendChild(element)");
+		if (widget.children.length > 0) {
+		    console.warn(
+			"A widget can have only one child if it's only HTML.");
+		}
+		widget.children = [child];
+		return widget.setContent(child);           // HTML element
+	    } else {
+		console.debug("widget.appendChild(widget)");
+		widget.children.push(child);
+		return widget.addChild(child);             // Dojo widget
+	    };
+	};
 	zen.widgets.push(widget);
 	return widget;
     };
     zen.createElement = function(kind, attributes) {
-	console.debug('zen.createElement: kind => ' + kind +
-		      ', attributes => ' + attributes);
+	console.debug("zen.createElement: kind => " + kind +
+		      ", attributes => " + attributes);
 	var element = document.createElement(kind);
-	console.debug('element => ' + element);
+	console.debug("element => " + element);
 	dojo.attr(element, attributes || {}); //FIXME: Check this.
 	return element;
     };
@@ -140,14 +172,14 @@
     Element.addMethods( // Extend all HTML elements with these methods.
 	{
 	    appendMyselfToParent : function (element, parent) {
-		console.debug('appendMyselfToParent: element => ' +
-			      element + ', parent => ' + parent);
+		console.debug("appendMyselfToParent: element => " +
+			      element + ", parent => " + parent);
 		parent.appendChild(element);
 	    },
 	    getDomNode : function (element) {
 		return element;
 	    },
-	    getChildren : function (element) {
+	    getChildCompons : function (element) {
 		return dojo.map(element.children,
 				function(c) {
 				    var w = dijit.byNode(c);

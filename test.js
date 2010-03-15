@@ -101,7 +101,7 @@
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
     var tree9 =
-    ["div", {},
+    ["div", {id:"id1"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
        [["dijit.layout.ContentPane",

@@ -56,6 +56,43 @@
 	startup : function() {
 	    // Start up all the Dojo widgets. The order is important.
 	    dojo.forEach(this.widgets.reverse(), function(w) { w.startup(); });
+	},
+	walkTree : function(tree) {
+	    console.debug('tree => ' + tree);
+	    var children = tree.getChildren();
+	    console.debug('children.length => ' + children.length);
+	    var i;
+	    for (i=0; i<children.length; i++) {
+		this.walkTree(children[i]);
+	    };
+	    console.debug('pop');
+	},
+	boxCompon : function(component, tbl) {
+	    var row = this.createElement('tr');
+	    var cell = this.createElement('td');
+	    var text = this.createTextNode('' + component);
+	    tbl.appendChild(row);
+	    row.appendChild(cell);
+	    cell.appendChild(text);
+	    return row;
+	},
+	boxTable : function(componList, tbl) {
+	    var i, len = componList.length, compon, children, row;
+	    console.debug('len => ' + len);
+	    for (i=0; i<len; i++) {
+		compon = componList[i];
+		console.debug('compon => ' + compon);
+		row = this.boxCompon(compon, tbl);
+		children = compon.getChildren();
+		if (children.length > 0) {
+		    cell = this.createElement('td');
+		    row.appendChild(cell);
+		    tbl = this.createElement('table',
+					     {border:'1px solid black'});
+		    cell.appendChild(tbl);
+		    this.boxTable(children, tbl);
+		};
+	    };
 	}
     };
     // Zen.createDijit does not allow a dijit to be built on a
@@ -87,7 +124,11 @@
 		      ', attributes => ' + attributes);
 	var element = document.createElement(kind);
 	console.debug('element => ' + element);
-	dojo.attr(element, attributes);
+	dojo.attr(element, attributes || {}); //FIXME: Check this.
+	return element;
+    };
+    zen.createTextNode = function(text, attributes) {
+	var element = document.createTextNode(text);
 	return element;
     };
     zen.shortCutsTable = {
@@ -105,6 +146,13 @@
 	    },
 	    getDomNode : function (element) {
 		return element;
+	    },
+	    getChildren : function (element) {
+		return dojo.map(element.children,
+				function(c) {
+				    var w = dijit.byNode(c);
+				    return w || c;
+				});
 	    }
 	});
     zen.initIRT();

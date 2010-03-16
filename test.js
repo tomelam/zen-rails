@@ -165,14 +165,21 @@
 		
     test = function(tree) {
 	console.debug("Testing creation of a tree");
-	var h1_0,tbl,newComponent;
-	h1_0 = dojo.byId("id0");
-	tbl = zen.createElement("table",{border:'1px solid black'});
-	h1_0.appendChild(tbl);
+	var div0,tbl,newComponent;
+	var div0 = dojo.byId("id0");
+	var tbl = zen.createElement("table",{border:'1px solid black'});
+	var fp = zen.createDijit("dojox.layout.FloatingPane",
+	                         {id:"fp0",
+	                          style:{width:"1100px",height:"400px",
+	                                 top:"0px",left:"0px",zIndex:"10"}});
+	fp.appendMyselfToParent(dojo.byId("id0"));
+	//dojo.byId("id0").appendChild(fp);
+	fp.appendChild(tbl);
 	newComponent = zen.createSubtree(tree);
 	console.debug("newComponent => " + newComponent);
 	newComponent.appendMyselfToParent(dojo.body());
 	zen.startup();
 	zen.boxTable([newComponent],tbl);
+	fp.startup();
 	console.debug("Done");
     };

@@ -1,9 +1,13 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <head>
     <title>Simple Page</title>
     <style type="text/css">
       @import "dojo/dijit/themes/tundra/tundra.css";
       @import "dojo/dojo/resources/dojo.css";
+      @import "dojo/dojox/layout/resources/FloatingPane.css";
+      @import "dojo/dojox/layout/resources/ResizeHandle.css";
       .box {
         position: relative;
         height: 100px;
@@ -13,7 +17,14 @@
         margin: 4px;
       }
       .ac {
-        width:160px;height:200px;top:35px;right:5px;position:absolute;z-index:100;
+        width:160px;height:200px;
+        top:35px;right:5px;position:absolute;z-index:100;
+      }
+      .visualRep {
+        width:135px;
+        height:40px;
+        font-size:smaller;
+        background-color:antiquewhite;
       }
     </style>
     <script type="text/javascript" src="prototype.js"></script>
@@ -23,6 +34,6 @@
     <script type="text/javascript" src="test.js"></script>
   </head>
   <body onload="init()" class="tundra">
-    <h1 id="id0">Simple Page</h1>
+    <div id="id0">Simple Page</div>
   </body>
 </html>

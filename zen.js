@@ -75,15 +75,18 @@
 	boxCompon : function(component, tbl) {
 	    var row = this.createElement("tr","r"+this.rowNumber);
 	    var cell = this.createElement("td");
+	    var div = this.createElement("div",{class:"visualRep"});
 	    var text = this.createTextNode("" + component);
 	    ++this.rowNumber;
 	    tbl.appendChild(row);
 	    row.appendChild(cell);
-	    cell.appendChild(text);
+	    cell.appendChild(div);
+	    div.appendChild(text);
 	    return row;
 	},
 	boxTable : function(componList, tbl) {
-	    var tbl1, i, len = componList.length, compon, children, row;
+	    var tbl1, i, len = componList.length,
+		compon, children, row, cell, div;
 	    console.debug("len => " + len);
 	    for (i=0; i<len; i++) {
 		compon = componList[i];
@@ -92,10 +95,13 @@
 		children = compon.getChildCompons();
 		if (children.length > 0) {
 		    cell = this.createElement("td");
+		    div = this.createElement("div",{class:"visualRep"});
+		    //cell.appendChild(div);
 		    console.debug("row => " + row);
 		    row.appendChild(cell);
 		    tbl1 = this.createElement("table",
-					      {border:"1px solid black"});
+					      {border:"1px solid black",
+					       backgroundColor:"antiquewhite"});
 		    cell.appendChild(tbl1);
 		    this.boxTable(children, tbl1);
 		};

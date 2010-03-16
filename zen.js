@@ -113,10 +113,10 @@
     // called without reference to a node, thus causing it to create a
     // top node on the fly. The dijit can be added to a parent
     // component afterwards.
-    zen.createDijit = function(klass, initParms) {
+    zen.createDijit = function(klass, initParms, topNode) {
 	console.debug("zen.dojo.createDijit, klass => " + klass);
 	dojo.require(klass);
-	var widget = createNew(zen.rule2ref(klass), initParms);
+	var widget = createNew(zen.rule2ref(klass), initParms, topNode);
 	console.debug("widget => " + widget);
 	widget.kind = klass;
 	widget.children = [];

@@ -167,14 +167,18 @@
 	console.debug("Testing creation of a tree");
 	var div0,tbl,newComponent;
 	var div0 = dojo.byId("id0");
-	var tbl = zen.createElement("table",{border:'1px solid black'});
-	var fp = zen.createDijit("dojox.layout.FloatingPane",
-	                         {id:"fp0",
-	                          style:{width:"1100px",height:"400px",
-	                                 top:"0px",left:"0px",zIndex:"10"}});
-	fp.appendMyselfToParent(dojo.byId("id0"));
-	//dojo.byId("id0").appendChild(fp);
-	fp.appendChild(tbl);
+	var tbl = zen.createElement(
+	    "table",{id:"componTbl",border:"1px solid black"});
+	var diagramTop = dojo.byId("diagramTop");
+	var fp = zen.createDijit(
+	    "dojox.layout.FloatingPane",
+	    {id:"hierarchy",
+	     title:"Hierarchy of Web Page Components",
+	     style:{width:"600px",height:"200px",zIndex:"10"},
+	     resizable:true},
+	    diagramTop);
+	diagramTop.appendMyselfToParent(dojo.body());
+	tbl.appendMyselfToParent(fp);
 	newComponent = zen.createSubtree(tree);
 	console.debug("newComponent => " + newComponent);
 	newComponent.appendMyselfToParent(dojo.body());

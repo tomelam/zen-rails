@@ -26,7 +26,8 @@
 	    createDijit   : [ "dijit.layout.ContentPane",
 			      "dijit.layout.BorderContainer",
 			      "dijit.layout.AccordionContainer",
-			      "dijit.layout.AccordionPane" //FIXME: deprecated
+			      "dijit.layout.AccordionPane", //FIXME: deprecated
+			      "dijit.DialogUnderlay"
 			    ]
 	    // FIXME: add this property and value: createTextNode : [ "*" ]
 	},
@@ -127,6 +128,7 @@
 	    return widget.children;
 	};
 	widget.appendMyselfToParent = function(parent) {
+	    //FIXME: See the placeat method in _Widget.js.
 	    console.debug("appendMyselfToParent: widget => " + widget);
 	    if (parent == parent.getDomNode()) {
 		console.debug("element.appendChild(widget.domNode)");

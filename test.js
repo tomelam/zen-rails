@@ -162,6 +162,16 @@
        {id:"cp01",title:"pane 2"},
        [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	 []]]]]];
+    var underlay =
+    ["dijit.DialogUnderlay",
+     {id:"underlay",style:{width:"100%",height:"200px",
+			   backgroundColor:"lightgreen"}},
+     []];
+    var pane =
+    ["dijit.layout.ContentPane",
+     {id:"pane",style:{width:"100%",height:"200px",
+			   backgroundColor:"lightgreen"}},
+     []];    
 		
     test = function(tree) {
 	console.debug("Testing creation of a tree");
@@ -169,15 +179,15 @@
 	var div0 = dojo.byId("id0");
 	var tbl = zen.createElement(
 	    "table",{id:"componTbl",border:"1px solid black"});
-	var diagramTop = dojo.byId("diagramTop");
+	var diagramDiv = dojo.byId("diagramDiv");
 	var fp = zen.createDijit(
 	    "dojox.layout.FloatingPane",
-	    {id:"hierarchy",
+	    {id:"diagramPane",
 	     title:"Hierarchy of Web Page Components",
 	     style:{width:"600px",height:"200px",zIndex:"10"},
 	     resizable:true},
-	    diagramTop);
-	diagramTop.appendMyselfToParent(dojo.body());
+	    diagramDiv);
+	diagramDiv.appendMyselfToParent(dojo.body());
 	tbl.appendMyselfToParent(fp);
 	newComponent = zen.createSubtree(tree);
 	console.debug("newComponent => " + newComponent);

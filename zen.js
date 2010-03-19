@@ -106,11 +106,6 @@
 			  dojo.forEach(
 			      domNode.childNodes,
 			      function(n) {
-				  console.debug("visibility => ",
-						dojo.style(n,"visibility"));
-				  n.savedVisibility =
-				      dojo.style(n,"visibility");
-				  //dojo.style(n,"visibility","hidden");
 				  dojo.addClass(n,"invisible");
 			      });
 		      });
@@ -126,9 +121,6 @@
 			  dojo.forEach(
 			      domNode.childNodes,
 			      function(n) {
-				  console.debug("savedVisibility => ",
-						n.savedVisibility);
-				  //dojo.style(n,"visibility",n.savedVisibility);
 				  dojo.removeClass(n,"invisible");
 			      });
 		      });

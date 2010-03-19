@@ -93,11 +93,45 @@
 	    //dojo.attr(cell, "onclick", "alert('Click')");
 	    dojo.attr(cell, "mouseover",
 		      function() {
-			  alert(component + component.getDomNode());
-			  dojo.style(component.getDomNode(),
-				     {backgroundColor:"green",
-				      zIndex:"100"})});
-	    //dojo.forEach();
+			  var domNode = component.getDomNode();
+			  console.debug("component => " + component +
+					", domNode => " + domNode +
+					", childNodes => " +
+					domNode.childNodes);
+			  domNode.savedBackgroundColor = dojo.style(
+			      domNode, "backgroundColor");
+			  dojo.style(
+			      domNode,
+			      {backgroundColor:"blue"});
+			  dojo.forEach(
+			      domNode.childNodes,
+			      function(n) {
+				  console.debug("visibility => ",
+						dojo.style(n,"visibility"));
+				  n.savedVisibility =
+				      dojo.style(n,"visibility");
+				  //dojo.style(n,"visibility","hidden");
+				  dojo.addClass(n,"invisible");
+			      });
+		      });
+	    dojo.attr(cell, "mouseout",
+		      function() {
+			  var domNode = component.getDomNode();
+			  console.debug("component => " + component +
+					", domNode => " + domNode +
+					", childNodes => " +
+					domNode.childNodes);
+			  dojo.style(domNode, "backgroundColor",
+				     domNode.savedBackgroundColor);
+			  dojo.forEach(
+			      domNode.childNodes,
+			      function(n) {
+				  console.debug("savedVisibility => ",
+						n.savedVisibility);
+				  //dojo.style(n,"visibility",n.savedVisibility);
+				  dojo.removeClass(n,"invisible");
+			      });
+		      });
 	    ++this.rowNumber;
 	    tbl.appendChild(row);
 	    row.appendChild(cell);

@@ -30,14 +30,16 @@
 
     var tree1 =
     ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
-	     title:"Title"}, []];
+	     id:"tree1",title:"Title"}, []];
     var tree2 =
-    ["div", {style:{width:"200px",height:"200px",backgroundColor:"red"}},
-     [["div",
-       {style:{width:"180px",height:"180px",backgroundColor:"orange"},
+    ["div", {id:"tree2",
+	     style:{width:"200px",height:"200px",backgroundColor:"red"}},
+     [["div", {id:"inner",
+	       style:{width:"180px",height:"180px",backgroundColor:"orange"},
 	title:"Title 1"}, []]]];
     var tree3 =
-    ["div", {style:{width:"200px",height:"250px",backgroundColor:"red"}},
+    ["div", {id:"tree3",
+	     style:{width:"200px",height:"250px",backgroundColor:"red"}},
      [["div",
        {}, []],
       ["table",
@@ -57,19 +59,19 @@
       ["p", {}, [["span", {}, [["div", {}, []], ["div", {}, []]]],
 		  ["div", {}, []]]]]];
     var tree4 =
-    ["div", {},
+    ["div", {id:"tree4"},
      [["p", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"300px",backgroundColor:"red"}},
        []]]];
     var tree5 =
-    ["div", {},
+    ["div", {id:"tree5"},
      [["p", {}, []],
       ["dijit.layout.ContentPane",
        {"class":"box"},
        []]]];
     var tree6 =
-    ["div", {},
+    ["div", {id:"tree6"},
      [["p", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"140px",backgroundColor:"red"}},
@@ -78,7 +80,7 @@
 	 [["div", {}, []]]]]]]];
     var tree7 =
     ["dijit.layout.AccordionContainer",
-     {id:"ac",style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
+     {id:"ac7",style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
      [["dijit.layout.AccordionPane",
        {id:"cp0",title:"pane 1"},
        []],
@@ -87,12 +89,12 @@
        []]]];
     var tree8 =
     ["dijit.layout.AccordionContainer",
-     {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
+     {id:"ac8",style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
      [["dijit.layout.ContentPane",
        {title:"pane 1"},
        []]]];
     var tree9 =
-    ["div", {},
+    ["div", {id:"ac9"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
        [["dijit.layout.AccordionPane",
@@ -104,7 +106,7 @@
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
     var tree10 =
-    ["div", {},
+    ["div", {id:"ac10"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
        [["dijit.layout.ContentPane",
@@ -116,7 +118,7 @@
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
     var tree11 =
-    ["div", {id:"id1"},
+    ["div", {id:"ac11"},
      [["dijit.layout.AccordionContainer",
        {id:"ac0",style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
        [["dijit.layout.ContentPane",
@@ -141,7 +143,7 @@
 	   []]]]]]]];
     var tree12 =
     ["dijit.layout.AccordionContainer",
-     {id:"ac0",style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
+     {id:"ac12",style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
      [["dijit.layout.ContentPane",
        {id:"cp00",title:"pane 1"},
        [["div", {id:"d000",style:{width:"100%",height:"140px",

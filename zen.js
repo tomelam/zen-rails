@@ -62,22 +62,42 @@
 			     w.startup(); }
 			);
 	},
-	walkTree : function(tree) {
+	walkTheDOM : function(node, func) {
+	    console.debug("node => " + node);
+	    func(node);
+	    node = node.firstChild;
+	    while (node) {
+		zen.walkTheDOM(node, func);
+		node = node.nextSibling;
+	    }
+	},
+	walkTree : function(tree, func) {
 	    console.debug("tree => " + tree);
+	    func(tree);
 	    var children = tree.getChildCompons();
 	    console.debug("children.length => " + children.length);
 	    var i;
 	    for (i=0; i<children.length; i++) {
-		this.walkTree(children[i]);
+		func(children[i]);
+		this.walkTree(children[i], func);
 	    };
 	    console.debug("pop");
 	},
 	rowNumber : 0,
+	//FIXME: Use dojo.create.
 	boxCompon : function(component, tbl) {
 	    var row = this.createElement("tr","r"+this.rowNumber);
 	    var cell = this.createElement("td");
 	    var div = this.createElement("div",{class:"visualRep"});
 	    var text = this.createTextNode("" + component);
+	    //dojo.attr(cell, "onclick", "alert('Click')");
+	    dojo.attr(cell, "mouseover",
+		      function() {
+			  alert(component + component.getDomNode());
+			  dojo.style(component.getDomNode(),
+				     {backgroundColor:"green",
+				      zIndex:"100"})});
+	    //dojo.forEach();
 	    ++this.rowNumber;
 	    tbl.appendChild(row);
 	    row.appendChild(cell);
@@ -85,6 +105,7 @@
 	    div.appendChild(text);
 	    return row;
 	},
+	//FIXME: Use dojo.create.
 	boxTable : function(componList, tbl) {
 	    var tbl1, i, len = componList.length,
 		compon, children, row, cell, div;
@@ -159,6 +180,7 @@
 	zen.widgets.push(widget);
 	return widget;
     };
+    //FIXME: Use dojo.create.
     zen.createElement = function(kind, attributes) {
 	console.debug("zen.createElement: kind => " + kind +
 		      ", attributes => " + attributes);
@@ -167,6 +189,7 @@
 	dojo.attr(element, attributes || {}); //FIXME: Check this.
 	return element;
     };
+    //FIXME: Use dojo.create, if appropriate.
     zen.createTextNode = function(text, attributes) {
 	var element = document.createTextNode(text);
 	return element;

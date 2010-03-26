@@ -28,6 +28,8 @@
     c = createNew(Baz, 3, 4);
     console.debug("c.a => " + c.a);
 
+    sayHello = function() { alert("Hi!"); }
+
     var tree1 =
     ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
 	     id:"tree1",title:"Title"}, []];
@@ -164,6 +166,26 @@
        {id:"cp01",title:"pane 2"},
        [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	 []]]]]];
+    var devTools =
+    ["dojox.layout.FloatingPane",
+     {id:"fp00",title:"FloatingPane 1"},
+
+       [["center", {},
+	 [["div", {},
+	   [["dijit.form.Button",
+	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]],
+	["center", {},
+	 [["div", {},
+	   [["dijit.form.Button",
+	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]],
+	["center", {},
+	 [["div", {},
+	   [["dijit.form.Button",
+	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]],
+	["center", {},
+	 [["div", {},
+	   [["dijit.form.Button",
+	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]]]];
     var underlay =
     ["dijit.DialogUnderlay",
      {id:"underlay",style:{width:"100%",height:"200px",
@@ -177,25 +199,35 @@
 		
     test = function(tree) {
 	console.debug("Testing creation of a tree");
-	var div0,tbl,newComponent;
+	var div0, tbl, newComponent, contentBox, floatingPaneContent;
 	var div0 = dojo.byId("id0");
 	var tbl = zen.createElement(
-	    "table",{id:"componTbl",border:"1px solid black"});
+	    "table",{id:"componTbl",class:"boxTable"});
 	var diagramDiv = dojo.byId("diagramDiv");
-	var fp = zen.createDijit(
+	var floatingPane = zen.createDijit(
 	    "dojox.layout.FloatingPane",
 	    {id:"diagramPane",
 	     title:"Hierarchy of Web Page Components",
-	     style:{width:"600px",height:"200px",zIndex:"10"},
+	     style:{backgroundColor:"yellow", zIndex:"10"},
 	     resizable:true},
 	    diagramDiv);
 	diagramDiv.appendMyselfToParent(dojo.body());
-	tbl.appendMyselfToParent(fp);
+	tbl.appendMyselfToParent(floatingPane);
 	newComponent = zen.createSubtree(tree);
 	console.debug("newComponent => " + newComponent);
 	newComponent.appendMyselfToParent(dojo.body());
 	zen.startup();
 	zen.boxTable([newComponent],tbl);
-	fp.startup();
+	contentBox = dojo.contentBox("componTbl");
+	floatingPane.startup();
+	floatingPane.resize({t:30, l:30, w:contentBox.w, h:contentBox.h+21});
+	floatingPaneContent = dojo.query(
+	    "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
+	dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
 	console.debug("Done");
     };
+
+    //init = function() { test(tree12); };
+    init = function() { test(devTools); };
+
+

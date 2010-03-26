@@ -17,22 +17,26 @@
 	    };
 	    return parentCompon;
 	},
-	// Each property of rulesTable is a rule for creating a kind
-	// of component. The value of each property is the set (an
-	// array) of the kinds of component that can be created using
-	// the rule.
+	// Each property of rulesTable is the name of a rule
+	// (i.e. method) for creating a kind of component. The value
+	// of each property is the set (an array) of the kinds of
+	// component that can be created using the rule.
 	rulesTable : {
-	    createElement : [ "div", "table", "tr", "td", "p", "span" ],
+	    createElement : [ "div", "table", "tr", "td", "p", "span",
+			      "center" ],
 	    createDijit   : [ "dijit.layout.ContentPane",
 			      "dijit.layout.BorderContainer",
 			      "dijit.layout.AccordionContainer",
 			      "dijit.layout.AccordionPane", //FIXME: deprecated
-			      "dijit.DialogUnderlay"
-			    ]
-	    // FIXME: add this property and value: createTextNode : [ "*" ]
+			      "dijit.DialogUnderlay",
+			      "dijit.form.Button",
+			      "dojox.layout.FloatingPane" //FIXME: deprecated
+			    ],
+	    createTextNode : [ "text" ]
 	},
-	// This is a table for looking up a rule given a component name as
-	// a key. We fill it up by immediately calling initIRT.
+	// This is a table for looking up a rule given a component
+	// name as a key. We fill it up by immediately calling
+	// initIRT.
 	invertedRulesTable : {},
 	initIRT : function() {
 	    var components, c, rule, len;
@@ -44,6 +48,8 @@
 		};
 	    };
 	},
+	// FIXME: eval is not cool here. FaceBook and MySpace, for
+	// example, won't allow it in included JavaScript.
 	rule2ref : function(rule) {
 	    var s;
 	    for (s in zen.shortCutsTable) {
@@ -83,14 +89,13 @@
 	    };
 	    console.debug("pop");
 	},
-	rowNumber : 0,
 	//FIXME: Use dojo.create.
 	boxCompon : function(component, tbl) {
-	    var row = this.createElement("tr","r"+this.rowNumber);
-	    var cell = this.createElement("td");
+	    var row = this.createElement("tr");
+	    var cell = this.createElement("td",
+		                          {class:"boxTD1"});
 	    var div = this.createElement("div",{class:"visualRep"});
 	    var text = this.createTextNode("" + component);
-	    //dojo.attr(cell, "onclick", "alert('Click')");
 	    dojo.attr(cell, "mouseover",
 		      function() {
 			  var domNode = component.getDomNode();
@@ -102,7 +107,7 @@
 			      domNode, "backgroundColor");
 			  dojo.style(
 			      domNode,
-			      {backgroundColor:"blue"});
+			      {backgroundColor:"lightblue"});
 			  dojo.forEach(
 			      domNode.childNodes,
 			      function(n) {
@@ -112,10 +117,6 @@
 	    dojo.attr(cell, "mouseout",
 		      function() {
 			  var domNode = component.getDomNode();
-			  console.debug("component => " + component +
-					", domNode => " + domNode +
-					", childNodes => " +
-					domNode.childNodes);
 			  dojo.style(domNode, "backgroundColor",
 				     domNode.savedBackgroundColor);
 			  dojo.forEach(
@@ -124,14 +125,13 @@
 				  dojo.removeClass(n,"invisible");
 			      });
 		      });
-	    ++this.rowNumber;
 	    tbl.appendChild(row);
 	    row.appendChild(cell);
 	    cell.appendChild(div);
 	    div.appendChild(text);
 	    return row;
 	},
-	//FIXME: Use dojo.create.
+	// FIXME: Use dojo.create.
 	boxTable : function(componList, tbl) {
 	    var tbl1, i, len = componList.length,
 		compon, children, row, cell, div;
@@ -142,14 +142,10 @@
 		row = this.boxCompon(compon, tbl);
 		children = compon.getChildCompons();
 		if (children.length > 0) {
-		    cell = this.createElement("td");
-		    div = this.createElement("div",{class:"visualRep"});
-		    //cell.appendChild(div);
+		    cell = this.createElement("td", {class:"boxTD2"});
 		    console.debug("row => " + row);
 		    row.appendChild(cell);
-		    tbl1 = this.createElement("table",
-					      {border:"1px solid black",
-					       backgroundColor:"antiquewhite"});
+		    tbl1 = this.createElement("table", {class:"boxTable"});
 		    cell.appendChild(tbl1);
 		    this.boxTable(children, tbl1);
 		};
@@ -177,7 +173,7 @@
 	widget.appendMyselfToParent = function(parent) {
 	    //FIXME: See the placeat method in _Widget.js.
 	    console.debug("appendMyselfToParent: widget => " + widget);
-	    if (parent == parent.getDomNode()) {
+	    if (parent == parent.getDomNode() || !parent.addChild) {
 		console.debug("element.appendChild(widget.domNode)");
 		return parent.appendChild(widget.domNode); // HTML element
 	    } else {
@@ -206,7 +202,7 @@
 	zen.widgets.push(widget);
 	return widget;
     };
-    //FIXME: Use dojo.create.
+    // FIXME: Use dojo.create.
     zen.createElement = function(kind, attributes) {
 	console.debug("zen.createElement: kind => " + kind +
 		      ", attributes => " + attributes);
@@ -215,7 +211,7 @@
 	dojo.attr(element, attributes || {}); //FIXME: Check this.
 	return element;
     };
-    //FIXME: Use dojo.create, if appropriate.
+    // FIXME: Use dojo.create, if appropriate.
     zen.createTextNode = function(text, attributes) {
 	var element = document.createTextNode(text);
 	return element;
@@ -226,6 +222,7 @@
 	createDijit : zen.createDijit
     };
 
+    // FIXME: Fix Zen so it will work with Internet Explorer.
     Element.addMethods( // Extend all HTML elements with these methods.
 	{
 	    appendMyselfToParent : function (element, parent) {
@@ -245,5 +242,3 @@
 	    }
 	});
     zen.initIRT();
-
-    init = function() {}; // Unused.

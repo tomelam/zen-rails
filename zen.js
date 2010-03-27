@@ -1,11 +1,11 @@
-    zen = {
-	createSubtree : function(treeSpec) {
+zen = {};
+zen.createSubtree = function(treeSpec) {
 	    var i, rule, parentCompon, compon, len, constructor, parentDomNode,
 		componKind = treeSpec[0],
 		initParms = treeSpec[1],
 		subtree = treeSpec[2];
 	    rule = zen.invertedRulesTable[componKind];
-	    console.debug("rule = > " + rule + ", componKind => " +
+	    console.debug("rule => " + rule + ", componKind => " +
 			  componKind);
 	    constructor = zen.rule2ref(rule);
 	    parentCompon = constructor.call(document, componKind, initParms);
@@ -21,7 +21,7 @@
 	// (i.e. method) for creating a kind of component. The value
 	// of each property is the set (an array) of the kinds of
 	// component that can be created using the rule.
-	rulesTable : {
+	zen.rulesTable = {
 	    createElement : [ "div", "table", "tr", "td", "p", "span",
 			      "center", "br" ],
 	    createDijit   : [ "dijit.layout.ContentPane",
@@ -33,12 +33,12 @@
 			      "dojox.layout.FloatingPane" //FIXME: deprecated
 			    ],
 	    createTextNode : [ "text" ]
-	},
+	};
 	// This is a table for looking up a rule given a component
 	// name as a key. We fill it up by immediately calling
 	// initIRT.
-	invertedRulesTable : {},
-	initIRT : function() {
+	zen.invertedRulesTable = {};
+	zen.initIRT = function() {
 	    var components, c, rule, len;
 	    for (rule in zen.rulesTable) {
 		components = zen.rulesTable[rule];
@@ -47,10 +47,10 @@
 		    zen.invertedRulesTable[components[c]] = rule;
 		};
 	    };
-	},
+	};
 	// FIXME: eval is not cool here. FaceBook and MySpace, for
 	// example, won't allow it in included JavaScript.
-	rule2ref : function(rule) {
+	zen.rule2ref = function(rule) {
 	    var s;
 	    for (s in zen.shortCutsTable) {
 		if (s == rule) {
@@ -58,17 +58,17 @@
 		}
 	    }
 	    return eval(rule);
-	},
-	widgets : [],
-	startup : function() {
+	};
+	zen.widgets = [];
+	zen.startup = function() {
 	    // Start up all the Dojo widgets. The order is important.
 	    dojo.forEach(zen.widgets.reverse(),
 			 function(w) {
 			     console.debug("starting up " + w);
 			     w.startup(); }
 			);
-	},
-	walkTheDOM : function(node, func) {
+	};
+	zen.walkTheDOM = function(node, func) {
 	    console.debug("node => " + node);
 	    func(node);
 	    node = node.firstChild;
@@ -76,8 +76,8 @@
 		zen.walkTheDOM(node, func);
 		node = node.nextSibling;
 	    }
-	},
-	walkTree : function(tree, func) {
+	};
+	zen.walkTree = function(tree, func) {
 	    console.debug("tree => " + tree);
 	    func(tree);
 	    var children = tree.getChildCompons();
@@ -85,17 +85,17 @@
 	    var i;
 	    for (i=0; i<children.length; i++) {
 		func(children[i]);
-		this.walkTree(children[i], func);
+		zen.walkTree(children[i], func);
 	    };
 	    console.debug("pop");
-	},
+	};
 	//FIXME: Use dojo.create.
-	boxCompon : function(component, tbl) {
-	    var row = this.createElement("tr");
-	    var cell = this.createElement("td",
+	zen.boxCompon = function(component, tbl) {
+	    var row = zen.createElement("tr");
+	    var cell = zen.createElement("td",
 		                          {class:"boxTD1"});
-	    var div = this.createElement("div",{class:"visualRep"});
-	    var text = this.createTextNode("" + component);
+	    var div = zen.createElement("div",{class:"visualRep"});
+	    var text = zen.createTextNode("" + component);
 	    dojo.attr(cell, "mouseover",
 		      function() {
 			  var domNode = component.getDomNode();
@@ -130,28 +130,27 @@
 	    cell.appendChild(div);
 	    div.appendChild(text);
 	    return row;
-	},
+	};
 	// FIXME: Use dojo.create.
-	boxTable : function(componList, tbl) {
+	zen.boxTable = function(componList, tbl) {
 	    var tbl1, i, len = componList.length,
 		compon, children, row, cell, div;
 	    console.debug("len => " + len);
 	    for (i=0; i<len; i++) {
 		compon = componList[i];
 		console.debug("compon => " + compon);
-		row = this.boxCompon(compon, tbl);
+		row = zen.boxCompon(compon, tbl);
 		children = compon.getChildCompons();
 		if (children.length > 0) {
-		    cell = this.createElement("td", {class:"boxTD2"});
+		    cell = zen.createElement("td", {class:"boxTD2"});
 		    console.debug("row => " + row);
 		    row.appendChild(cell);
-		    tbl1 = this.createElement("table", {class:"boxTable"});
+		    tbl1 = zen.createElement("table", {class:"boxTable"});
 		    cell.appendChild(tbl1);
-		    this.boxTable(children, tbl1);
+		    zen.boxTable(children, tbl1);
 		};
 	    };
-	}
-    };
+	};
     // Zen.createDijit does not allow a dijit to be built on a
     // passed-in HTML element node. Instead, the dijit constructor is
     // called without reference to a node, thus causing it to create a

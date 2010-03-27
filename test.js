@@ -229,6 +229,7 @@
 	console.debug("Done");
     };
 
+    //init = function() { console.debug("init: doing nothing"); };
     //init = function() { test(tree12); };
     init = function() { test(devTools); };
 

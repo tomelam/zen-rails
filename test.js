@@ -168,24 +168,25 @@
 	 []]]]]];
     var devTools =
     ["dojox.layout.FloatingPane",
-     {id:"fp00",title:"FloatingPane 1"},
-
-       [["center", {},
-	 [["div", {},
-	   [["dijit.form.Button",
-	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]],
-	["center", {},
-	 [["div", {},
-	   [["dijit.form.Button",
-	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]],
-	["center", {},
-	 [["div", {},
-	   [["dijit.form.Button",
-	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]],
-	["center", {},
-	 [["div", {},
-	   [["dijit.form.Button",
-	     {label:"Clear the Canvas",onClick:sayHello}, []]]]]]]];
+     {id:"fp00",title:"Main Controls",style:{bottom:"30px",right:"30px"}},
+     [["center", {},
+       [["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []]]]]];
     var underlay =
     ["dijit.DialogUnderlay",
      {id:"underlay",style:{width:"100%",height:"200px",
@@ -217,6 +218,7 @@
 	console.debug("newComponent => " + newComponent);
 	newComponent.appendMyselfToParent(dojo.body());
 	zen.startup();
+	console.debug("##### CREATING DIAGRAM #####");
 	zen.boxTable([newComponent],tbl);
 	contentBox = dojo.contentBox("componTbl");
 	floatingPane.startup();

@@ -23,7 +23,7 @@
 	// component that can be created using the rule.
 	rulesTable : {
 	    createElement : [ "div", "table", "tr", "td", "p", "span",
-			      "center" ],
+			      "center", "br" ],
 	    createDijit   : [ "dijit.layout.ContentPane",
 			      "dijit.layout.BorderContainer",
 			      "dijit.layout.AccordionContainer",
@@ -173,7 +173,7 @@
 	widget.appendMyselfToParent = function(parent) {
 	    //FIXME: See the placeat method in _Widget.js.
 	    console.debug("appendMyselfToParent: widget => " + widget);
-	    if (parent == parent.getDomNode() || !parent.addChild) {
+	    if (parent == parent.getDomNode()) {
 		console.debug("element.appendChild(widget.domNode)");
 		return parent.appendChild(widget.domNode); // HTML element
 	    } else {

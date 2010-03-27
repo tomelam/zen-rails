@@ -16,7 +16,7 @@ zen.createSubtree = function(treeSpec) {
 		compon.appendMyselfToParent(parentCompon);
 	    };
 	    return parentCompon;
-	},
+};
 	// Each property of rulesTable is the name of a rule
 	// (i.e. method) for creating a kind of component. The value
 	// of each property is the set (an array) of the kinds of

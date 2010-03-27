@@ -32,15 +32,15 @@
 
     var tree1 =
     ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
-	     id:"tree1",title:"Title"}, []];
+	     id:"workingNode",title:"Title"}, []];
     var tree2 =
-    ["div", {id:"tree2",
+    ["div", {id:"workingNode",
 	     style:{width:"200px",height:"200px",backgroundColor:"red"}},
-     [["div", {id:"inner",
+     [["div", {id:"workingNode",
 	       style:{width:"180px",height:"180px",backgroundColor:"orange"},
 	title:"Title 1"}, []]]];
     var tree3 =
-    ["div", {id:"tree3",
+    ["div", {id:"workingNode",
 	     style:{width:"200px",height:"250px",backgroundColor:"red"}},
      [["div",
        {}, []],
@@ -61,19 +61,19 @@
       ["p", {}, [["span", {}, [["div", {}, []], ["div", {}, []]]],
 		  ["div", {}, []]]]]];
     var tree4 =
-    ["div", {id:"tree4"},
+    ["div", {id:"workingNode"},
      [["p", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"300px",backgroundColor:"red"}},
        []]]];
     var tree5 =
-    ["div", {id:"tree5"},
+    ["div", {id:"workingNode"},
      [["p", {}, []],
       ["dijit.layout.ContentPane",
        {"class":"box"},
        []]]];
     var tree6 =
-    ["div", {id:"tree6"},
+    ["div", {id:"workingNode"},
      [["p", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"140px",backgroundColor:"red"}},
@@ -82,21 +82,23 @@
 	 [["div", {}, []]]]]]]];
     var tree7 =
     ["dijit.layout.AccordionContainer",
-     {id:"ac7",style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
+     {id:"workingNode",
+      style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
      [["dijit.layout.AccordionPane",
-       {id:"cp0",title:"pane 1"},
+       {id:"workingNode",title:"pane 1"},
        []],
       ["dijit.layout.AccordionPane",
        {id:"cp1",title:"pane 1"},
        []]]];
     var tree8 =
     ["dijit.layout.AccordionContainer",
-     {id:"ac8",style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
+     {id:"workingNode",
+      style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
      [["dijit.layout.ContentPane",
        {title:"pane 1"},
        []]]];
     var tree9 =
-    ["div", {id:"ac9"},
+    ["div", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
        [["dijit.layout.AccordionPane",
@@ -108,7 +110,7 @@
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
     var tree10 =
-    ["div", {id:"ac10"},
+    ["div", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
        [["dijit.layout.ContentPane",
@@ -120,7 +122,7 @@
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
     var tree11 =
-    ["div", {id:"ac11"},
+    ["div", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {id:"ac0",style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
        [["dijit.layout.ContentPane",
@@ -145,7 +147,8 @@
 	   []]]]]]]];
     var tree12 =
     ["dijit.layout.AccordionContainer",
-     {id:"ac12",style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
+     {id:"workingNode",
+      style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
      [["dijit.layout.ContentPane",
        {id:"cp00",title:"pane 1"},
        [["div", {id:"d000",style:{width:"100%",height:"140px",
@@ -168,10 +171,11 @@
 	 []]]]]];
     var devTools =
     ["dojox.layout.FloatingPane",
-     {id:"fp00",title:"Main Controls",style:{bottom:"30px",right:"30px"}},
+     {id:"workingNode",
+      title:"Main Controls",style:{bottom:"30px",right:"30px"}},
      [["center", {},
        [["dijit.form.Button",
-	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	 {label:"Clear the Canvas",onClick:zen.cleanUpWebPage}, []],
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:sayHello}, []],
@@ -189,13 +193,13 @@
 	 {label:"Clear the Canvas",onClick:sayHello}, []]]]]];
     var underlay =
     ["dijit.DialogUnderlay",
-     {id:"underlay",style:{width:"100%",height:"200px",
-			   backgroundColor:"lightgreen"}},
+     {id:"workingNode",style:{width:"100%",height:"200px",
+			      backgroundColor:"lightgreen"}},
      []];
     var pane =
     ["dijit.layout.ContentPane",
-     {id:"pane",style:{width:"100%",height:"200px",
-			   backgroundColor:"lightgreen"}},
+     {id:"workingNode",style:{width:"100%",height:"200px",
+			      backgroundColor:"lightgreen"}},
      []];    
 		
     test = function(tree) {

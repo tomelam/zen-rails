@@ -77,12 +77,15 @@ zen.startup = function() {
 };
 
 zen.walkTheDOM = function(node, func) {
+    var oldNode;
     console.debug("node => " + node);
     func(node);
     node = node.firstChild;
     while (node) {
 	zen.walkTheDOM(node, func);
+	//oldNode = node;
 	node = node.nextSibling;
+	//oldNode.parentNode.removeChild(oldNode);
     }
 };
 

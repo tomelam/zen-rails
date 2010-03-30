@@ -172,10 +172,10 @@
     var devTools =
     ["dojox.layout.FloatingPane",
      {id:"workingNode",
-      title:"Main Controls",style:{bottom:"30px",right:"30px"}},
+      title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
-	 {label:"Clear the Canvas",onClick:zen.cleanUpWebPage}, []],
+	 {label:"Clear the Canvas",onClick:zen.cleanUpWebpage}, []],
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:sayHello}, []],
@@ -191,6 +191,43 @@
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:sayHello}, []]]]]];
+    var testRendering =
+    ["dojox.layout.FloatingPane",
+     {id:"testRendering",
+      title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
+     [["center", {},
+       [["dijit.form.Button",
+	 {label:"tree 1",onClick:function(){test(tree1)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 2",onClick:function(){test(tree2)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 3",onClick:function(){test(tree3)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 4",onClick:function(){test(tree4)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 5",onClick:function(){test(tree5)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 6",onClick:function(){test(tree6)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 7",onClick:function(){test(tree7)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 8",onClick:function(){test(tree8)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 9",onClick:function(){test(tree9)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"tree 10",onClick:function(){test(tree10)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"dev tools",onClick:function(){test(devTools)}}, []]]]]];
     var underlay =
     ["dijit.DialogUnderlay",
      {id:"workingNode",style:{width:"100%",height:"200px",
@@ -235,6 +272,7 @@
 
     //init = function() { console.debug("init: doing nothing"); };
     //init = function() { test(tree12); };
-    init = function() { test(devTools); };
+    //init = function() { test(devTools); };
+    init = function() { test(testRendering); };
 
 

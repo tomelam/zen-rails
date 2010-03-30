@@ -208,6 +208,9 @@ zen.createDijit = function(klass, initParms, topNode) {
 	    return widget.addChild(child);             // Dojo widget
 	};
     };
+    widget.destroyChild = function(child) {
+	console.debug("widget.destroyChild: child => " + child);
+    };
     zen.widgets.push(widget);
     return widget;
 };

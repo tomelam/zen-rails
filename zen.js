@@ -54,15 +54,19 @@ zen.initIRT = function() {
 };
 
 // FIXME: eval is not cool here. FaceBook and MySpace, for
-// example, won't allow it in included JavaScript.
+// example, won't allow it in included JavaScript. See
+// http://www.dojotoolkit.org/reference-guide/dojo/_base/json.html
+// for a safe way to evaluate JSON strings.
 zen.rule2ref = function(rule) {
     var s;
-    for (s in zen.shortCutsTable) {
+    for (s in zen.shortcutsTable) {
 	if (s == rule) {
-	    return eval(zen.shortCutsTable[rule]);
+	    //return eval(zen.shortcutsTable[rule]);
+	    return dojo.fromJson(zen.shortcutsTable[rule]);
 	}
     }
-    return eval(rule);
+    //return eval(rule);
+    return dojo.fromJson(rule)
 };
 
 zen.widgets = [];
@@ -234,7 +238,9 @@ zen.createTextNode = function(text, attributes) {
     return element;
 };
 
-zen.shortCutsTable = {
+// These shortcuts make it easy to specify methods for creating
+// various kinds of components.
+zen.shortcutsTable = {
     createElement : zen.createElement,
     createTextNode : document.createTextNode,
     createDijit : zen.createDijit

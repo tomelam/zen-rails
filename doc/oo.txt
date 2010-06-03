@@ -1,0 +1,14 @@
+Methods for any component
+-------------------------
+appendMyselfToParent
+getDomNode
+getChildCompons
+
+Components (each should have its own prototype)
+-----------------------------------------------
+zen.TextNode
+zen.Element
+dijit.*
+dijit.*.*
+dojox.*.*
+

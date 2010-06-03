@@ -12,6 +12,13 @@
     //
     // FIXME: Look around to see if Prototype or any other JavaScript
     // library provides similar functionality.
+    //
+    // FIXME: Someone criticized Crockford's function for creating an
+    // object because it creates a function every time called, even
+    // though only the prototype of that object mattered and is
+    // changed every time the object creator is called. It looks like
+    // this could easily be fixed by defining hiddenLink outside of
+    // createNew.
     function createNew() {
 	// A function to explain the new operator.
 	//   var object = createNew(...);

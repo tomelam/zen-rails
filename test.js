@@ -10,25 +10,27 @@
 	};
 	
     };
-    console.debug(".");
-    f = createNew(Foo);
-    console.debug("f.a => " + f.a); // => undefined
-    console.debug("f.getA() => " + f.getA()); // => 1
-    Bar = function() {
-	this.a = 1;
-	return 1;
+    testObjectCreator = function() {
+	console.debug(".");
+	f = createNew(Foo);
+	console.debug("f.a => " + f.a); // => undefined
+	console.debug("f.getA() => " + f.getA()); // => 1
+	Bar = function() {
+	    this.a = 1;
+	    return 1;
+	}
+	console.debug(".");
+	b = createNew(Bar);
+	console.debug("b.a => " + b.a); // => 1
+	Baz = function(z) {
+	    this.a = z;
+	}
+	console.debug(".");
+	c = createNew(Baz, 3, 4);
+	console.debug("c.a => " + c.a);
     }
-    console.debug(".");
-    b = createNew(Bar);
-    console.debug("b.a => " + b.a); // => 1
-    Baz = function(z) {
-	this.a = z;
-    }
-    console.debug(".");
-    c = createNew(Baz, 3, 4);
-    console.debug("c.a => " + c.a);
-
     sayHello = function() { alert("Hi!"); }
+    //testObjectCreator();
 
     var tree1 =
     ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
@@ -238,34 +240,50 @@
      {id:"workingNode",style:{width:"100%",height:"200px",
 			      backgroundColor:"lightgreen"}},
      []];    
-		
+
+    var tblCompon, floatingPane;// for testing
     test = function(tree) {
 	console.debug("Testing creation of a tree");
-	var div0, tbl, newComponent, contentBox, floatingPaneContent;
-	var div0 = dojo.byId("id0");
-	var tbl = zen.createElement(
-	    "table",{id:"componTbl",class:"boxTable"});
-	var diagramDiv = dojo.byId("diagramDiv");
-	var floatingPane = zen.createDijit(
+	var div0, tblComponx, newComponent, contentBox, floatingPaneContent;
+	var diagramDivCompon, floatingPanex;
+	console.debug("dojo.byId('diagramDiv') => " + dojo.byId("diagramDiv"));
+	div0 = dojo.byId("id0");
+	tblCompon = zen.createElement("table",
+				      {id:"componTbl",class:"boxTable"});
+	console.debug("tblCompon => " + tblCompon + ", tblCompon.element => " + tblCompon.element);
+	diagramDivCompon = createNew(zen.Component, dojo.byId("diagramDiv"));
+	console.debug("diagramDivCompon => " + diagramDivCompon);
+	floatingPane = zen.createDijit(
 	    "dojox.layout.FloatingPane",
 	    {id:"diagramPane",
 	     title:"Hierarchy of Web Page Components",
 	     style:{backgroundColor:"yellow", zIndex:"10"},
 	     resizable:true},
-	    diagramDiv);
-	diagramDiv.appendMyselfToParent(dojo.body());
-	tbl.appendMyselfToParent(floatingPane);
+	    diagramDivCompon);
+	console.debug("*** append diagramDivCompon");
+	diagramDivCompon.appendMyselfToParent(zen.body);
+	console.debug("*** appended diagramDivCompon");
+	//return;
+	tblCompon.appendMyselfToParent(floatingPane);
+	console.debug("*** appended tblCompon");
 	newComponent = zen.createSubtree(tree);
-	console.debug("newComponent => " + newComponent);
-	newComponent.appendMyselfToParent(dojo.body());
+	console.debug("******* newComponent => " + newComponent);
+	newComponent.appendMyselfToParent(zen.body);
 	zen.startup();
-	console.debug("##### CREATING DIAGRAM #####");
-	zen.boxTable([newComponent],tbl);
+	console.info("############################");
+	console.info("##### CREATING DIAGRAM #####");
+	console.info("############################");
+	zen.boxTable([newComponent], tblCompon);
+	console.debug("*** created boxTable");
 	contentBox = dojo.contentBox("componTbl");
+	console.debug("contentBox => " + contentBox);
 	floatingPane.startup();
+	console.debug("started up floatingPane");
 	floatingPane.resize({t:30, l:30, w:contentBox.w, h:contentBox.h+21});
+	console.debug("resized floatingPane");
 	floatingPaneContent = dojo.query(
 	    "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
+	console.debug("floatingPaneContent => " + floatingPaneContent);
 	dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
 	console.debug("Done");
     };
@@ -273,6 +291,7 @@
     //init = function() { console.debug("init: doing nothing"); };
     //init = function() { test(tree12); };
     //init = function() { test(devTools); };
-    init = function() { test(testRendering); };
+    init = function() { zen.init(); test(testRendering); };
+    //init = function() {};
 
 

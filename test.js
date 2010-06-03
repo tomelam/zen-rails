@@ -250,7 +250,8 @@
 	div0 = dojo.byId("id0");
 	tblCompon = zen.createElement("table",
 				      {id:"componTbl",class:"boxTable"});
-	console.debug("tblCompon => " + tblCompon + ", tblCompon.element => " + tblCompon.element);
+	console.debug("tblCompon => " + tblCompon + ", tblCompon.domNode => " +
+		      tblCompon.domNode);
 	diagramDivCompon = createNew(zen.Component, dojo.byId("diagramDiv"));
 	console.debug("diagramDivCompon => " + diagramDivCompon);
 	floatingPane = zen.createDijit(

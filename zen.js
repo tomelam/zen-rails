@@ -3,25 +3,25 @@ zen = {};
 zen.components = [];
 
 zen.Component = function(e) {
-    this.element = e;
+    this.domNode = e;
     this.appendMyselfToParent = function (parent) {
-	console.debug("Component.appendMyselfToParent: element => " +
-		      this.element + ", parent => " + parent);
+	console.debug("Component.appendMyselfToParent: domNode => " +
+		      this.domNode + ", parent => " + parent);
 	parent.appendChild(this);
     };
     this.appendChild = function (child) {
 	console.debug("Component.appendChild: child => " +
 		      child + ", this => " + this);
-	this.element.appendChild(child.getDomNode());
+	this.domNode.appendChild(child.getDomNode());
     };
     this.getDomNode = function () {
-	console.debug("Component.getDomNode: element => " + this.element);
-	return this.element;
+	console.debug("Component.getDomNode: domNode => " + this.domNode);
+	return this.domNode;
     };
     this.getChildCompons = function () { //FIXME: WORKING ON THIS: WAS BROKEN!
-	var element = this.element;
-	console.debug("zen.Component.getChildCompons: element => " + element);
-	return dojo.map(element.children,
+	var domNode = this.domNode;
+	console.debug("zen.Component.getChildCompons: domNode => " + domNode);
+	return dojo.map(domNode.children,
 			function(c) {
 			    var w = dijit.byNode(c);
 			    //return w || c;
@@ -40,7 +40,7 @@ zen.Component.nodeToComponent = function (node) {
 	compon = zen.components[i];
 	//console.debug("...nodeToComponent: i => " + i + ", compon => " +
 	//	      compon);
-	if (compon.element == node) {
+	if (compon.domNode == node) {
 	    //console.debug("...nodeToComponent: returning compon " + compon);
 	    return compon;
 	};
@@ -62,12 +62,12 @@ zen.createTextNode = function(text, attributes) {
     console.debug("*** zen.createTextNode: text => " + text +
 		  ", attributes => " + attributes);
     // FIXME: Use dojo.create, if appropriate.
-    var element = document.createTextNode(text);
-    console.debug("zen.createTextNode: element => " + element);
+    var domNode = document.createTextNode(text);
+    console.debug("zen.createTextNode: domNode => " + domNode);
     zen.components.push(component);
     console.debug("zen.createTextNode: # of components => " +
 		  zen.components.length);
-    component.element = element;
+    component.domNode = domNode;
     return component;
 };
 
@@ -78,13 +78,13 @@ zen.createElement = function(kind, attributes) {
     console.debug("*** zen.createElement: kind => " + kind +
 		  ", attributes => " + attributes);
     // FIXME: Use dojo.create.
-    var element = document.createElement(kind);
-    console.debug("zen.createElement: element => " + element);
+    var domNode = document.createElement(kind);
+    console.debug("zen.createElement: domNode => " + domNode);
     zen.components.push(component);
     console.debug("zen.createElement: # of components => " +
 		  zen.components.length);
-    dojo.attr(element, attributes || {}); //FIXME: Check this.
-    component.element = element;
+    dojo.attr(domNode, attributes || {}); //FIXME: Check this.
+    component.domNode = domNode;
     return component;
 };
 
@@ -204,7 +204,7 @@ zen.boxCompon = function(component, tbl) {
     console.debug("** zen.boxCompon: createTextNode " + component);
     var text = zen.createTextNode("" + component);
     console.debug("** zen.boxCompon: createTextNode done, call dojo.attr");
-    dojo.attr(cell.element, "mouseover",
+    dojo.attr(cell.domNode, "mouseover",
 	      function() {
 		  var domNode = component.getDomNode();
 		  console.debug("** zen.boxCompon: component => " + component +
@@ -222,7 +222,7 @@ zen.boxCompon = function(component, tbl) {
 			  dojo.addClass(n,"invisible");
 		      });
 	      });
-    dojo.attr(cell.element, "mouseout",
+    dojo.attr(cell.domNode, "mouseout",
 	      function() {
 		  var domNode = component.getDomNode();
 		  dojo.style(domNode, "backgroundColor",
@@ -241,8 +241,8 @@ zen.boxCompon = function(component, tbl) {
     cell.appendChild(div);
     console.debug("** zen.boxCompon: appended div");
     div.appendChild(text);
-    console.debug("** EXIT zen.boxCompon: returning compon with element => " +
-		  row.element);
+    console.debug("** EXIT zen.boxCompon: returning compon with domNode => " +
+		  row.domNode);
     return row;
 };
 
@@ -260,8 +260,8 @@ zen.boxTable = function(componList, tbl) {
 	compon = componList[i];
 	console.debug("* zen.boxTable: compon => " + compon);
 	row = zen.boxCompon(compon, tbl);
-	console.debug("* zen.boxTable: compon => " + compon + ", element => " +
-		      compon.element);
+	console.debug("* zen.boxTable: compon => " + compon + ", domNode => " +
+		      compon.domNode);
 	children = compon.getChildCompons();
 
 	console.group("* zen.boxTable: component children");
@@ -271,7 +271,7 @@ zen.boxTable = function(componList, tbl) {
 	if (children.length > 0) {
 	    console.debug("* zen.boxTable: create cell");
 	    cell = zen.createElement("td", {class:"boxTD2"});
-	    console.debug("* zen.boxTable: row.element => " + row.element);
+	    console.debug("* zen.boxTable: row.domNode => " + row.domNode);
 	    row.appendChild(cell);
 	    console.debug("* zen.boxTable: create table");
 	    tbl1 = zen.createElement("table", {class:"boxTable"});
@@ -293,7 +293,7 @@ zen.createDijit = function(klass, initParms, topNode) {
     var node = null, widget;
     dojo.require(klass);
     if (topNode) {
-	node = topNode.element;
+	node = topNode.domNode;
     }
     widget = createNew(zen.rule2ref(klass), initParms, node);
     console.debug("widget => " + widget);
@@ -315,10 +315,10 @@ zen.createDijit = function(klass, initParms, topNode) {
 	    console.debug("widgetp.addChild(widgetc), widgetp => " +
 			  parent + ", widgetc => " + widget);
 	    parent.children.push(widget);
-	    return parent.addChild(widget);           // parent is Dojo widget
+	    return parent.addChild(widget);         // parent is Dojo widget
 	} else {
-	    console.debug("element.appendChild(widget.domNode)");
-	    return parent.appendChild(widget);        // parent is HTML element
+	    console.debug("domNode.appendChild(widget.domNode)");
+	    return parent.appendChild(widget);      // parent is not Dojo widget
 	};
     };
     widget.appendChild = function(child) {
@@ -326,15 +326,15 @@ zen.createDijit = function(klass, initParms, topNode) {
 	if (child.isDojoWidget) {
 	    console.debug("widget.appendChild(widget)");
 	    widget.children.push(child);
-	    return widget.addChild(child);             // child is Dojo widget
+	    return widget.addChild(child);           // child is Dojo widget
 	} else {
-	    console.debug("widget.appendChild(element)");
+	    console.debug("widget.appendChild(domNode)");
 	    if (widget.children.length > 0) {
 		console.warn(
 		    "A widget can have only one child if it's only HTML.");
 	    }
 	    widget.children = [child];
-	    return widget.setContent(child.element);   // child is HTML element
+	    return widget.setContent(child.domNode); // child is not Dojo widget
 	};
     };
     widget.destroyChild = function(child) {
@@ -352,34 +352,10 @@ zen.shortcutsTable = {
     createDijit : zen.createDijit
 };
 
-// FIXME: Fix Zen so it will work with Internet Explorer.
-// FIXME: Fix this so it is not dependent upon order of appearance of js
-// files in index.html?
-/*
-Element.addMethods( // Extend all HTML elements with these methods.
-    {
-	appendMyselfToParent : function (element, parent) {
-	    console.debug("appendMyselfToParent: element => " +
-			  element + ", parent => " + parent);
-	    parent.appendChild(element);
-	},
-	getDomNode : function (element) {
-	    return element;
-	},
-	getChildCompons : function (element) {
-	    return dojo.map(element.children,
-			    function(c) {
-				var w = dijit.byNode(c);
-				return w || c;
-			    });
-	}
-    });
-*/
-
 zen.init = function() {
     zen.initIRT();
     zen.body = createNew(zen.Component, dojo.body());
-    console.debug("zen.body.element => " + zen.body.element);
+    console.debug("zen.body.domNode => " + zen.body.domNode);
 }
 
 

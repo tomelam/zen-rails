@@ -1,51 +1,51 @@
 zen = {};
 
-zen.components = [];
+zen.domNodeCompons = [];
 
-zen.Component = function(e) {
+zen.DomNodeCompon = function(e) {
     this.domNode = e;
     this.appendMyselfToParent = function (parent) {
-	console.debug("Component.appendMyselfToParent: domNode => " +
+	console.debug("DomNodeCompon.appendMyselfToParent: domNode => " +
 		      this.domNode + ", parent => " + parent);
 	parent.appendChild(this);
     };
     this.appendChild = function (child) {
-	console.debug("Component.appendChild: child => " +
+	console.debug("DomNodeCompon.appendChild: child => " +
 		      child + ", this => " + this);
 	this.domNode.appendChild(child.getDomNode());
     };
     this.getDomNode = function () {
-	console.debug("Component.getDomNode: domNode => " + this.domNode);
+	console.debug("DomNodeCompon.getDomNode: domNode => " + this.domNode);
 	return this.domNode;
     };
     this.getChildCompons = function () { //FIXME: WORKING ON THIS: WAS BROKEN!
 	var domNode = this.domNode;
-	console.debug("zen.Component.getChildCompons: domNode => " + domNode);
+	console.debug("zen.DomNodeCompon.getChildCompons: domNode => " + domNode);
 	return dojo.map(domNode.children,
 			function(c) {
 			    var w = dijit.byNode(c);
 			    //return w || c;
-			    return w || zen.Component.nodeToComponent(c);
+			    return w || zen.DomNodeCompon.nodeToDomNodeCompon(c);
 			});
     };
 }
 
-zen.Component.nodeToComponent = function (node) {
+zen.DomNodeCompon.nodeToDomNodeCompon = function (node) {
     var i = 0;
-    var len = zen.components.length;
+    var len = zen.domNodeCompons.length;
     var compon;
-    //console.debug("zen.Component.nodeToComponent: len => " + len +
+    //console.debug("zen.DomNodeCompon.nodeToDomNodeCompon: len => " + len +
     //		  ", node => " + node);
     for (i; i<len; i++) {
-	compon = zen.components[i];
-	//console.debug("...nodeToComponent: i => " + i + ", compon => " +
+	compon = zen.domNodeCompons[i];
+	//console.debug("...nodeToDomNodeCompon: i => " + i + ", compon => " +
 	//	      compon);
 	if (compon.domNode == node) {
-	    //console.debug("...nodeToComponent: returning compon " + compon);
+	    //console.debug("...nodeToDomNodeCompon: returning compon " + compon);
 	    return compon;
 	};
     };
-    console.error("...nodeToComponent: returning null, node => " +
+    console.error("...nodeToDomNodeCompon: returning null, node => " +
 		  node + ", i => " + i);
     return null;
 };
@@ -58,34 +58,34 @@ zen.Component.nodeToComponent = function (node) {
 // FIXME: Can text nodes have attributes?
 zen.createTextNode = function(text, attributes) {
 //zen.TextNode = function(text, attributes) {
-    var component = createNew(zen.Component);
+    var domNodeCompon = createNew(zen.DomNodeCompon);
     console.debug("*** zen.createTextNode: text => " + text +
 		  ", attributes => " + attributes);
     // FIXME: Use dojo.create, if appropriate.
     var domNode = document.createTextNode(text);
     console.debug("zen.createTextNode: domNode => " + domNode);
-    zen.components.push(component);
-    console.debug("zen.createTextNode: # of components => " +
-		  zen.components.length);
-    component.domNode = domNode;
-    return component;
+    zen.domNodeCompons.push(domNodeCompon);
+    console.debug("zen.createTextNode: # of domNodeCompons => " +
+		  zen.domNodeCompons.length);
+    domNodeCompon.domNode = domNode;
+    return domNodeCompon;
 };
 
 // FIXME: Consider using dojo.fromJSON here for safety.
 zen.createElement = function(kind, attributes) {
 //zen.createElement = function(kind, attributes) {
-    var component = createNew(zen.Component);
+    var domNodeCompon = createNew(zen.DomNodeCompon);
     console.debug("*** zen.createElement: kind => " + kind +
 		  ", attributes => " + attributes);
     // FIXME: Use dojo.create.
     var domNode = document.createElement(kind);
     console.debug("zen.createElement: domNode => " + domNode);
-    zen.components.push(component);
-    console.debug("zen.createElement: # of components => " +
-		  zen.components.length);
+    zen.domNodeCompons.push(domNodeCompon);
+    console.debug("zen.createElement: # of domNodeCompons => " +
+		  zen.domNodeCompons.length);
     dojo.attr(domNode, attributes || {}); //FIXME: Check this.
-    component.domNode = domNode;
-    return component;
+    domNodeCompon.domNode = domNode;
+    return domNodeCompon;
 };
 
 zen.createSubtree = function(treeSpec) {
@@ -354,7 +354,7 @@ zen.shortcutsTable = {
 
 zen.init = function() {
     zen.initIRT();
-    zen.body = createNew(zen.Component, dojo.body());
+    zen.body = createNew(zen.DomNodeCompon, dojo.body());
     console.debug("zen.body.domNode => " + zen.body.domNode);
 }
 

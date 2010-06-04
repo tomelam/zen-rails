@@ -252,7 +252,8 @@
 				      {id:"componTbl",class:"boxTable"});
 	console.debug("tblCompon => " + tblCompon + ", tblCompon.domNode => " +
 		      tblCompon.domNode);
-	diagramDivCompon = createNew(zen.DomNodeCompon, dojo.byId("diagramDiv"));
+	diagramDivCompon = createNew(zen.DomNodeCompon,
+				     dojo.byId("diagramDiv"));
 	console.debug("diagramDivCompon => " + diagramDivCompon);
 	floatingPane = zen.createDijit(
 	    "dojox.layout.FloatingPane",

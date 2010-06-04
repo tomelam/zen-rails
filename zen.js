@@ -20,32 +20,61 @@ zen.DomNodeCompon = function(e) {
     };
     this.getChildCompons = function () { //FIXME: WORKING ON THIS: WAS BROKEN!
 	var domNode = this.domNode;
-	console.debug("zen.DomNodeCompon.getChildCompons: domNode => " + domNode);
+	console.debug("zen.DomNodeCompon.getChildCompons: domNode => " +
+		      domNode);
 	return dojo.map(domNode.children,
 			function(c) {
 			    var w = dijit.byNode(c);
 			    //return w || c;
-			    return w || zen.DomNodeCompon.nodeToDomNodeCompon(c);
+			    return w ||
+				zen.DomNodeCompon.fromDomNode(c);
 			});
+    };
+    this.destroy = function() {
+	var compon;
+	console.debug("zen.DomNodeCompon.destroy: this => " + this +
+		      ", domNode => " + this.domNode);
+	dojo.forEach(this.getChildCompons(),
+		     function(child) {
+			 child.destroy();
+		     });
+	dojo.destroy(this.domNode);
+	index = zen.domNodeCompons.indexOf(this);
+	if (index >= 0) {
+	    console.debug("...destroy: index => " + index + ", compon => " +
+			  zen.domNodeCompons[index] +
+			  ", zen.domNodeCompons.length => " +
+			  zen.domNodeCompons.length);
+	    delete zen.domNodeCompons[index];
+	    compon = zen.domNodeCompons.pop();
+	    if (index != zen.domNodeCompons.length) {
+		zen.domNodeCompons[index] = compon;
+	    } else {
+		console.warn("compon was last in the list; won't put it back!");
+	    }
+	} else {
+	    console.error("zen.DomNodeCompon.destroy: couldn't find last ref");
+	};
     };
 }
 
-zen.DomNodeCompon.nodeToDomNodeCompon = function (node) {
+zen.DomNodeCompon.fromDomNode = function (node) {
     var i = 0;
     var len = zen.domNodeCompons.length;
     var compon;
-    //console.debug("zen.DomNodeCompon.nodeToDomNodeCompon: len => " + len +
+    //console.debug("zen.DomNodeCompon.fromDomNode: len => " + len +
     //		  ", node => " + node);
     for (i; i<len; i++) {
 	compon = zen.domNodeCompons[i];
-	//console.debug("...nodeToDomNodeCompon: i => " + i + ", compon => " +
-	//	      compon);
+	//console.debug("...fromDomNode: i => " + i + ", compon => " + compon +
+	//	      ", zen.domNodeCompons.length => " +
+	//	      zen.domNodeCompons.length);
 	if (compon.domNode == node) {
-	    //console.debug("...nodeToDomNodeCompon: returning compon " + compon);
+	    console.debug("...fromDomNode: returning compon " + compon);
 	    return compon;
 	};
     };
-    console.error("...nodeToDomNodeCompon: returning null, node => " +
+    console.error("...fromDomNode: returning null, node => " +
 		  node + ", i => " + i);
     return null;
 };
@@ -162,9 +191,10 @@ zen.widgets = [];
 
 zen.startup = function() {
     // Start up all the Dojo widgets. The order is important.
+    console.debug("zen.startup: starting up widgets");
     dojo.forEach(zen.widgets.reverse(),
 		 function(w) {
-		     console.debug("starting up " + w);
+		     //console.debug("starting up " + w);
 		     w.startup(); }
 		);
 };
@@ -253,8 +283,8 @@ zen.boxTable = function(componList, tbl) {
     for (i=0; i<len; i++) {
 
 	console.debug("* zen.boxTable: i => " + i);
-	console.group("* zen.boxTable: componentList");
-	console.dir(componList);
+	console.group("* zen.boxTable: componList");
+	//console.dir(componList);
 	console.groupEnd();
 
 	compon = componList[i];
@@ -265,7 +295,7 @@ zen.boxTable = function(componList, tbl) {
 	children = compon.getChildCompons();
 
 	console.group("* zen.boxTable: component children");
-	console.dir(children);
+	//console.dir(children);
 	console.groupEnd();
 
 	if (children.length > 0) {

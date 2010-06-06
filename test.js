@@ -206,7 +206,7 @@
     var testRendering =
     ["dojox.layout.FloatingPane",
      {id:"testRendering",
-      title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
+      title:"Main Controls",style:{top:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:zen.cleanUpWebpage}, []],
@@ -261,30 +261,31 @@
 			      backgroundColor:"lightgreen"}},
      []];    
 
-    var tblCompon, floatingPane;// for testing
     test = function(tree) {
 	console.debug("*** Testing creation of a tree");
-	var div0, tblComponx, newComponent, contentBox, floatingPaneContent;
-	var canvasDivCompon, floatingPanex;
-	console.debug("*** dojo.byId('canvasDiv') => " +
-		      dojo.byId("canvasDiv"));
+	var div0, tblCompon, newComponent, contentBox, floatingPaneContent;
+	var diagramPaneCompon, floatingPane;
+	console.debug("*** dojo.byId('diagramPane') => " +
+		      dojo.byId("diagramPane"));
 	tblCompon = zen.createElement("table",
 				      {id:"componTbl",class:"boxTable"});
 	console.debug("*** tblCompon => " + tblCompon +
 		      ", tblCompon.domNode => " + tblCompon.domNode);
-	canvasDivCompon = createNew(zen.DomNodeCompon,
-				    dojo.byId("canvasDiv"));
-	console.debug("*** canvasDivCompon => " + canvasDivCompon);
-	floatingPane = zen.createDijit(
-	    "dojox.layout.FloatingPane",
-	    {id:"diagramPane",
-	     title:"Hierarchy of Web Page Components",
-	     style:{backgroundColor:"yellow", zIndex:"10"},
-	     resizable:true},
-	    canvasDivCompon);
-	console.debug("*** append canvasDivCompon");
-	canvasDivCompon.appendMyselfToParent(zen.body);
-	console.debug("*** appended canvasDivCompon");
+	diagramPaneCompon = createNew(zen.DomNodeCompon,
+				      dojo.byId("diagramPane"));
+	console.debug("*** diagramPaneCompon => " + diagramPaneCompon);
+	dojo.require("dijit._base");
+	floatingPane = dijit.byId("diagramPane");
+	if (!floatingPane) {
+	    floatingPane = zen.createDijit(
+		"dojox.layout.FloatingPane",
+		{title:"Hierarchy of Web Page Components",
+		 style:{backgroundColor:"yellow", zIndex:"10"},
+		 resizable:true},
+		diagramPaneCompon);
+	};
+	console.debug("*** append diagramPaneCompon");
+	console.debug("*** appended diagramPaneCompon");
 	tblCompon.appendMyselfToParent(floatingPane);
 	console.debug("*** appended tblCompon");
 	newComponent = zen.createSubtree(tree);
@@ -312,7 +313,7 @@
     //init = function() { console.debug("init: doing nothing"); };
     //init = function() { test(tree12); };
     //init = function() { test(devTools); };
-    init = function() { zen.init(); test(testRendering); };
+    init = function() { zen.init(); test(testRendering); zen.debugLevel = 6; };
     //init = function() { zen.init(); };
 
 

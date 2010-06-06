@@ -3,67 +3,51 @@ zen = {};
 zen.domNodeCompons = [];
 
 zen.debugLevel = 0; // Off.
-
 zen.log = function() {
     if (zen.debugLevel > 0) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.log.apply(null, args);
     }
 }
-
 zen.info = function() {
     if (zen.debugLevel > 1) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.info.apply(null, args);
     }
 }
-
 zen.debug = function() {
     if (zen.debugLevel > 2) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.debug.apply(null, args);
     }
 }
-
 zen.warn = function() {
     if (zen.debugLevel > 3) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.warn.apply(null, args);
     }
 }
-
 zen.error = function() {
     if (zen.debugLevel > 4) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.error.apply(null, args);
     }
 }
-
 zen.group = function() {
     if (zen.debugLevel > 0) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.group.apply(null, args);
     }
 } 
-
 zen.groupEnd = function() {
     if (zen.debugLevel > 0) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.groupEnd.apply(null, args);
     }
 }
-
 zen.dir = function() {
     if (zen.debugLevel > 0) {
 	var args = Array.prototype.slice.call(arguments);
-	//console.debug("args => " + args + ", args[0] => " + args[0]);
 	console.dir.apply(null, args);
     }
 }
@@ -73,8 +57,6 @@ zen.DomNodeCompon = function(e) {
     this.stringRep = "[zen.DomNodeCompon " + this.domNode + "]";
     this.children = [];
     this.toString = function () { // Without this, we get '[object Object]'.
-	zen.debug("zen.DomNodeCompon.toString: this.domNode => " +
-		      this.domNode);
 	//return "[zen.DomNodeCompon " + this.domNode + "]";
 	return "[zen.DomNodeCompon " +
 	    String(this.domNode).replace(/^\[object /,"").replace(/\]$/,"") +
@@ -110,7 +92,7 @@ zen.DomNodeCompon = function(e) {
 			});
     };
     this.destroy = function() {
-	var compon;
+	var compon, index;
 	zen.debug("zen.DomNodeCompon.destroy: this => " + this +
 		      ", domNode => " + this.domNode);
 	dojo.forEach(this.getChildCompons(),

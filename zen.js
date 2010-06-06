@@ -70,7 +70,16 @@ zen.dir = function() {
 
 zen.DomNodeCompon = function(e) {
     this.domNode = e;
+    this.stringRep = "[zen.DomNodeCompon " + this.domNode + "]";
     this.children = [];
+    this.toString = function () { // Without this, we get '[object Object]'.
+	zen.debug("zen.DomNodeCompon.toString: this.domNode => " +
+		      this.domNode);
+	//return "[zen.DomNodeCompon " + this.domNode + "]";
+	return "[zen.DomNodeCompon " +
+	    String(this.domNode).replace(/^\[object /,"").replace(/\]$/,"") +
+	    "]";
+    };
     this.appendMyselfToParent = function (parent) {
 	zen.debug("DomNodeCompon.appendMyselfToParent: domNode => " +
 		      this.domNode + ", parent => " + parent);

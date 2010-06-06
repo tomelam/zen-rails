@@ -79,6 +79,16 @@
      [["p", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"140px",backgroundColor:"red"}},
+       [["div", {},
+	 [["dijit.layout.ContentPane",
+	   {"class":"box"},
+	   [["div", {}, []]]]]]]]]];
+    // tree6b does not work: ContentPane has no 'addChild' method.
+    var tree6b =
+    ["div", {id:"workingNode"},
+     [["p", {}, []],
+      ["dijit.layout.ContentPane",
+       {style:{width:"300px",height:"140px",backgroundColor:"red"}},
        [["dijit.layout.ContentPane",
 	 {"class":"box"},
 	 [["div", {}, []]]]]]]];
@@ -87,10 +97,10 @@
      {id:"workingNode",
       style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
      [["dijit.layout.AccordionPane",
-       {id:"workingNode",title:"pane 1"},
+       {id:"insideWorkingNode",title:"pane 1"},
        []],
       ["dijit.layout.AccordionPane",
-       {id:"cp1",title:"pane 1"},
+       {id:"cp1",title:"pane 2"},
        []]]];
     var tree8 =
     ["dijit.layout.AccordionContainer",
@@ -199,6 +209,9 @@
       title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:zen.cleanUpWebpage}, []],
+	["br", {}, []],
+	["dijit.form.Button",
 	 {label:"red DIV",onClick:function(){test(tree1)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
@@ -252,26 +265,26 @@
     test = function(tree) {
 	console.debug("*** Testing creation of a tree");
 	var div0, tblComponx, newComponent, contentBox, floatingPaneContent;
-	var diagramDivCompon, floatingPanex;
-	console.debug("*** dojo.byId('diagramDiv') => " +
-		      dojo.byId("diagramDiv"));
+	var canvasDivCompon, floatingPanex;
+	console.debug("*** dojo.byId('canvasDiv') => " +
+		      dojo.byId("canvasDiv"));
 	tblCompon = zen.createElement("table",
 				      {id:"componTbl",class:"boxTable"});
 	console.debug("*** tblCompon => " + tblCompon +
 		      ", tblCompon.domNode => " + tblCompon.domNode);
-	diagramDivCompon = createNew(zen.DomNodeCompon,
-				     dojo.byId("diagramDiv"));
-	console.debug("*** diagramDivCompon => " + diagramDivCompon);
+	canvasDivCompon = createNew(zen.DomNodeCompon,
+				    dojo.byId("canvasDiv"));
+	console.debug("*** canvasDivCompon => " + canvasDivCompon);
 	floatingPane = zen.createDijit(
 	    "dojox.layout.FloatingPane",
 	    {id:"diagramPane",
 	     title:"Hierarchy of Web Page Components",
 	     style:{backgroundColor:"yellow", zIndex:"10"},
 	     resizable:true},
-	    diagramDivCompon);
-	console.debug("*** append diagramDivCompon");
-	diagramDivCompon.appendMyselfToParent(zen.body);
-	console.debug("*** appended diagramDivCompon");
+	    canvasDivCompon);
+	console.debug("*** append canvasDivCompon");
+	canvasDivCompon.appendMyselfToParent(zen.body);
+	console.debug("*** appended canvasDivCompon");
 	tblCompon.appendMyselfToParent(floatingPane);
 	console.debug("*** appended tblCompon");
 	newComponent = zen.createSubtree(tree);
@@ -291,9 +304,9 @@
 	console.debug("*** resized floatingPane");
 	floatingPaneContent = dojo.query(
 	    "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
-	console.debug("floatingPaneContent => " + floatingPaneContent);
+	console.debug("*** floatingPaneContent => " + floatingPaneContent);
 	dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
-	console.debug("Done");
+	console.debug("*** Done");
     };
 
     //init = function() { console.debug("init: doing nothing"); };

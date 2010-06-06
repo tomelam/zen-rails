@@ -199,37 +199,44 @@
       title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
-	 {label:"tree 1",onClick:function(){test(tree1)}}, []],
+	 {label:"red DIV",onClick:function(){test(tree1)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 2",onClick:function(){test(tree2)}}, []],
+	 {label:"red DIV with orange DIV",onClick:function(){test(tree2)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 3",onClick:function(){test(tree3)}}, []],
+	 {label:"red DIV with table",onClick:function(){test(tree3)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 4",onClick:function(){test(tree4)}}, []],
+	 {label:"DIV with P and red ContentPane",
+	  onClick:function(){test(tree4)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 5",onClick:function(){test(tree5)}}, []],
+	 {label:"DIV (id:workingNode) with<br/>ContentPane (class:box)",
+	  onClick:function(){test(tree5)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 6",onClick:function(){test(tree6)}}, []],
+	 {label:"DIV w/ P & red ContentPane<br/>w/ box ContentPane w/ DIV",
+	  onClick:function(){test(tree6)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 7",onClick:function(){test(tree7)}}, []],
+	 {label:"AccordionContainer & AccordionPanes<br/>'workingNode' & 'cp1'",
+	  onClick:function(){test(tree7)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 8",onClick:function(){test(tree8)}}, []],
+	 {label:"AccordionContainer 'workingNode' & AccordionPane with title",
+	  onClick:function(){test(tree8)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 9",onClick:function(){test(tree9)}}, []],
+	 {label:"AccordionContainer w/ AccordionPanes, each w/ DIV",
+	  onClick:function(){test(tree9)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"tree 10",onClick:function(){test(tree10)}}, []],
+	 {label:"AccordionContainer w/ AccordionPanes, each /w DIV",
+	  onClick:function(){test(tree10)}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
-	 {label:"dev tools",onClick:function(){test(devTools)}}, []]]]]];
+	 {label:"Main Controls",onClick:function(){test(devTools)}}, []]]]]];
     var underlay =
     ["dijit.DialogUnderlay",
      {id:"workingNode",style:{width:"100%",height:"200px",
@@ -243,18 +250,18 @@
 
     var tblCompon, floatingPane;// for testing
     test = function(tree) {
-	console.debug("Testing creation of a tree");
+	console.debug("*** Testing creation of a tree");
 	var div0, tblComponx, newComponent, contentBox, floatingPaneContent;
 	var diagramDivCompon, floatingPanex;
-	console.debug("dojo.byId('diagramDiv') => " + dojo.byId("diagramDiv"));
-	div0 = dojo.byId("id0");
+	console.debug("*** dojo.byId('diagramDiv') => " +
+		      dojo.byId("diagramDiv"));
 	tblCompon = zen.createElement("table",
 				      {id:"componTbl",class:"boxTable"});
-	console.debug("tblCompon => " + tblCompon + ", tblCompon.domNode => " +
-		      tblCompon.domNode);
+	console.debug("*** tblCompon => " + tblCompon +
+		      ", tblCompon.domNode => " + tblCompon.domNode);
 	diagramDivCompon = createNew(zen.DomNodeCompon,
 				     dojo.byId("diagramDiv"));
-	console.debug("diagramDivCompon => " + diagramDivCompon);
+	console.debug("*** diagramDivCompon => " + diagramDivCompon);
 	floatingPane = zen.createDijit(
 	    "dojox.layout.FloatingPane",
 	    {id:"diagramPane",
@@ -265,7 +272,6 @@
 	console.debug("*** append diagramDivCompon");
 	diagramDivCompon.appendMyselfToParent(zen.body);
 	console.debug("*** appended diagramDivCompon");
-	//return;
 	tblCompon.appendMyselfToParent(floatingPane);
 	console.debug("*** appended tblCompon");
 	newComponent = zen.createSubtree(tree);
@@ -278,11 +284,11 @@
 	zen.boxTable([newComponent], tblCompon);
 	console.debug("*** created boxTable");
 	contentBox = dojo.contentBox("componTbl");
-	console.debug("contentBox => " + contentBox);
+	console.debug("*** contentBox => " + contentBox);
 	floatingPane.startup();
-	console.debug("started up floatingPane");
-	floatingPane.resize({t:30, l:30, w:contentBox.w, h:contentBox.h+21});
-	console.debug("resized floatingPane");
+	console.debug("*** started up floatingPane");
+	floatingPane.resize({t:30, l:30, w:contentBox.w+5, h:contentBox.h+31});
+	console.debug("*** resized floatingPane");
 	floatingPaneContent = dojo.query(
 	    "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
 	console.debug("floatingPaneContent => " + floatingPaneContent);
@@ -294,6 +300,6 @@
     //init = function() { test(tree12); };
     //init = function() { test(devTools); };
     init = function() { zen.init(); test(testRendering); };
-    //init = function() {};
+    //init = function() { zen.init(); };
 
 

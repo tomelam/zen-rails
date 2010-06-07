@@ -261,12 +261,16 @@
 			      backgroundColor:"lightgreen"}},
      []];    
 
+     //FIXME: Should probably be broken into 2 parts: 1 to test the
+     //creation of a tree & 1 to fill out the hierarchy of web page
+     //components. And this stuff should be moved to zen.js.
     test = function(tree) {
 	console.debug("*** Testing creation of a tree");
 	var div0, tblCompon, newComponent, contentBox, floatingPaneContent;
 	var diagramPaneCompon, floatingPane;
 	console.debug("*** dojo.byId('diagramPane') => " +
 		      dojo.byId("diagramPane"));
+
 	tblCompon = zen.createElement("table",
 				      {id:"componTbl",class:"boxTable"});
 	console.debug("*** tblCompon => " + tblCompon +
@@ -284,7 +288,6 @@
 		 resizable:true},
 		diagramPaneCompon);
 	};
-	console.debug("*** append diagramPaneCompon");
 	console.debug("*** appended diagramPaneCompon");
 	tblCompon.appendMyselfToParent(floatingPane);
 	console.debug("*** appended tblCompon");
@@ -292,6 +295,7 @@
 	console.debug("******* newComponent => " + newComponent);
 	newComponent.appendMyselfToParent(zen.body);
 	zen.startup();
+
 	console.info("############################");
 	console.info("##### CREATING DIAGRAM #####");
 	console.info("############################");
@@ -313,7 +317,7 @@
     //init = function() { console.debug("init: doing nothing"); };
     //init = function() { test(tree12); };
     //init = function() { test(devTools); };
-    init = function() { zen.init(); test(testRendering); zen.debugLevel = 6; };
+    init = function() { zen.init(); test(testRendering); } //zen.debugLevel = 6; };
     //init = function() { zen.init(); };
 
 

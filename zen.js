@@ -260,30 +260,13 @@ zen.startup = function() {
 		);
 };
 
-zen.walkTheDOM = function(node, func) {
-    var oldNode;
-    zen.debug("node => " + node);
-    func(node);
-    node = node.firstChild;
-    while (node) {
-	zen.walkTheDOM(node, func);
-	//oldNode = node;
-	node = node.nextSibling;
-	//oldNode.parentNode.removeChild(oldNode);
-    }
-};
-
-zen.walkTree = function(tree, func) {
-    zen.debug("tree => " + tree);
-    func(tree);
-    var children = tree.getChildCompons();
-    zen.debug("children.length => " + children.length);
-    var i;
-    for (i=0; i<children.length; i++) {
-	func(children[i]);
-	zen.walkTree(children[i], func);
-    };
-    zen.debug("pop");
+//FIXME: Use this function where useful.
+zen.walkZen = function(compon, func) {
+    func(compon);
+    dojo.forEach(compon.getChildCompons(),
+		 function(child) {
+		     zen.walkZen(child, func);
+		 });
 };
 
 //FIXME: Use dojo.create.
@@ -448,5 +431,3 @@ zen.init = function() {
     zen.body = createNew(zen.DomNodeCompon, dojo.body());
     zen.debug("zen.body.domNode => " + zen.body.domNode);
 }
-
-

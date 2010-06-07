@@ -264,6 +264,7 @@
 
     renderTree = function(tree) {
 	var newComponent;
+
 	zen.debug("*** Entering renderTree");
 	zen.info("#############################");
 	zen.info("##### TESTING RENDERING #####");
@@ -277,6 +278,9 @@
     };
 
     diagramTree = function(newComponent) {
+	var tblCompon, contentBox, floatingPaneContent;
+	var diagramPaneCompon, floatingPane;
+
 	zen.debug("*** Entering diagramTree");
 	zen.info("############################");
 	zen.info("##### CREATING DIAGRAM #####");
@@ -327,8 +331,7 @@
      //conflicting element, so trying to delete a tree and add it or
      //another using the same id would be a good test.
     test = function(tree) {
-	var div0, tblCompon, newComponent, contentBox, floatingPaneContent;
-	var diagramPaneCompon, floatingPane;
+	var newComponent;
 
 	console.debug("*** Testing creation and diagramming of a tree");
 

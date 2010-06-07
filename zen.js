@@ -365,8 +365,8 @@ zen.clearTheHierarchyDiagram = function () {
     var diagramPaneCompon = dijit.byId("diagramPane");
     zen.debug("*** Clearing the hierarchy diagram");
     // Even if an element with id 'diagramPane' exists, we need to
-    // have a Zen component so that we can use it. But if we already
-    // have a widget with that id, we can use that instead.
+    // have a Zen component so that we can use it. If we already have
+    // a widget with that id, we can use that.
     if (!diagramPaneCompon) {
 	diagramPaneCompon = createNew(zen.DomNodeCompon,
 				      dojo.byId("diagramPane"));

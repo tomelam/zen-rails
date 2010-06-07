@@ -357,6 +357,30 @@ zen.boxTable = function(componList, tbl) {
     zen.debug("* EXIT zen.boxTable");
 };
 
+zen.clearTheCanvas = function () {
+    console.debug("*** Entering clearTheCanvas");
+};
+
+zen.clearTheHierarchyDiagram = function () {
+    var diagramPaneCompon = dijit.byId("diagramPane");
+    zen.debug("*** Clearing the hierarchy diagram");
+    // Even if an element with id 'diagramPane' exists, we need to
+    // have a Zen component so that we can use it. But if we already
+    // have a widget with that id, we can use that instead.
+    if (!diagramPaneCompon) {
+	diagramPaneCompon = createNew(zen.DomNodeCompon,
+				      dojo.byId("diagramPane"));
+    }
+    var compons = diagramPaneCompon.getChildCompons();
+    zen.debug("compons => " + compons);
+    dojo.forEach(diagramPaneCompon.getChildCompons(),
+		 function(child) {
+		     zen.debug("Destroying " + child);
+		     child.destroy();
+		 });
+    zen.debug("*** Exiting clear");
+};
+
 // Zen.createDijit does not allow a dijit to be built on a
 // passed-in HTML element node. Instead, the dijit constructor is
 // called without reference to a node, thus causing it to create a

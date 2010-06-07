@@ -187,7 +187,7 @@
       title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
-	 {label:"Clear the Canvas",onClick:zen.cleanUpWebpage}, []],
+	 {label:"Clear the Canvas",onClick:zen.clearTheCanvas}, []],
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:sayHello}, []],
@@ -206,10 +206,11 @@
     var testRendering =
     ["dojox.layout.FloatingPane",
      {id:"testRendering",
-      title:"Main Controls",style:{top:"30px",right:"30px"},closable:true},
+      title:"Rendering Tests",style:{top:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
-	 {label:"Clear the Canvas",onClick:zen.cleanUpWebpage}, []],
+	 {label:"Clear the Canvas",onClick:function(){zen.clearTheCanvas()}},
+	 []],
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"red DIV",onClick:function(){test(tree1)}}, []],
@@ -261,23 +262,35 @@
 			      backgroundColor:"lightgreen"}},
      []];    
 
-     //FIXME: Should probably be broken into 2 parts: 1 to test the
-     //creation of a tree & 1 to fill out the hierarchy of web page
-     //components. And this stuff should be moved to zen.js.
-    test = function(tree) {
-	console.debug("*** Testing creation of a tree");
-	var div0, tblCompon, newComponent, contentBox, floatingPaneContent;
-	var diagramPaneCompon, floatingPane;
-	console.debug("*** dojo.byId('diagramPane') => " +
-		      dojo.byId("diagramPane"));
+    renderTree = function(tree) {
+	var newComponent;
+	zen.debug("*** Entering renderTree");
+	zen.info("#############################");
+	zen.info("##### TESTING RENDERING #####");
+	zen.info("#############################");
+	newComponent = zen.createSubtree(tree);
+	zen.debug("******* newComponent => " + newComponent);
+	newComponent.appendMyselfToParent(zen.body);
+	zen.startup();
+	zen.debug("*** Exiting renderTree");
+	return newComponent;
+    };
 
+    diagramTree = function(newComponent) {
+	zen.debug("*** Entering diagramTree");
+	zen.info("############################");
+	zen.info("##### CREATING DIAGRAM #####");
+	zen.info("############################");
+	zen.debug("*** dojo.byId('diagramPane') => " +
+		      dojo.byId("diagramPane"));
+	zen.clearTheHierarchyDiagram();
 	tblCompon = zen.createElement("table",
 				      {id:"componTbl",class:"boxTable"});
-	console.debug("*** tblCompon => " + tblCompon +
+	zen.debug("*** tblCompon => " + tblCompon +
 		      ", tblCompon.domNode => " + tblCompon.domNode);
 	diagramPaneCompon = createNew(zen.DomNodeCompon,
 				      dojo.byId("diagramPane"));
-	console.debug("*** diagramPaneCompon => " + diagramPaneCompon);
+	zen.debug("*** diagramPaneCompon => " + diagramPaneCompon);
 	dojo.require("dijit._base");
 	floatingPane = dijit.byId("diagramPane");
 	if (!floatingPane) {
@@ -288,36 +301,46 @@
 		 resizable:true},
 		diagramPaneCompon);
 	};
-	console.debug("*** appended diagramPaneCompon");
+	zen.debug("*** Appended diagramPaneCompon");
 	tblCompon.appendMyselfToParent(floatingPane);
-	console.debug("*** appended tblCompon");
-	newComponent = zen.createSubtree(tree);
-	console.debug("******* newComponent => " + newComponent);
-	newComponent.appendMyselfToParent(zen.body);
-	zen.startup();
+	zen.debug("*** Appended tblCompon");
 
-	console.info("############################");
-	console.info("##### CREATING DIAGRAM #####");
-	console.info("############################");
 	zen.boxTable([newComponent], tblCompon);
-	console.debug("*** created boxTable");
+	zen.debug("*** Created boxTable");
 	contentBox = dojo.contentBox("componTbl");
-	console.debug("*** contentBox => " + contentBox);
+	zen.debug("*** Got contentBox => " + contentBox);
 	floatingPane.startup();
-	console.debug("*** started up floatingPane");
+	zen.debug("*** Started up floatingPane");
 	floatingPane.resize({t:30, l:30, w:contentBox.w+5, h:contentBox.h+31});
-	console.debug("*** resized floatingPane");
+	zen.debug("*** Resized floatingPane");
 	floatingPaneContent = dojo.query(
 	    "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
-	console.debug("*** floatingPaneContent => " + floatingPaneContent);
+	zen.debug("*** floatingPaneContent => " + floatingPaneContent);
 	dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
-	console.debug("*** Done");
+    };
+
+     //FIXME: Should probably be broken into 2 parts: 1 to test the
+     //creation of a tree & 1 to fill out the hierarchy of web page
+     //components. And this stuff should be moved to zen.js. Also have
+     //to think about the use of the same id ('workingNode') for many
+     //elements. Note that deleting a tree should remove the
+     //conflicting element, so trying to delete a tree and add it or
+     //another using the same id would be a good test.
+    test = function(tree) {
+	var div0, tblCompon, newComponent, contentBox, floatingPaneContent;
+	var diagramPaneCompon, floatingPane;
+
+	console.debug("*** Testing creation and diagramming of a tree");
+
+	newComponent = renderTree(tree);
+	diagramTree(newComponent);
+	console.debug("*** Done testing creation and rendering of a tree");
     };
 
     //init = function() { console.debug("init: doing nothing"); };
     //init = function() { test(tree12); };
     //init = function() { test(devTools); };
-    init = function() { zen.init(); test(testRendering); } //zen.debugLevel = 6; };
+    init = function() { zen.init(); test(testRendering); }
     //init = function() { zen.init(); };
 
 

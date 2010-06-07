@@ -286,12 +286,12 @@
 	zen.info("##### CREATING DIAGRAM #####");
 	zen.info("############################");
 	zen.debug("*** dojo.byId('diagramPane') => " +
-		      dojo.byId("diagramPane"));
+		  dojo.byId("diagramPane"));
 	zen.clearTheHierarchyDiagram();
 	tblCompon = zen.createElement("table",
 				      {id:"componTbl",class:"boxTable"});
 	zen.debug("*** tblCompon => " + tblCompon +
-		      ", tblCompon.domNode => " + tblCompon.domNode);
+		  ", tblCompon.domNode => " + tblCompon.domNode);
 	diagramPaneCompon = createNew(zen.DomNodeCompon,
 				      dojo.byId("diagramPane"));
 	zen.debug("*** diagramPaneCompon => " + diagramPaneCompon);

@@ -357,13 +357,27 @@ zen.boxTable = function(componList, tbl) {
     zen.debug("* EXIT zen.boxTable");
 };
 
-zen.clearTheCanvas = function () {
-    console.debug("*** Entering clearTheCanvas");
+//FIXME: Maybe we could think up a good scheme for which components to
+//save and which to destroy.
+zen.clearTheCanvas = function (saveCompons) {
+    console.debug("*** Entering clearTheCanvas, saving compons " + saveCompons);
+    
 };
 
 zen.clearTheHierarchyDiagram = function () {
-    var diagramPaneCompon = dijit.byId("diagramPane");
-    zen.debug("*** Clearing the hierarchy diagram");
+    var diagramPaneElementx, diagramPaneCompon;
+    console.debug("*** Clearing the hierarchy diagram");
+    diagramPaneElement = dojo.byId("diagramPane");
+    if (!diagramPaneElement) {
+	diagramPaneElement = zen.createElement(
+	    "div",
+	    {id:"diagramPane",
+	     style:
+	     "position:absolute;width:100px;height:100px;top:100px;left:300px;",
+	     duration:"750"});
+	zen.body.appendChild(diagramPaneElement);
+    };
+    diagramPaneCompon = dijit.byId("diagramPane");
     // Even if an element with id 'diagramPane' exists, we need to
     // have a Zen component so that we can use it. If we already have
     // a widget with that id, we can use that.
@@ -372,13 +386,13 @@ zen.clearTheHierarchyDiagram = function () {
 				      dojo.byId("diagramPane"));
     }
     var compons = diagramPaneCompon.getChildCompons();
-    zen.debug("compons => " + compons);
+    console.debug("compons => " + compons);
     dojo.forEach(diagramPaneCompon.getChildCompons(),
 		 function(child) {
-		     zen.debug("Destroying " + child);
+		     console.debug("Destroying " + child);
 		     child.destroy();
 		 });
-    zen.debug("*** Exiting clear");
+    console.debug("*** Exiting clear");
 };
 
 // Zen.createDijit does not allow a dijit to be built on a
@@ -435,9 +449,9 @@ zen.createDijit = function(klass, initParms, topNode) {
 	    return widget.setContent(child.domNode); // child is not Dojo widget
 	};
     };
-    widget.destroyChild = function(child) {
-	zen.debug("widget.destroyChild: child => " + child);
-    };
+    //widget.destroyChild = function(child) {
+    //	zen.debug("widget.destroyChild: child => " + child);
+    //};
     zen.widgets.push(widget);
     return widget;
 };

@@ -1,3 +1,5 @@
+    zen.test.topCompons = [];
+
     // Test createNew.
     Foo = function() {
 	var a = 1;
@@ -203,54 +205,6 @@
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:sayHello}, []]]]]];
-    var testRendering =
-    ["dojox.layout.FloatingPane",
-     {id:"testRendering",
-      title:"Rendering Tests",style:{top:"30px",right:"30px"},closable:true},
-     [["center", {},
-       [["dijit.form.Button",
-	 {label:"Clear the Canvas",onClick:function(){zen.clearTheCanvas()}},
-	 []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"red DIV",onClick:function(){test(tree1)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"red DIV with orange DIV",onClick:function(){test(tree2)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"red DIV with table",onClick:function(){test(tree3)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"DIV with P and red ContentPane",
-	  onClick:function(){test(tree4)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"DIV (id:workingNode) with<br/>ContentPane (class:box)",
-	  onClick:function(){test(tree5)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"DIV w/ P & red ContentPane<br/>w/ box ContentPane w/ DIV",
-	  onClick:function(){test(tree6)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"AccordionContainer & AccordionPanes<br/>'workingNode' & 'cp1'",
-	  onClick:function(){test(tree7)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"AccordionContainer 'workingNode' & AccordionPane with title",
-	  onClick:function(){test(tree8)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"AccordionContainer w/ AccordionPanes, each w/ DIV",
-	  onClick:function(){test(tree9)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"AccordionContainer w/ AccordionPanes, each /w DIV",
-	  onClick:function(){test(tree10)}}, []],
-	["br", {}, []],
-	["dijit.form.Button",
-	 {label:"Main Controls",onClick:function(){test(devTools)}}, []]]]]];
     var underlay =
     ["dijit.DialogUnderlay",
      {id:"workingNode",style:{width:"100%",height:"200px",
@@ -261,21 +215,6 @@
      {id:"workingNode",style:{width:"100%",height:"200px",
 			      backgroundColor:"lightgreen"}},
      []];    
-
-    renderTree = function(tree) {
-	var newComponent;
-
-	zen.debug("*** Entering renderTree");
-	zen.info("#############################");
-	zen.info("##### TESTING RENDERING #####");
-	zen.info("#############################");
-	newComponent = zen.createSubtree(tree);
-	zen.debug("******* newComponent => " + newComponent);
-	newComponent.appendMyselfToParent(zen.body);
-	zen.startup();
-	zen.debug("*** Exiting renderTree");
-	return newComponent;
-    };
 
     diagramTree = function(newComponent) {
 	var tblCompon, contentBox, floatingPaneContent;
@@ -321,6 +260,7 @@
 	    "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
 	zen.debug("*** floatingPaneContent => " + floatingPaneContent);
 	dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
+	return floatingPane;
     };
 
      //FIXME: Should probably be broken into 2 parts: 1 to test the
@@ -331,19 +271,13 @@
      //conflicting element, so trying to delete a tree and add it or
      //another using the same id would be a good test.
     test = function(tree) {
-	var newComponent;
+	var newComponent, diagram;
 
 	console.debug("*** Testing creation and diagramming of a tree");
 
-	newComponent = renderTree(tree);
-	diagramTree(newComponent);
+	newComponent = zen.renderTree(tree, zen.body);
+	zen.test.topCompons.push(newComponent);
+	diagram = diagramTree(newComponent);
+	zen.test.topCompons.push(diagram);
 	console.debug("*** Done testing creation and rendering of a tree");
     };
-
-    //init = function() { console.debug("init: doing nothing"); };
-    //init = function() { test(tree12); };
-    //init = function() { test(devTools); };
-    init = function() { zen.init(); test(testRendering); }
-    //init = function() { zen.init(); };
-
-

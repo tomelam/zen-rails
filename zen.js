@@ -1,6 +1,8 @@
-zen = {};
+var zen = {};
+zen.test = {};
 
 zen.domNodeCompons = [];
+zen.widgets = [];
 
 zen.debugLevel = 0; // Off.
 zen.log = function() {
@@ -91,30 +93,30 @@ zen.DomNodeCompon = function(e) {
 				zen.DomNodeCompon.fromDomNode(c);
 			});
     };
-    this.destroy = function() {
+    this.destroyCompon = function() {
 	var compon, index;
-	zen.debug("zen.DomNodeCompon.destroy: this => " + this +
+	zen.debug("zen.DomNodeCompon.destroyCompon: this => " + this +
 		      ", domNode => " + this.domNode);
 	dojo.forEach(this.getChildCompons(),
 		     function(child) {
-			 child.destroy();
+			 child.destroyCompon();
 		     });
 	dojo.destroy(this.domNode);
 	index = zen.domNodeCompons.indexOf(this);
 	if (index >= 0) {
-	    zen.debug("...destroy: index => " + index + ", compon => " +
-			  zen.domNodeCompons[index] +
-			  ", zen.domNodeCompons.length => " +
-			  zen.domNodeCompons.length);
+	    zen.debug("...destroyCompon: index => " + index + ", compon => " +
+		      zen.domNodeCompons[index] +
+		      ", zen.domNodeCompons.length => " +
+		      zen.domNodeCompons.length);
 	    delete zen.domNodeCompons[index];
 	    compon = zen.domNodeCompons.pop();
 	    if (index != zen.domNodeCompons.length) {
 		zen.domNodeCompons[index] = compon;
 	    } else {
 		zen.warn("compon was last in the list; won't put it back!");
-	    }
+	    };
 	} else {
-	    zen.error("zen.DomNodeCompon.destroy: couldn't find last ref");
+	    zen.error("zen.DomNodeCompon.destroyCompon: couldn't find last ref");
 	};
     };
 }
@@ -248,8 +250,6 @@ zen.rule2ref = function(rule) {
     return dojo.fromJson(rule)
 };
 
-zen.widgets = [];
-
 zen.startup = function() {
     // Start up all the Dojo widgets. The order is important.
     zen.debug("zen.startup: starting up widgets");
@@ -267,6 +267,21 @@ zen.walkZen = function(compon, func) {
 		 function(child) {
 		     zen.walkZen(child, func);
 		 });
+};
+
+zen.renderTree = function(tree, parent) {
+    var newComponent;
+    
+    zen.debug("*** Entering renderTree");
+    zen.info("#############################");
+    zen.info("##### TESTING RENDERING #####");
+    zen.info("#############################");
+    newComponent = zen.createSubtree(tree);
+    zen.debug("******* newComponent => " + newComponent);
+    newComponent.appendMyselfToParent(parent);
+    zen.startup();
+    zen.debug("*** Exiting renderTree");
+    return newComponent;
 };
 
 //FIXME: Use dojo.create.
@@ -359,9 +374,30 @@ zen.boxTable = function(componList, tbl) {
 
 //FIXME: Maybe we could think up a good scheme for which components to
 //save and which to destroy.
-zen.clearTheCanvas = function (saveCompons) {
-    console.debug("*** Entering clearTheCanvas, saving compons " + saveCompons);
-    
+zen.clearTheCanvas = function (componsToDestroy, componsToSave) {
+    if (typeof componsToSave == 'undefined' || !componsToSave) {
+	componsToSave = null;
+    };
+    console.debug("*** Entering zen.clearTheCanvas, destroying compons " +
+		  componsToDestroy + " except for " + componsToSave);
+    console.debug("*** componsToDestroy.length => " + componsToDestroy.length);
+    dojo.forEach(componsToDestroy,
+		 function(compon) {
+		     console.debug("*** compon => " + compon);
+		 });
+    console.debug("*** Destroying");
+    dojo.forEach(componsToDestroy,
+		 function(compon) {
+		     console.debug("compon => " + compon);
+		     if (!componsToSave ||
+			 (componsToSave.indexOf(compon) < 0)) {
+			 compon.destroyCompon();
+		     };
+		 });
+    //zen.domNodeCompons = [];
+    //zen.widgets = [];
+    //zen.test.topCompons = [];
+    console.debug("*** Exiting zen.clearTheCanvas");
 };
 
 zen.clearTheHierarchyDiagram = function () {
@@ -390,7 +426,7 @@ zen.clearTheHierarchyDiagram = function () {
     dojo.forEach(diagramPaneCompon.getChildCompons(),
 		 function(child) {
 		     console.debug("Destroying " + child);
-		     child.destroy();
+		     child.destroyCompon();
 		 });
     console.debug("*** Exiting clear");
 };
@@ -449,9 +485,32 @@ zen.createDijit = function(klass, initParms, topNode) {
 	    return widget.setContent(child.domNode); // child is not Dojo widget
 	};
     };
-    //widget.destroyChild = function(child) {
-    //	zen.debug("widget.destroyChild: child => " + child);
-    //};
+    widget.destroyCompon = function() {
+	var compon, index;
+	console.debug("widget.destroyCompon: widget => " + widget +
+		  ", domNode => " + widget.domNode);
+	dojo.forEach(widget.getChildCompons(),
+		     function(child) {
+			 child.destroyCompon();
+		     });
+	widget.destroy();
+	index = zen.widgets.indexOf(widget);
+	if (index >= 0) {
+	    console.debug("...destroyCompon: index => " + index + ", compon => " +
+		      zen.widgets[index] +
+		      ", zen.widgets.length => " +
+		      zen.widgets.length);
+	    delete zen.widgets[index];
+	    compon = zen.widgets.pop();
+	    if (index != zen.widgets.length) {
+		zen.widgets[index] = compon;
+	    } else {
+		console.warn("widget was last in the list; won't put it back!");
+	    };
+	} else {
+	    console.error("widget.destroyCompon: couldn't find last ref");
+	};
+    };
     zen.widgets.push(widget);
     return widget;
 };
@@ -465,7 +524,62 @@ zen.shortcutsTable = {
 };
 
 zen.init = function() {
+    var toolbox =
+    ["dojox.layout.FloatingPane",
+     {id:"testRendering",
+      title:"Rendering Tests",style:{top:"30px",right:"30px"},closable:true},
+     [["center", {},
+       [["dijit.form.Button",
+	 {label:"Clear the Canvas",
+	  onClick:function() {
+	      zen.clearTheCanvas(zen.test.topCompons);
+	      zen.test.topCompons = [];
+	  }},
+	 []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"red DIV",onClick:function(){test(tree1)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"red DIV with orange DIV",onClick:function(){test(tree2)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"red DIV with table",onClick:function(){test(tree3)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"DIV with P and red ContentPane",
+	  onClick:function(){test(tree4)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"DIV (id:workingNode) with<br/>ContentPane (class:box)",
+	  onClick:function(){test(tree5)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"DIV w/ P & red ContentPane<br/>w/ box ContentPane w/ DIV",
+	  onClick:function(){test(tree6)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"AccordionContainer & AccordionPanes<br/>'workingNode' & 'cp1'",
+	  onClick:function(){test(tree7)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"AccordionContainer 'workingNode' & AccordionPane with title",
+	  onClick:function(){test(tree8)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"AccordionContainer w/ AccordionPanes, each w/ DIV",
+	  onClick:function(){test(tree9)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"AccordionContainer w/ AccordionPanes, each /w DIV",
+	  onClick:function(){test(tree10)}}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Main Controls",onClick:function(){test(devTools)}}, []]]]]];
+
     zen.initIRT();
     zen.body = createNew(zen.DomNodeCompon, dojo.body());
-    zen.debug("zen.body.domNode => " + zen.body.domNode);
+    zen.debug("zen.body => " + zen.body + 
+	      ", zen.body.domNode => " + zen.body.domNode);
+    zen.renderTree(toolbox, zen.body);
 }

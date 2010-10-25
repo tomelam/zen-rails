@@ -1,0 +1,5 @@
+Assuming you have got a copy of Zen, then to set it up, create a
+symbolic link called 'dojo' in this directory pointing to the top
+directory Dojo source release (Dojo Toolkit SDK). (In the top
+directory of that release, there should be the directories dojo/,
+dijit/, dojox/, and util/.)

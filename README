@@ -1,3 +1,11 @@
+== Welcome to Zen-Rails
+
+The project zen-rails is to create the parts of Zen other than the Zen Composer
+with a Ruby on Rails backend.  Without the Zen Composer, Zen web pages can be
+rendered, but the handy facilities for composing Zen web pages provided by the
+Zen Composer are not part of those pages.
+
+
 == Welcome to Rails
 
 Rails is a web-application framework that includes everything needed to create

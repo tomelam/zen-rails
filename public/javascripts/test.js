@@ -299,7 +299,9 @@
 
 	newComponent = zen.renderTree(tree, zen.body);
 	zen.test.topCompons.push(newComponent);
-	diagram = diagramTree(newComponent);
-	zen.test.topCompons.push(diagram);
+	if (zen.debugLevel > 0) {
+	    diagram = diagramTree(newComponent);
+	    zen.test.topCompons.push(diagram);
+	};
 	console.debug("*** Done testing creation and rendering of a tree");
     };

@@ -5,6 +5,9 @@ with a Ruby on Rails backend.  Without the Zen Composer, Zen web pages can be
 rendered, but the handy facilities for composing Zen web pages provided by the
 Zen Composer are not part of those pages.
 
+The version of Dojo included in this version of Zen-Rails is a build of Dojo
+from the 1.5.0 source distribution, using the standard profile.
+
 
 == Welcome to Rails
 

@@ -183,8 +183,30 @@
        {id:"cp01",title:"pane 2"},
        [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	 []]]]]];
-    var devTools =
+    var tree13 =
     ["dojox.layout.FloatingPane",
+     {id:"workingNode",
+      title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
+     [["center", {},
+       [["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:zen.clearTheCanvas}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []],
+	["br", {}, []],
+	["dijit.form.Button",
+	 {label:"Clear the Canvas",onClick:sayHello}, []]]]]];
+    var devTools =
+    ["dijit.TitlePane",
      {id:"workingNode",
       title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
      [["center", {},

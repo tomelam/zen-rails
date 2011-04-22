@@ -207,7 +207,8 @@ zen.createSubtree = function(treeSpec) {
 zen.rulesTable = {
     createElement : [ "div", "table", "tr", "td", "p", "span",
 		      "center", "br" ],
-    createDijit   : [ "dijit.layout.ContentPane",
+    createDijit   : [ "dijit.TitlePane",
+		      "dijit.layout.ContentPane",
 		      "dijit.layout.BorderContainer",
 		      "dijit.layout.AccordionContainer",
 		      "dijit.layout.AccordionPane", //FIXME: deprecated

@@ -1,6 +1,1 @@
-Assuming you have got a copy of Zen, then to set it up, create a
-symbolic link called 'dojo' in the directory 'public/javascripts'
-pointing to the top directory Dojo source release (Dojo Toolkit SDK).
-(In the top directory of that release, there should be the directories
-dojo/, dijit/, dojox/, and util/.)  The reference to 'dojo.js' in the
-file 'public/index.html' should be valid after this setup.
+This version of Zen-Rails includes a built version of Dojo.

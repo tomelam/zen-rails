@@ -32,6 +32,7 @@ GEM
       activesupport (~> 3.0.0)
     builder (2.1.2)
     configuration (1.2.0)
+    dojo-pkg (1.132.0)
     erubis (2.6.6)
       abstract (>= 1.0.0)
     heroku (1.20.1)
@@ -81,6 +82,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  dojo-pkg
   heroku
   rails (= 3.0.1)
   sqlite3-ruby

@@ -30,3 +30,9 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 # end
 
 gem 'heroku'
+
+# This gem allows us to distribute the Dojo Toolkit
+# source code and provides utilities for working with
+# Dojo in a Rails application.
+
+gem 'dojo-pkg'

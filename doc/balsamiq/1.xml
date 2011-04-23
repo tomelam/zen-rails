@@ -15,5 +15,11 @@
         <text>Here%20is%20an%20example%20Zen%20notebook.</text>
       </controlProperties>
     </control>
+    <control controlID="27" controlTypeID="com.balsamiq.mockups::VerticalTabBar" x="26" y="98" w="466" h="372" measuredW="200" measuredH="186" zOrder="3" locked="false" isInGroup="-1"/>
+    <control controlID="28" controlTypeID="com.balsamiq.mockups::VerticalTabBar" x="509" y="98" w="441" h="372" measuredW="200" measuredH="186" zOrder="4" locked="false" isInGroup="-1">
+      <controlProperties>
+        <position>right</position>
+      </controlProperties>
+    </control>
   </controls>
 </mockup>

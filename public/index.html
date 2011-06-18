@@ -14,7 +14,29 @@
     <script type="text/javascript" src="javascripts/new.js"></script>
     <script type="text/javascript" src="javascripts/zen.js"></script>
     <script type="text/javascript" src="javascripts/test.js"></script>
+    <script type="text/javascript">
+      function ioIframeGetJson(t){
+	  dojo.io.iframe.send({
+	      url: "http://localhost/iframeResponse.json.html",
+	      method: "GET",
+	      timeoutSeconds: 5,
+	      preventCache: true,
+	      handleAs: "json",
+	      handle: function(res, ioArgs){
+		  if(!(res instanceof Error)){
+		      console.group("json iframe");
+		      console.dir(res.color);
+		      console.groupEnd();
+		  }else{
+		      console.error("json iframe error");
+		  }
+	      }		
+	  });
+      }
+    </script>
   </head>
   <body onload="zen.init()" class="tundra">
+    <form id="contentArrayTest" method="get" enctype="multipart/form-data">
+    </form>
   </body>
 </html>

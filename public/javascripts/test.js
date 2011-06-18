@@ -249,8 +249,10 @@
 	zen.debug("*** dojo.byId('diagramPane') => " +
 		  dojo.byId("diagramPane"));
 	zen.clearTheHierarchyDiagram();
+	// FIXME: tblCompon = zen.createElement("table",
+	//			      {id:"componTbl",class:"boxTable"});
 	tblCompon = zen.createElement("table",
-				      {id:"componTbl",class:"boxTable"});
+				      {id:"componTbl"});
 	zen.debug("*** tblCompon => " + tblCompon +
 		  ", tblCompon.domNode => " + tblCompon.domNode);
 	diagramPaneCompon = createNew(zen.DomNodeCompon,

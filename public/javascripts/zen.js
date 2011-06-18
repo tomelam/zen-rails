@@ -289,8 +289,10 @@ zen.renderTree = function(tree, parent) {
 zen.boxCompon = function(component, tbl) {
     zen.debug("** ENTER zen.boxCompon");
     var row = zen.createElement("tr");
-    var cell = zen.createElement("td", {class:"boxTD1"});
-    var div = zen.createElement("div", {class:"visualRep"});
+    // FIXME: var cell = zen.createElement("td", {class:"boxTD1"});
+    // FIXME: var div = zen.createElement("div", {class:"visualRep"});
+    var cell = zen.createElement("td");
+    var div = zen.createElement("div");
     zen.debug("** zen.boxCompon: createTextNode " + component);
     var text = zen.createTextNode("" + component);
     zen.debug("** zen.boxCompon: createTextNode done, call dojo.attr");
@@ -360,11 +362,13 @@ zen.boxTable = function(componList, tbl) {
 
 	if (children.length > 0) {
 	    zen.debug("* zen.boxTable: create cell");
-	    cell = zen.createElement("td", {class:"boxTD2"});
+	    // FIXME: cell = zen.createElement("td", {class:"boxTD2"});
+	    cell = zen.createElement("td");
 	    zen.debug("* zen.boxTable: row.domNode => " + row.domNode);
 	    row.appendChild(cell);
 	    zen.debug("* zen.boxTable: create table");
-	    tbl1 = zen.createElement("table", {class:"boxTable"});
+	    // FIXME: tbl1 = zen.createElement("table", {class:"boxTable"});
+	    tbl1 = zen.createElement("table");
 	    zen.debug("* zen.boxTable: append table to cell");
 	    cell.appendChild(tbl1);
 	    zen.boxTable(children, tbl1);
@@ -565,4 +569,5 @@ zen.init = function() {
     zen.debug("zen.body => " + zen.body + 
 	      ", zen.body.domNode => " + zen.body.domNode);
     zen.renderTree(toolbox, zen.body);
+    dojo.require("dojo.io.iframe");
 }

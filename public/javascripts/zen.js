@@ -4,53 +4,51 @@ zen.test = {};
 zen.domNodeCompons = [];
 zen.widgets = [];
 
-zen.debugLevel = 0; // Off.
+zen.debugLevel = 9; // All tracing.
 zen.log = function() {
     if (zen.debugLevel > 0) {
-	var args = Array.prototype.slice.call(arguments);
-	console.log.apply(null, args);
+	var args = Array.prototype.join.call(arguments, ", ");
+	console.log(args);
     }
 }
 zen.info = function() {
     if (zen.debugLevel > 1) {
-	var args = Array.prototype.slice.call(arguments);
-	console.info.apply(null, args);
+	var args = Array.prototype.join.call(arguments, ", ");
+	console.info(args);
     }
 }
 zen.debug = function() {
     if (zen.debugLevel > 2) {
-	var args = Array.prototype.slice.call(arguments);
-	console.debug.apply(null, args);
+	var args = Array.prototype.join.call(arguments, ", ");
+	console.debug(args);
     }
 }
 zen.warn = function() {
     if (zen.debugLevel > 3) {
-	var args = Array.prototype.slice.call(arguments);
-	console.warn.apply(null, args);
+	var args = Array.prototype.join.call(arguments, ", ");
+	console.warn(args);
     }
 }
 zen.error = function() {
     if (zen.debugLevel > 4) {
-	var args = Array.prototype.slice.call(arguments);
-	console.error.apply(null, args);
+	var args = Array.prototype.join.call(arguments, ", ");
+	console.error(args);
     }
 }
 zen.group = function() {
     if (zen.debugLevel > 0) {
-	var args = Array.prototype.slice.call(arguments);
-	console.group.apply(null, args);
+	var args = Array.prototype.join.call(arguments, ", ");
+	console.group(args);
     }
 } 
 zen.groupEnd = function() {
     if (zen.debugLevel > 0) {
-	var args = Array.prototype.slice.call(arguments);
-	console.groupEnd.apply(null, args);
+	console.groupEnd();
     }
 }
 zen.dir = function() {
     if (zen.debugLevel > 0) {
-	var args = Array.prototype.slice.call(arguments);
-	console.dir.apply(null, args);
+	console.dir(arguments[0]);
     }
 }
 
@@ -175,6 +173,12 @@ zen.createElement = function(kind, attributes) {
     zen.domNodeCompons.push(domNodeCompon);
     zen.debug("zen.createElement: # of domNodeCompons => " +
 		  zen.domNodeCompons.length);
+    attributes = attributes || {};
+    if (typeof attributes.klass != "undefined") {
+	dojo.addClass(domNode, attributes.klass);
+	delete attributes.klass;
+	zen.debug("added class");
+    }
     dojo.attr(domNode, attributes || {}); //FIXME: Check this.
     domNodeCompon.domNode = domNode;
     return domNodeCompon;
@@ -289,10 +293,8 @@ zen.renderTree = function(tree, parent) {
 zen.boxCompon = function(component, tbl) {
     zen.debug("** ENTER zen.boxCompon");
     var row = zen.createElement("tr");
-    // FIXME: var cell = zen.createElement("td", {class:"boxTD1"});
-    // FIXME: var div = zen.createElement("div", {class:"visualRep"});
-    var cell = zen.createElement("td");
-    var div = zen.createElement("div");
+    var cell = zen.createElement("td", {klass:"boxTD1"});
+    var div = zen.createElement("div", {klass:"visualRep"});
     zen.debug("** zen.boxCompon: createTextNode " + component);
     var text = zen.createTextNode("" + component);
     zen.debug("** zen.boxCompon: createTextNode done, call dojo.attr");
@@ -362,13 +364,11 @@ zen.boxTable = function(componList, tbl) {
 
 	if (children.length > 0) {
 	    zen.debug("* zen.boxTable: create cell");
-	    // FIXME: cell = zen.createElement("td", {class:"boxTD2"});
-	    cell = zen.createElement("td");
+	    cell = zen.createElement("td", {klass:"boxTD2"});
 	    zen.debug("* zen.boxTable: row.domNode => " + row.domNode);
 	    row.appendChild(cell);
 	    zen.debug("* zen.boxTable: create table");
-	    // FIXME: tbl1 = zen.createElement("table", {class:"boxTable"});
-	    tbl1 = zen.createElement("table");
+	    tbl1 = zen.createElement("table", {klass:"boxTable"});
 	    zen.debug("* zen.boxTable: append table to cell");
 	    cell.appendChild(tbl1);
 	    zen.boxTable(children, tbl1);
@@ -564,10 +564,30 @@ zen.init = function() {
 	 {label:"AccordionContainer w/ AccordionPanes, each /w DIV",
 	  onClick:function(){test(tree10)}}, []]]]]];
 
+    var ioIframeGetJson = function() {
+	dojo.io.iframe.send({
+	    url: "http://localhost:3000/toolbox.json.html",
+	    method: "GET",
+	    timeoutSeconds: 5,
+	    preventCache: true,
+	    handleAs: "json",
+	    handle: function(res, ioArgs){
+		if(!(res instanceof Error)){
+		    console.group("json iframe");
+		    console.dir(res);
+		    console.groupEnd();
+		    zen.renderTree(res, zen.body);
+		}else{
+		    console.error("json iframe error");
+		}
+	    }		
+	});
+    }
+
     zen.initIRT();
     zen.body = createNew(zen.DomNodeCompon, dojo.body());
-    zen.debug("zen.body => " + zen.body + 
+    console.debug("zen.body => " + zen.body + 
 	      ", zen.body.domNode => " + zen.body.domNode);
-    zen.renderTree(toolbox, zen.body);
     dojo.require("dojo.io.iframe");
+    ioIframeGetJson();
 }

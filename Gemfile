@@ -30,3 +30,6 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 # end
 
 gem 'heroku'
+
+gem 'couchrest'
+gem 'validatable'

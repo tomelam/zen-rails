@@ -4,7 +4,7 @@ zen.test = {};
 zen.domNodeCompons = [];
 zen.widgets = [];
 
-zen.debugLevel = 1; // All tracing.
+zen.debugLevel = 9; // All tracing.
 zen.log = function() {
     if (zen.debugLevel > 0) {
 	var args = Array.prototype.join.call(arguments, ", ");

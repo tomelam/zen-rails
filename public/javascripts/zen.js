@@ -566,7 +566,7 @@ zen.init = function() {
 
     var ioIframeGetJson = function() {
 	dojo.io.iframe.send({
-	    url: "http://localhost:3000/toolbox.json.html",
+	    url: "toolbox.json.html",
 	    method: "GET",
 	    timeoutSeconds: 5,
 	    preventCache: true,

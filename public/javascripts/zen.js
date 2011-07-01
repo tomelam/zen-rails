@@ -4,7 +4,7 @@ zen.test = {};
 zen.domNodeCompons = [];
 zen.widgets = [];
 
-zen.debugLevel = 9; // All tracing.
+zen.debugLevel = 1; // All tracing.
 zen.log = function() {
     if (zen.debugLevel > 0) {
 	var args = Array.prototype.join.call(arguments, ", ");
@@ -36,18 +36,18 @@ zen.error = function() {
     }
 }
 zen.group = function() {
-    if (zen.debugLevel > 0) {
+    if (zen.debugLevel > 5) {
 	var args = Array.prototype.join.call(arguments, ", ");
 	console.group(args);
     }
 } 
 zen.groupEnd = function() {
-    if (zen.debugLevel > 0) {
+    if (zen.debugLevel > 5) {
 	console.groupEnd();
     }
 }
 zen.dir = function() {
-    if (zen.debugLevel > 0) {
+    if (zen.debugLevel > 5) {
 	console.dir(arguments[0]);
     }
 }
@@ -383,17 +383,17 @@ zen.clearTheCanvas = function (componsToDestroy, componsToSave) {
     if (typeof componsToSave == 'undefined' || !componsToSave) {
 	componsToSave = null;
     };
-    console.debug("*** Entering zen.clearTheCanvas, destroying compons " +
+    zen.debug("*** Entering zen.clearTheCanvas, destroying compons " +
 		  componsToDestroy + " except for " + componsToSave);
-    console.debug("*** componsToDestroy.length => " + componsToDestroy.length);
+    zen.debug("*** componsToDestroy.length => " + componsToDestroy.length);
     dojo.forEach(componsToDestroy,
 		 function(compon) {
-		     console.debug("*** compon => " + compon);
+		     zen.debug("*** compon => " + compon);
 		 });
-    console.debug("*** Destroying");
+    zen.debug("*** Destroying");
     dojo.forEach(componsToDestroy,
 		 function(compon) {
-		     console.debug("compon => " + compon);
+		     zen.debug("compon => " + compon);
 		     if (!componsToSave ||
 			 (componsToSave.indexOf(compon) < 0)) {
 			 compon.destroyCompon();
@@ -402,12 +402,12 @@ zen.clearTheCanvas = function (componsToDestroy, componsToSave) {
     //zen.domNodeCompons = [];
     //zen.widgets = [];
     //zen.test.topCompons = [];
-    console.debug("*** Exiting zen.clearTheCanvas");
+    zen.debug("*** Exiting zen.clearTheCanvas");
 };
 
 zen.clearTheHierarchyDiagram = function () {
     var diagramPaneElementx, diagramPaneCompon;
-    console.debug("*** Clearing the hierarchy diagram");
+    zen.debug("*** Clearing the hierarchy diagram");
     diagramPaneElement = dojo.byId("diagramPane");
     if (!diagramPaneElement) {
 	diagramPaneElement = zen.createElement(
@@ -427,13 +427,13 @@ zen.clearTheHierarchyDiagram = function () {
 				      dojo.byId("diagramPane"));
     }
     var compons = diagramPaneCompon.getChildCompons();
-    console.debug("compons => " + compons);
+    zen.debug("compons => " + compons);
     dojo.forEach(diagramPaneCompon.getChildCompons(),
 		 function(child) {
-		     console.debug("Destroying " + child);
+		     zen.debug("Destroying " + child);
 		     child.destroyCompon();
 		 });
-    console.debug("*** Exiting clear");
+    zen.debug("*** Exiting clear");
 };
 
 // Zen.createDijit does not allow a dijit to be built on a
@@ -492,7 +492,7 @@ zen.createDijit = function(klass, initParms, topNode) {
     };
     widget.destroyCompon = function() {
 	var compon, index;
-	console.debug("widget.destroyCompon: widget => " + widget +
+	zen.debug("widget.destroyCompon: widget => " + widget +
 		  ", domNode => " + widget.domNode);
 	dojo.forEach(widget.getChildCompons(),
 		     function(child) {
@@ -501,7 +501,7 @@ zen.createDijit = function(klass, initParms, topNode) {
 	widget.destroy();
 	index = zen.widgets.indexOf(widget);
 	if (index >= 0) {
-	    console.debug("...destroyCompon: index => " + index + ", compon => " +
+	    zen.debug("...destroyCompon: index => " + index + ", compon => " +
 		      zen.widgets[index] +
 		      ", zen.widgets.length => " +
 		      zen.widgets.length);
@@ -510,10 +510,10 @@ zen.createDijit = function(klass, initParms, topNode) {
 	    if (index != zen.widgets.length) {
 		zen.widgets[index] = compon;
 	    } else {
-		console.warn("widget was last in the list; won't put it back!");
+		zen.warn("widget was last in the list; won't put it back!");
 	    };
 	} else {
-	    console.error("widget.destroyCompon: couldn't find last ref");
+	    zen.error("widget.destroyCompon: couldn't find last ref");
 	};
     };
     zen.widgets.push(widget);
@@ -573,12 +573,12 @@ zen.init = function() {
 	    handleAs: "json",
 	    handle: function(res, ioArgs){
 		if(!(res instanceof Error)){
-		    console.group("json iframe");
-		    console.dir(res);
-		    console.groupEnd();
+		    zen.group("json iframe");
+		    zen.dir(res);
+		    zen.groupEnd();
 		    zen.renderTree(res, zen.body);
 		}else{
-		    console.error("json iframe error");
+		    zen.error("json iframe error");
 		}
 	    }		
 	});
@@ -586,7 +586,7 @@ zen.init = function() {
 
     zen.initIRT();
     zen.body = createNew(zen.DomNodeCompon, dojo.body());
-    console.debug("zen.body => " + zen.body + 
+    zen.debug("zen.body => " + zen.body + 
 	      ", zen.body.domNode => " + zen.body.domNode);
     dojo.require("dojo.io.iframe");
     ioIframeGetJson();

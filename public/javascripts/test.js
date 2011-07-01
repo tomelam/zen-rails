@@ -13,23 +13,23 @@
 	
     };
     testObjectCreator = function() {
-	console.debug(".");
+	zen.debug(".");
 	f = createNew(Foo);
-	console.debug("f.a => " + f.a); // => undefined
-	console.debug("f.getA() => " + f.getA()); // => 1
+	zen.debug("f.a => " + f.a); // => undefined
+	zen.debug("f.getA() => " + f.getA()); // => 1
 	Bar = function() {
 	    this.a = 1;
 	    return 1;
 	}
-	console.debug(".");
+	zen.debug(".");
 	b = createNew(Bar);
-	console.debug("b.a => " + b.a); // => 1
+	zen.debug("b.a => " + b.a); // => 1
 	Baz = function(z) {
 	    this.a = z;
 	}
-	console.debug(".");
+	zen.debug(".");
 	c = createNew(Baz, 3, 4);
-	console.debug("c.a => " + c.a);
+	zen.debug("c.a => " + c.a);
     }
     sayHello = function() { alert("Hi!"); }
     //testObjectCreator();
@@ -297,7 +297,7 @@
     test = function(tree) {
 	var newComponent, diagram;
 
-	console.debug("*** Testing creation and diagramming of a tree");
+	zen.log("*** Testing creation and diagramming of a tree");
 
 	newComponent = zen.renderTree(tree, zen.body);
 	zen.test.topCompons.push(newComponent);
@@ -305,5 +305,5 @@
 	    diagram = diagramTree(newComponent);
 	    zen.test.topCompons.push(diagram);
 	};
-	console.debug("*** Done testing creation and rendering of a tree");
+	zen.log("*** Done testing creation and rendering of a tree");
     };

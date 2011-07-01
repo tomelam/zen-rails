@@ -1,0 +1,41 @@
+<html>
+	<head>
+	</head>
+	<body>
+	    <textarea style="width: 100%; height: 100px;">
+    ["dijit.TitlePane",
+     {id:"testRendering",
+      title:"Toolbar - Zen Notebook",
+      style:{top:"30px",right:"30px"},closable:true},
+     [["center", {},
+       [["dijit.form.Button",
+	 {label:"Clear the Canvas",
+	  onClick:function() {
+	      zen.clearTheCanvas(zen.test.topCompons);
+	      zen.test.topCompons = [];
+	  }},
+	 []],
+	["dijit.form.Button",
+	 {label:"red DIV",onClick:function(){test(tree1)}}, []],
+	["dijit.form.Button",
+	 {label:"red DIV with orange DIV",onClick:function(){test(tree2)}}, []],
+	["dijit.form.Button",
+	 {label:"red DIV with table",onClick:function(){test(tree3)}}, []],
+	["dijit.form.Button",
+	 {label:"DIV with P and red ContentPane",
+	  onClick:function(){test(tree4)}}, []],
+	["dijit.form.Button",
+	 {label:"DIV (id:workingNode) with<br/>ContentPane (class:box)",
+	  onClick:function(){test(tree5)}}, []],
+	["dijit.form.Button",
+	 {label:"DIV w/ P & red ContentPane<br/>w/ box ContentPane w/ DIV",
+	  onClick:function(){test(tree6)}}, []],
+	["dijit.form.Button",
+	 {label:"AccordionContainer w/ AccordionPanes, each w/ DIV",
+	  onClick:function(){test(tree9)}}, []],
+	["dijit.form.Button",
+	 {label:"AccordionContainer w/ AccordionPanes, each /w DIV",
+	  onClick:function(){test(tree10)}}, []]]]]]
+	    </textarea>
+	</body>
+</html>

@@ -1,13 +1,5 @@
-/*
-	Copyright (c) 2004-2010, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojo.window"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojo.window"] = true;
-dojo.provide("dojo.window");
+define("dojo/window", ["dojo"], function(dojo) {
+dojo.getObject("window", true, dojo);
 
 dojo.window.getBox = function(){
 	// summary:
@@ -133,11 +125,12 @@ dojo.window.scrollIntoView = function(/*DomNode*/ node, /*Object?*/ pos){
 				nodePos.y -= el.scrollTop;
 			}
 			el = (el != scrollRoot) && !fixedPos && el.parentNode;
-		}	
+		}
 	}catch(error){
 		console.error('scrollIntoView: ' + error);
 		node.scrollIntoView(false);
 	}
 };
 
-}
+return dojo.window;
+});

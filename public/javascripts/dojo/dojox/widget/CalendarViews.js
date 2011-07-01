@@ -1,12 +1,3 @@
-/*
-	Copyright (c) 2004-2010, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.widget.CalendarViews"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.widget.CalendarViews"] = true;
 dojo.provide("dojox.widget.CalendarViews");
 dojo.experimental("dojox.widget.CalendarViews");
 
@@ -29,7 +20,7 @@ dojo.declare("dojox.widget._CalendarMonthView", [dojox.widget._CalendarView, dij
 
 	// templateString: String
 	//	The template to be used to construct the widget.
-	templateString: dojo.cache("dojox.widget", "Calendar/CalendarMonth.html", "<div class=\"dojoxCalendarMonthLabels\" style=\"left: 0px;\"  \n\tdojoAttachPoint=\"monthContainer\" dojoAttachEvent=\"onclick: onClick\">\n    <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin: auto;\">\n        <tbody>\n            <tr class=\"dojoxCalendarMonthGroupTemplate\">\n                <td class=\"dojoxCalendarMonthTemplate\">\n                    <div class=\"dojoxCalendarMonthLabel\"></div>\n                </td>\n             </tr>\n        </tbody>\n    </table>\n</div>\n"),
+	templateString: dojo.cache("dojox.widget","Calendar/CalendarMonth.html"),
 
 	// datePart: String
 	//	Specifies how much to increment the displayed date when the user
@@ -61,8 +52,13 @@ dojo.declare("dojox.widget._CalendarMonthView", [dojox.widget._CalendarView, dij
 	onClick: function(evt){
 		// summary: Handles clicks on month names
 		if(!dojo.hasClass(evt.target, "dojoxCalendarMonthLabel")){dojo.stopEvent(evt); return;}
-		var month = evt.target.parentNode.cellIndex + (evt.target.parentNode.parentNode.rowIndex * 4);
+		var parentNode = evt.target.parentNode;
+		var month = parentNode.cellIndex + (parentNode.parentNode.rowIndex * 4);
 		var date = this.get("value");
+
+		// Seeing a really strange bug in FF3.6 where this has to be called twice
+		// in order to take affect
+		date.setMonth(month);
 		date.setMonth(month);
 		this.onValueSelected(date, month);
 	}
@@ -85,7 +81,7 @@ dojo.declare("dojox.widget._CalendarYearView", [dojox.widget._CalendarView, diji
 
 	// templateString: String
 	//		The template to be used to construct the widget.
-	templateString: dojo.cache("dojox.widget", "Calendar/CalendarYear.html", "<div class=\"dojoxCalendarYearLabels\" style=\"left: 0px;\" dojoAttachPoint=\"yearContainer\">\n    <table cellspacing=\"0\" cellpadding=\"0\" border=\"0\" style=\"margin: auto;\" dojoAttachEvent=\"onclick: onClick\">\n        <tbody>\n            <tr class=\"dojoxCalendarYearGroupTemplate\">\n                <td class=\"dojoxCalendarNextMonth dojoxCalendarYearTemplate\">\n                    <div class=\"dojoxCalendarYearLabel\">\n                    </div>\n                </td>\n            </tr>\n        </tbody>\n    </table>\n</div>\n"),
+	templateString: dojo.cache("dojox.widget","Calendar/CalendarYear.html"),
 
 	displayedYears: 6,
 
@@ -133,13 +129,21 @@ dojo.declare("dojox.widget.MonthlyCalendar",
 	[dojox.widget._CalendarBase,
 	 dojox.widget._CalendarMonth], {
 	 	// summary: A calendar with only a month view.
+		_makeDate: function(value){
+			var now = new Date();
+			now.setMonth(value);
+			return now;
+		}
 	 }
 );
 dojo.declare("dojox.widget.YearlyCalendar",
 	[dojox.widget._CalendarBase,
 	 dojox.widget._CalendarYear], {
 	 	// summary: A calendar with only a year view.
+		_makeDate: function(value){
+			var now = new Date();
+			now.setFullYear(value);
+			return now;
+		}
 	 }
 );
-
-}

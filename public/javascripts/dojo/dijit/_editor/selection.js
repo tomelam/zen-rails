@@ -1,13 +1,6 @@
-/*
-	Copyright (c) 2004-2010, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
+define("dijit/_editor/selection", ["dojo", "dijit"], function(dojo, dijit) {
 
-
-if(!dojo._hasResource["dijit._editor.selection"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit._editor.selection"] = true;
-dojo.provide("dijit._editor.selection");
+dojo.getObject("_editor.selection", true, dijit);
 
 // FIXME:
 //		all of these methods branch internally for IE. This is probably
@@ -331,7 +324,7 @@ dojo.mixin(dijit._editor.selection, {
 				}
 			}else if(doc.selection){
 				// Probably IE, so we can't use the range object as the pseudo
-				// range doesn't implement the boundry checking, we have to 
+				// range doesn't implement the boundry checking, we have to
 				// use IE specific crud.
 				range = doc.selection.createRange();
 				try{
@@ -358,4 +351,5 @@ dojo.mixin(dijit._editor.selection, {
 
 });
 
-}
+return dijit._editor.selection;
+});

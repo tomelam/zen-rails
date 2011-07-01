@@ -1,14 +1,4 @@
-/*
-	Copyright (c) 2004-2010, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dijit._PaletteMixin"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dijit._PaletteMixin"] = true;
-dojo.provide("dijit._PaletteMixin");
-dojo.require("dijit._CssStateMixin");
+define("dijit/_PaletteMixin", ["dojo", "dijit", "dijit/_CssStateMixin"], function(dojo, dijit) {
 
 dojo.declare("dijit._PaletteMixin",
 	[dijit._CssStateMixin],
@@ -36,23 +26,23 @@ dojo.declare("dijit._PaletteMixin",
 	//		Index of the currently selected cell. Initially, none selected
 	_selectedCell: -1,
 
+/*=====
 	// _currentFocus: [private] DomNode
 	//		The currently focused cell (if the palette itself has focus), or otherwise
 	//		the cell to be focused when the palette itself gets focus.
 	//		Different from value, which represents the selected (i.e. clicked) cell.
-/*=====
 	_currentFocus: null,
 =====*/
 
+/*=====
 	// _xDim: [protected] Integer
 	//		This is the number of cells horizontally across.
-/*=====
 	_xDim: null,
 =====*/
 
+/*=====
 	// _yDim: [protected] Integer
 	//		This is the number of cells vertically down.
-/*=====
 	_yDim: null,
 =====*/
 
@@ -168,7 +158,7 @@ dojo.declare("dijit._PaletteMixin",
 		// tags:
 		//		private
 
-		var target = evt.currentTarget,	
+		var target = evt.currentTarget,
 			value = this._getDye(target).getValue();
 
 		// First focus the clicked cell, and then send onChange() notification.
@@ -178,8 +168,8 @@ dojo.declare("dijit._PaletteMixin",
 		// Use setTimeout because IE doesn't like changing focus inside of an event handler.
 		this._setCurrent(target);
 		setTimeout(dojo.hitch(this, function(){
-			dijit.focus(target);		
-			this._setValueAttr(value, true);		
+			dijit.focus(target);
+			this._setValueAttr(value, true);
 		}));
 
 		// workaround bug where hover class is not removed on popup because the popup is
@@ -223,8 +213,7 @@ dojo.declare("dijit._PaletteMixin",
 		//		Optional parameter used to tell the select whether or not to fire
 		//		onChange event.
 		
-		// clear old value and selected cell
-		this.value = null;
+		// clear old selected cell
 		if(this._selectedCell >= 0){
 			dojo.removeClass(this._cells[this._selectedCell].node, "dijitPaletteCellSelected");
 		}
@@ -235,7 +224,6 @@ dojo.declare("dijit._PaletteMixin",
 			for(var i = 0; i < this._cells.length; i++){
 				if(value == this._cells[i].dye.getValue()){
 					this._selectedCell = i;
-					this.value = value;
 
 					dojo.addClass(this._cells[i].node, "dijitPaletteCellSelected");
 
@@ -247,6 +235,9 @@ dojo.declare("dijit._PaletteMixin",
 				}
 			}
 		}
+		
+		// record new value, or null if no matching cell
+		this._set("value", this._selectedCell >= 0 ? value : null);
 	},
 
 	onChange: function(value){
@@ -321,4 +312,6 @@ dojo.declare("dijit.Dye",
 );
 =====*/
 
-}
+
+return dijit._PaletteMixin;
+});

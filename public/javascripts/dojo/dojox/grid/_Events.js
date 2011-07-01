@@ -1,18 +1,9 @@
-/*
-	Copyright (c) 2004-2010, The Dojo Foundation All Rights Reserved.
-	Available via Academic Free License >= 2.1 OR the modified BSD license.
-	see: http://dojotoolkit.org/license for details
-*/
-
-
-if(!dojo._hasResource["dojox.grid._Events"]){ //_hasResource checks added by build. Do not use _hasResource directly in your code.
-dojo._hasResource["dojox.grid._Events"] = true;
 dojo.provide("dojox.grid._Events");
 
 dojo.declare("dojox.grid._Events", null, {
 	// summary:
 	//		_Grid mixin that provides default implementations for grid events.
-	// description: 
+	// description:
 	//		Default synthetic events dispatched for _Grid. dojo.connect to events to
 	//		retain default implementation or override them for custom handling.
 	
@@ -499,5 +490,3 @@ dojo.declare("dojox.grid._Events", null, {
 	onSelectionChanged: function(){
 	}
 });
-
-}

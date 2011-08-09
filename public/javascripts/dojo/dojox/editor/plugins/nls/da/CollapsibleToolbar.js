@@ -1,5 +1,1 @@
-({
-	"collapse": "Skjul editorværktøjslinje",
-	"expand": "Udvid editorværktøjslinje"
-})
-
+({"collapse":"Skjul editorværktøjslinje","expand":"Udvid editorværktøjslinje"})

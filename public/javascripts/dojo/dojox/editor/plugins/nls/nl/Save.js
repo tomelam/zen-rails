@@ -1,4 +1,1 @@
-({
-	"save": "Opslaan"
-})
-
+({"save":"Opslaan"})

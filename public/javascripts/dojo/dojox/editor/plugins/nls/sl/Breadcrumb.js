@@ -1,10 +1,1 @@
-({
-	"nodeActions": "Dejanja ${nodeName} ",
-	"selectContents": "Izberi vsebine ",
-	"selectElement": "Izberi element ",
-	"deleteElement": "Izbriši element ",
-	"deleteContents": "Izbriši vsebine ",
-	"moveStart": "Pomakni kazalko na začetek ",
-	"moveEnd": "Pomakni kazalko na konec "
-})
-
+({"selectContents":"Izberi vsebine ","deleteElement":"Izbriši element ","moveEnd":"Pomakni kazalko na konec ","deleteContents":"Izbriši vsebine ","nodeActions":"Dejanja ${nodeName} ","selectElement":"Izberi element ","moveStart":"Pomakni kazalko na začetek "})

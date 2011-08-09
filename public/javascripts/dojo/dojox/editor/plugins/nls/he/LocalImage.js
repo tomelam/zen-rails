@@ -1,11 +1,1 @@
-({
-	insertImageTitle: "הוספת תמונה",
-	url: "תמונה",
-	browse: "עיון...‏ ",
-	text: "תיאור ",
-	set: "הוספה",
-	invalidMessage: "סוג קובץ תמונה לא חוקי",
-	prePopuTextUrl: "ציינו URL של תמונה",
-	prePopuTextBrowse: " או נווטו לקובץ מקומי. "
-})
-
+({"set":"הוספה","text":"תיאור ","insertImageTitle":"הוספת תמונה","invalidMessage":"סוג קובץ תמונה לא חוקי","prePopuTextBrowse":" או נווטו לקובץ מקומי. ","browse":"עיון...‏ ","prePopuTextUrl":"ציינו URL של תמונה","url":"תמונה"})

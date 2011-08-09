@@ -1,12 +1,1 @@
-({
-	displayOptions: "[อ็อพชันการแสดงผล]",
-	title: "ชื่อเรื่อง",
-	authors: "ผู้เขียน",
-	contributors: "ผู้อนุเคราะห์",
-	id: "ID",
-	close: "[ปิด]",
-	updated: "อัพเดต",
-	summary: "สรุป",
-	content: "เนื้อหา"
-})
-
+({"close":"[ปิด]","title":"ชื่อเรื่อง","authors":"ผู้เขียน","summary":"สรุป","content":"เนื้อหา","contributors":"ผู้อนุเคราะห์","updated":"อัพเดต","displayOptions":"[อ็อพชันการแสดงผล]","id":"ID"})

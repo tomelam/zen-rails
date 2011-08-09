@@ -1,17 +1,1 @@
-define(
-//begin v1.x content
-({
-	createLinkTitle: "Ιδιότητες σύνδεσης",
-	insertImageTitle: "Ιδιότητες εικόνας",
-	url: "Διεύθυνση URL:",
-	text: "Περιγραφή:",
-	target: "Προορισμός:",
-	set: "Ορισμός",
-	currentWindow: "Τρέχον παράθυρο",
-	parentWindow: "Γονικό παράθυρο",
-	topWindow: "Παράθυρο σε πρώτο πλάνο",
-	newWindow: "Νέο παράθυρο"
-})
-
-//end v1.x content
-);
+({"text":"Περιγραφή:","insertImageTitle":"Ιδιότητες εικόνας","set":"Ορισμός","newWindow":"Νέο παράθυρο","topWindow":"Παράθυρο σε πρώτο πλάνο","target":"Προορισμός:","createLinkTitle":"Ιδιότητες σύνδεσης","parentWindow":"Γονικό παράθυρο","currentWindow":"Τρέχον παράθυρο","url":"Διεύθυνση URL:"})

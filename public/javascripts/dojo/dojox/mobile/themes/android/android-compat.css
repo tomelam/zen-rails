@@ -1,9 +1,7 @@
-/* mbl.widget.Heading */
+
 .mblHeading {
 	background-image: url(compat/heading-bg.png);
 }
-
-/* Heading Arrow Button */
 .mblArrowButtonHead {
 	position: absolute;
 	top: 0px;
@@ -17,8 +15,6 @@
 	padding: 0px 10px 0px 10px;
 	background-image: url(compat/arrow-button-bg.png);
 }
-
-/* Round Corner */
 .mblRoundCorner {
 	background-color: black;
 	height: 1px;
@@ -60,7 +56,6 @@
 .mblRoundCorner5T {
 	margin: 0px 1px;
 }
-
 .mblRoundCorner0B {
 	height: 0px;
 }
@@ -82,12 +77,9 @@
 	background-color: #ADAAAD;
 	margin: 0px 5px;
 }
-
-/* mbl.widget.ListItem */
-*html li.mblListItem.mblVariableHeight { /* IE6 hack */
+*html li.mblListItem.mblVariableHeight { 
 	height: 0;
 }
-
 .mblListItem .mblArrow {
 	border-style: none;
 	width: 9px;
@@ -97,13 +89,9 @@
 .mblItemSelected .mblArrow {
 	background-image: url(compat/white-arrow.png);
 }
-
-/* dojox.mobile.TabBarButton */
 .dj_ie6 .mblTabBarButtonDiv, .dj_ie7 .mblTabBarButtonDiv {
 	left: auto;
 }
-
-/* Switch */
 .mblSwitchInner {
 	width: 100px;
 }
@@ -158,7 +146,6 @@
 	margin: 0px 0px;
 	border-width: 0px 1px;
 }
-
 .mblSwitchCorner1B {
 	background-color: #FBFBFB;
 	margin: 0px 0px;
@@ -174,7 +161,6 @@
 	margin: 0px 1px;
 	border-width: 0px;
 }
-
 .mblSwitchBgLeft .mblSwitchCorner1T {
 	border-width: 0px 2px;
 	background-color: #00A600;
@@ -185,7 +171,6 @@
 .mblSwitchBgLeft .mblSwitchCorner3T {
 	background-color: #00A600;
 }
-
 .mblSwitchBgLeft .mblSwitchCorner1B {
 	background-color: #00D700;
 }
@@ -195,7 +180,6 @@
 .mblSwitchBgLeft .mblSwitchCorner3B {
 	background-color: #00D700;
 }
-
 .mblSwitchText {
 	height: 21px;
 	line-height: 21px;
@@ -209,21 +193,15 @@
 	left: 35px;
 	border-right: 1px solid #848684;
 }
-
-/* Icon Content Heading */
 .mblIconContentHeading {
 	background-image: url(compat/icon-content-heading-bg.png);
 }
-
-/* dojox.mobile.Button */
 .mblBlueButton {
 	background-image: url(compat/blue-button-bg.png);
 }
 .mblBlueButtonSelected {
 	background-image: url(compat/blue-button-sel-bg.png);
 }
-
-/* Tab Container */
 .mblTabPanelHeader {
 }
 .mblTabButton {
@@ -232,7 +210,7 @@
 .mblTabButtonSelected {
 	background-image: url(compat/tab-sel-button-bg.png);
 }
-*html .mblTabButton { /* IE6 hack */
+*html .mblTabButton { 
 	behavior: expression(
 		(function(el){
 			if(!el.previousSibling)
@@ -241,8 +219,6 @@
 		})(this)
 	);
 }
-
-/* Progress Indicator */
 .mblProg {
 	position: absolute;
 	top: 0px;

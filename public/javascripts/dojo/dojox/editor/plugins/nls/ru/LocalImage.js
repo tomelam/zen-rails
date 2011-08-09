@@ -1,11 +1,1 @@
-({
-	insertImageTitle: "Вставить изображение",
-	url: "Изображение",
-	browse: "Обзор...",
-	text: "Описание",
-	set: "Вставить",
-	invalidMessage: "Недопустимый тип файла изображения",
-	prePopuTextUrl: "Введите URL изображения",
-	prePopuTextBrowse: " или выберите локальный файл."
-})
-
+({"set":"Вставить","text":"Описание","insertImageTitle":"Вставить изображение","invalidMessage":"Недопустимый тип файла изображения","prePopuTextBrowse":" или выберите локальный файл.","browse":"Обзор...","prePopuTextUrl":"Введите URL изображения","url":"Изображение"})

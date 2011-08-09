@@ -1,4 +1,1 @@
-({
-	"blockquote": "Idézet"
-})
-
+({"blockquote":"Idézet"})

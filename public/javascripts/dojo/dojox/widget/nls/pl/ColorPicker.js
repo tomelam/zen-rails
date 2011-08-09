@@ -1,12 +1,1 @@
-({
-redLabel: "c",
-greenLabel: "z",
-blueLabel: "n",
-hueLabel: "barwa",
-saturationLabel: "nas.",
-valueLabel: "jas.", /* aka intensity or brightness */
-hexLabel: "szesnastkowe",
-huePickerTitle: "Selektor barwy",
-saturationPickerTitle: "Selektor nasycenia"
-})
-
+({"saturationPickerTitle":"Selektor nasycenia","valueLabel":"jas.","blueLabel":"n","saturationLabel":"nas.","greenLabel":"z","redLabel":"c","hueLabel":"barwa","hexLabel":"szesnastkowe","huePickerTitle":"Selektor barwy","degLabel":"°"})

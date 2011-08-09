@@ -1,9 +1,1 @@
-({
-	insertAnchor: "Indsæt anker",
-	title: "Ankeregenskaber",
-	anchor: "Navn:",
-	text: "Beskrivelse:",
-	set: "Definér",
-	cancel: "Annullér"
-})
-
+({"set":"Definér","insertAnchor":"Indsæt anker","title":"Ankeregenskaber","text":"Beskrivelse:","cancel":"Annullér","anchor":"Navn:"})

@@ -1,11 +1,1 @@
-({
-	insertImageTitle: "Insérer une image",
-	url: "Image",
-	browse: "Parcourir...",
-	text: "Description",
-	set: "Insérer",
-	invalidMessage: "Type de fichier image non valide",
-	prePopuTextUrl: "Entrez une URL d'image",
-	prePopuTextBrowse: " ou sélectionnez un fichier local."
-})
-
+({"set":"Insérer","text":"Description","insertImageTitle":"Insérer une image","invalidMessage":"Type de fichier image non valide","prePopuTextBrowse":" ou sélectionnez un fichier local.","browse":"Parcourir...","prePopuTextUrl":"Entrez une URL d'image","url":"Image"})

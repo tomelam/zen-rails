@@ -1,4 +1,1 @@
-({
-	insertEntity: "Simge Ekle"
-})
-
+({"insertEntity":"Simge Ekle"})

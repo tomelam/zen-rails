@@ -1,6 +1,12 @@
-define("dijit/form/MappedTextBox", ["dojo", "dijit", "dijit/form/ValidationTextBox"], function(dojo, dijit) {
+/*
+	Copyright (c) 2004-2011, The Dojo Foundation All Rights Reserved.
+	Available via Academic Free License >= 2.1 OR the modified BSD license.
+	see: http://dojotoolkit.org/license for details
+*/
 
 
-
-return dijit.form.MappedTextBox;
-});
+if(!dojo._hasResource["dijit.form.MappedTextBox"]){
+dojo._hasResource["dijit.form.MappedTextBox"]=true;
+dojo.provide("dijit.form.MappedTextBox");
+dojo.require("dijit.form.ValidationTextBox");
+}

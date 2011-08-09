@@ -1,9 +1,1 @@
-({
-	insertAnchor: "Anker invoegen",
-	title: "Ankereigenschappen",
-	anchor: "Naam:",
-	text: "Beschrijving:",
-	set: "Instellen",
-	cancel: "Annuleren"
-})
-
+({"set":"Instellen","insertAnchor":"Anker invoegen","title":"Ankereigenschappen","text":"Beschrijving:","cancel":"Annuleren","anchor":"Naam:"})

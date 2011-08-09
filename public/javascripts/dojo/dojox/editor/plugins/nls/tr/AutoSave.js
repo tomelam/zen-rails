@@ -1,14 +1,1 @@
-({
-	"saveLabel": "Kaydet",
-	"saveSettingLabelOn": "Otomatik Kaydetme Aralığını Ayarla...",
-	"saveSettingLabelOff": "Otomatik Kaydetmeyi Kapat",
-	"saveSettingdialogTitle": "Otomatik Kaydet",
-	"saveSettingdialogDescription": "Otomatik Kaydetme Aralığını Belirt",
-	"saveSettingdialogParamName": "Otomatik Kaydetme Aralığı",
-	"saveSettingdialogParamLabel": "dak",
-	"saveSettingdialogButtonOk": "Aralığı Ayarla",
-	"saveSettingdialogButtonCancel": "İptal",
-	"saveMessageSuccess": "${0} konumuna kaydedildi",
-	"saveMessageFail": "${0} konumuna kaydedilemedi"
-})
-
+({"saveLabel":"Kaydet","saveSettingdialogTitle":"Otomatik Kaydet","saveSettingdialogButtonOk":"Aralığı Ayarla","saveMessageSuccess":"${0} konumuna kaydedildi","saveSettingdialogButtonCancel":"İptal","saveSettingdialogDescription":"Otomatik Kaydetme Aralığını Belirt","saveSettingLabelOn":"Otomatik Kaydetme Aralığını Ayarla...","saveSettingdialogParamLabel":"dak","saveSettingdialogParamName":"Otomatik Kaydetme Aralığı","saveMessageFail":"${0} konumuna kaydedilemedi","saveSettingLabelOff":"Otomatik Kaydetmeyi Kapat"})

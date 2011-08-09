@@ -1,7 +1,1 @@
-({
-	doNew: "[nový]",
-	edit: "[upraviť]",
-	save: "[uložiť]",
-	cancel: "[zrušiť]"
-})
-
+({"edit":"[upraviť]","save":"[uložiť]","cancel":"[zrušiť]","doNew":"[nový]"})

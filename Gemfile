@@ -31,5 +31,10 @@ gem 'sqlite3-ruby', :require => 'sqlite3'
 
 gem 'heroku'
 
+# Required for couchrest:
 gem 'couchrest'
 gem 'validatable'
+gem 'json'
+
+# Required for activecouch:
+gem 'rspec'

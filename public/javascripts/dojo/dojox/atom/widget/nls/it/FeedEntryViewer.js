@@ -1,11 +1,1 @@
-({
-	displayOptions: "[visualizza opzioni]",
-	title: "Titolo",
-	authors: "Autori",
-	contributors: "Collaboratori",
-	id: "ID",
-	close: "[chiudi]",
-	updated: "Aggiornato",
-	summary: "Riepilogo",
-	content: "Indice"
-})
+({"close":"[chiudi]","title":"Titolo","authors":"Autori","summary":"Riepilogo","content":"Indice","contributors":"Collaboratori","updated":"Aggiornato","displayOptions":"[visualizza opzioni]","id":"ID"})

@@ -1,10 +1,1 @@
-({
-	"nodeActions": "${nodeName} - Ενέργειες",
-	"selectContents": "Επιλογή περιεχομένων",
-	"selectElement": "Επιλογή στοιχείου",
-	"deleteElement": "Διαγραφή στοιχείου",
-	"deleteContents": "Διαγραφή περιεχομένων",
-	"moveStart": "Μετακίνηση δρομέα στην αρχή",
-	"moveEnd": "Μετακίνηση δρομέα στο τέλος"
-})
-
+({"selectContents":"Επιλογή περιεχομένων","deleteElement":"Διαγραφή στοιχείου","moveEnd":"Μετακίνηση δρομέα στο τέλος","deleteContents":"Διαγραφή περιεχομένων","nodeActions":"${nodeName} - Ενέργειες","selectElement":"Επιλογή στοιχείου","moveStart":"Μετακίνηση δρομέα στην αρχή"})

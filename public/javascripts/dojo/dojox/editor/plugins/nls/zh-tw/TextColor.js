@@ -1,4 +1,1 @@
-({
-	"setButtonText": "設定",
-	"cancelButtonText": "取消"
-})
+({"setButtonText":"設定","cancelButtonText":"取消"})

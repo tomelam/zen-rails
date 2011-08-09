@@ -1,7 +1,1 @@
-({
-	doNew: "[nowy]",
-	edit: "[edytuj]",
-	save: "[zapisz]",
-	cancel: "[anuluj]"
-})
-
+({"edit":"[edytuj]","save":"[zapisz]","cancel":"[anuluj]","doNew":"[nowy]"})

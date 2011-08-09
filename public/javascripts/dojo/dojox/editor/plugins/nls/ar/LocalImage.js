@@ -1,11 +1,1 @@
-({
-	insertImageTitle: "ادراج صورة",
-	url: "صورة",
-	browse: "استعراض...",
-	text: "الوصف",
-	set: "‏ادراج‏",
-	invalidMessage: "نوع ملف صور غير صحيح",
-	prePopuTextUrl: "ادخل عنوان URL لصورة",
-	prePopuTextBrowse: " أو تصفح الى ملف محلي."
-})
-
+({"set":"‏ادراج‏","text":"الوصف","insertImageTitle":"ادراج صورة","invalidMessage":"نوع ملف صور غير صحيح","prePopuTextBrowse":" أو تصفح الى ملف محلي.","browse":"استعراض...","prePopuTextUrl":"ادخل عنوان URL لصورة","url":"صورة"})

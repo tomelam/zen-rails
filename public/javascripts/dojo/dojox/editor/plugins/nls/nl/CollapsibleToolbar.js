@@ -1,5 +1,1 @@
-({
-	"collapse": "Editor-werkbalk samenvouwen",
-	"expand": "Editor-werkbalk uitvouwen"
-})
-
+({"collapse":"Editor-werkbalk samenvouwen","expand":"Editor-werkbalk uitvouwen"})

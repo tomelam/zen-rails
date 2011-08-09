@@ -1,6 +1,1 @@
-({
-next: "Următor",
-previous: "Anterior",
-done: "Gata"
-})
-
+({"next":"Următor","done":"Gata","previous":"Anterior"})

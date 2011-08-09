@@ -1,17 +1,1 @@
-({
-	widgetLabel: "Groepsgewijze spellingcontrole",
-	unfound: "Niet gevonden",
-	skip: "Overslaan",
-	skipAll: "Alle overslaan",
-	toDic: "Toevoegen aan woordenboek",
-	suggestions: "Suggesties",
-	replace: "Vervangen",
-	replaceWith: "Vervangen door",
-	replaceAll: "Alle vervangen",
-	cancel: "Annuleren",
-	msg: "Geen spelfouten gevonden",
-	iSkip: "Deze overslaan",
-	iSkipAll: "Al deze overslaan",
-	iMsg: "Geen spellingsuggesties"
-})
-
+({"cancel":"Annuleren","toDic":"Toevoegen aan woordenboek","skip":"Overslaan","iMsg":"Geen spellingsuggesties","replaceAll":"Alle vervangen","widgetLabel":"Groepsgewijze spellingcontrole","skipAll":"Alle overslaan","suggestions":"Suggesties","iSkipAll":"Al deze overslaan","replaceWith":"Vervangen door","msg":"Geen spelfouten gevonden","replace":"Vervangen","unfound":"Niet gevonden","iSkip":"Deze overslaan"})

@@ -1,5 +1,1 @@
-({
-name: "Nom",
-path: "Chemin",
-size: "Taille (en octets)"
-})
+({"name":"Nom","size":"Taille (en octets)","path":"Chemin"})

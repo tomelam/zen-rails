@@ -1,10 +1,1 @@
-({
-	"nodeActions": "${nodeName} - Toiminnot",
-	"selectContents": "Valitse sisältö",
-	"selectElement": "Valitse elementti",
-	"deleteElement": "Poista elementti",
-	"deleteContents": "Poista sisältö",
-	"moveStart": "Siirrä kohdistin alkuun",
-	"moveEnd": "Siirrä kohdistin loppuun"
-})
-
+({"selectContents":"Valitse sisältö","deleteElement":"Poista elementti","moveEnd":"Siirrä kohdistin loppuun","deleteContents":"Poista sisältö","nodeActions":"${nodeName} - Toiminnot","selectElement":"Valitse elementti","moveStart":"Siirrä kohdistin alkuun"})

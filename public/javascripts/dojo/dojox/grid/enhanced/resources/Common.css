@@ -10,7 +10,6 @@
 .dojoxGridInProgress {
 	cursor:progress;
 }
-/* Indirect Selection */
 .dojoxGridRowSelectorStatusText{
 	visibility:hidden;
 }

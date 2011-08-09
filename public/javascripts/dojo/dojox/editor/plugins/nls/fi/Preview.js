@@ -1,4 +1,1 @@
-({
-	"preview": "Esikatselu"
-})
-
+({"preview":"Esikatselu"})

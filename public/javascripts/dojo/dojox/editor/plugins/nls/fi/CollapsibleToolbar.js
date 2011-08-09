@@ -1,5 +1,1 @@
-({
-	"collapse": "Pienennä muokkausohjelman työkalurivi",
-	"expand": "Laajenna muokkausohjelman työkalurivi"
-})
-
+({"collapse":"Pienennä muokkausohjelman työkalurivi","expand":"Laajenna muokkausohjelman työkalurivi"})

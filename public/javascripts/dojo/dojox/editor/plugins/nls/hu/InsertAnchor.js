@@ -1,9 +1,1 @@
-({
-	insertAnchor: "Horgony beszúrása",
-	title: "Horgony tulajdonságai",
-	anchor: "Név:",
-	text: "Leírás:",
-	set: "Beállítás",
-	cancel: "Mégse"
-})
-
+({"set":"Beállítás","insertAnchor":"Horgony beszúrása","title":"Horgony tulajdonságai","text":"Leírás:","cancel":"Mégse","anchor":"Név:"})

@@ -1,18 +1,1 @@
-({
-	"descTemplate": "${2} - ${3} / ${1} ${0}",
-	"firstTip": "İlk Sayfa",
-	"lastTip": "Son Sayfa",
-	"nextTip": "Sonraki Sayfa",
-	"prevTip": "Önceki Sayfa",
-	"itemTitle": "öğeler",
-	"pageStepLabelTemplate": "Sayfa ${0}",
-	"pageSizeLabelTemplate": "Sayfa başına ${0} öğe",
-	"allItemsLabelTemplate": "Tüm öğeler",
-	"gotoButtonTitle": "Belli bir sayfaya git",
-	"dialogTitle": "Sayfaya Git",
-	"dialogIndication": "Sayfa numarasını belirt",
-	"pageCountIndication": " (${0} sayfa)",
-	"dialogConfirm": "Git",
-	"dialogCancel": "İptal"
-})
-
+({"gotoButtonTitle":"Belirli bir sayfaya git","prevTip":"Önceki Sayfa","pageCountIndication":" (${0} sayfa)","pageStepLabelTemplate":"Sayfa ${0}","descTemplate":"${2} - ${3} / ${1} ${0}","lastTip":"Son Sayfa","nextTip":"Sonraki Sayfa","pageSizeLabelTemplate":"Sayfa başına ${0} öğe","dialogCancel":"İptal","itemTitle":"öğe","dialogConfirm":"Git","firstTip":"İlk Sayfa","allItemsLabelTemplate":"Tüm öğeler","dialogIndication":"Sayfa numarasını belirtin","dialogTitle":"Sayfaya Git"})

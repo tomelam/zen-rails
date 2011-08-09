@@ -1,9 +1,1 @@
-({
-	insertAnchor: "Wstaw zakotwiczenie",
-	title: "Właściwości zakotwiczenia",
-	anchor: "Nazwa:",
-	text: "Opis:",
-	set: "Ustaw",
-	cancel: "Anuluj"
-})
-
+({"set":"Ustaw","insertAnchor":"Wstaw zakotwiczenie","title":"Właściwości zakotwiczenia","text":"Opis:","cancel":"Anuluj","anchor":"Nazwa:"})

@@ -1,14 +1,1 @@
-({
-	"saveLabel": "Tallenna",
-	"saveSettingLabelOn": "Aseta automaattisen tallennuksen väli...",
-	"saveSettingLabelOff": "Ota automaattinen tallennus pois käytöstä",
-	"saveSettingdialogTitle": "Automaattinen tallennus",
-	"saveSettingdialogDescription": "Määritä automaattisen tallennuksen väli",
-	"saveSettingdialogParamName": "Automaattisen tallennuksen väli",
-	"saveSettingdialogParamLabel": "min",
-	"saveSettingdialogButtonOk": "Aseta väli",
-	"saveSettingdialogButtonCancel": "Peruuta",
-	"saveMessageSuccess": "Tallennusaika ${0}",
-	"saveMessageFail": "Tallennus epäonnistui ${0}"
-})
-
+({"saveLabel":"Tallenna","saveSettingdialogTitle":"Automaattinen tallennus","saveSettingdialogButtonOk":"Aseta väli","saveMessageSuccess":"Tallennusaika ${0}","saveSettingdialogButtonCancel":"Peruuta","saveSettingdialogDescription":"Määritä automaattisen tallennuksen väli","saveSettingLabelOn":"Aseta automaattisen tallennuksen väli...","saveSettingdialogParamLabel":"min","saveSettingdialogParamName":"Automaattisen tallennuksen väli","saveMessageFail":"Tallennus epäonnistui ${0}","saveSettingLabelOff":"Ota automaattinen tallennus pois käytöstä"})

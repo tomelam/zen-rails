@@ -1,5 +1,1 @@
-({
-name: "Nimi",
-path: "Polku",
-size: "Koko (tavuina)"
-})
+({"name":"Nimi","size":"Koko (tavuina)","path":"Polku"})

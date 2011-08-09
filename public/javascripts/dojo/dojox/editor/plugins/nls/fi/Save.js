@@ -1,4 +1,1 @@
-({
-	"save": "Tallenna"
-})
-
+({"save":"Tallenna"})

@@ -1,6 +1,1 @@
-({
-	doNew: "[új]",
-	edit: "[szerkesztés]",
-	save: "[mentés]",
-	cancel: "[mégse]"
-})
+({"edit":"[szerkesztés]","save":"[mentés]","cancel":"[mégse]","doNew":"[új]"})

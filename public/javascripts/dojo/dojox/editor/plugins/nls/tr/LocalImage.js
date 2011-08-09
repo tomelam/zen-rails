@@ -1,11 +1,1 @@
-({
-	insertImageTitle: "Resim Ekle",
-	url: "Resim",
-	browse: "Göz at...",
-	text: "Açıklama",
-	set: "Ekle",
-	invalidMessage: "Geçersiz resim dosyası tipi",
-	prePopuTextUrl: "Bir resim URL'si girin",
-	prePopuTextBrowse: " ya da yerel bir dosyaya göz atın."
-})
-
+({"set":"Ekle","text":"Açıklama","insertImageTitle":"Resim Ekle","invalidMessage":"Geçersiz resim dosyası tipi","prePopuTextBrowse":" ya da yerel bir dosyaya göz atın.","browse":"Göz at...","prePopuTextUrl":"Bir resim URL'si girin","url":"Resim"})

@@ -1,4 +1,1 @@
-({
-	"blockquote": "Cita en bloque"
-})
-
+({"blockquote":"Cita en bloque"})

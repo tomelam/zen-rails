@@ -1,18 +1,1 @@
-({
-	"descTemplate": "${2} - ${3} von ${1} ${0}",
-	"firstTip": "Erste Seite",
-	"lastTip": "Letzte Seite",
-	"nextTip": "Nächste Seite",
-	"prevTip": "Vorherige Seite",
-	"itemTitle": "Elemente",
-	"pageStepLabelTemplate": "Seite ${0}",
-	"pageSizeLabelTemplate": "${0} Elemente pro Seite",
-	"allItemsLabelTemplate": "Alle Elemente",
-	"gotoButtonTitle": "Zu einer bestimmten Seite wechseln",
-	"dialogTitle": "Zur Seite wechseln",
-	"dialogIndication": "Seitenzahl angeben",
-	"pageCountIndication": " (${0} Seiten)",
-	"dialogConfirm": "Start",
-	"dialogCancel": "Abbrechen"
-})
-
+({"gotoButtonTitle":"Eine bestimmte Seite aufrufen","prevTip":"Vorherige Seite","pageCountIndication":" (${0} Seiten)","pageStepLabelTemplate":"Seite ${0}","descTemplate":"${2} - ${3} von ${1} ${0}","lastTip":"Letzte Seite","nextTip":"Nächste Seite","pageSizeLabelTemplate":"${0} Elemente pro Seite","dialogCancel":"Abbrechen","itemTitle":"Elemente","dialogConfirm":"Start","firstTip":"Erste Seite","allItemsLabelTemplate":"Alle Elemente","dialogIndication":"Geben Sie die Seitenzahl an.","dialogTitle":"Zu Seite"})

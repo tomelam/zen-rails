@@ -1,10 +1,1 @@
-({
-	"nodeActions": "${nodeName}-åtgärder",
-	"selectContents": "Välj innehåll",
-	"selectElement": "Välj element",
-	"deleteElement": "Ta bort element",
-	"deleteContents": "Ta bort innehåll",
-	"moveStart": "Flytta markören till början",
-	"moveEnd": "Flytta markören till slutet"
-})
-
+({"selectContents":"Välj innehåll","deleteElement":"Ta bort element","moveEnd":"Flytta markören till slutet","deleteContents":"Ta bort innehåll","nodeActions":"${nodeName}-åtgärder","selectElement":"Välj element","moveStart":"Flytta markören till början"})

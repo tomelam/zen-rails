@@ -1,9 +1,1 @@
-({
-	insertAnchor: "Inserare ancoră",
-	title: "Proprietăţi ancoră",
-	anchor: "Nume:",
-	text: "Descriere:",
-	set: "Setare",
-	cancel: "Anulare"
-})
-
+({"set":"Setare","insertAnchor":"Inserare ancoră","title":"Proprietăţi ancoră","text":"Descriere:","cancel":"Anulare","anchor":"Nume:"})

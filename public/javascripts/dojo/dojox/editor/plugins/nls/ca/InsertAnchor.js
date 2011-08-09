@@ -1,9 +1,1 @@
-({
-	insertAnchor: "Insereix una àncora",
-	title: "Propietats de l'àncora",
-	anchor: "Nom:",
-	text: "Descripció:",
-	set: "Defineix",
-	cancel: "Cancel·la"
-})
-
+({"set":"Defineix","insertAnchor":"Insereix una àncora","title":"Propietats de l'àncora","text":"Descripció:","cancel":"Cancel·la","anchor":"Nom:"})

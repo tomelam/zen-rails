@@ -1,4 +1,1 @@
-({
-	"pageBreak": "Sayfa Sonu"
-})
-
+({"pageBreak":"Sayfa Sonu"})

@@ -1,11 +1,13 @@
-/* filter bar */
+
 .dojoxGridRtl .dojoxGridFBarStatus {
 	margin-left: 0;
 	margin-right: 9px;
+	float: right;
 }
 .dojoxGridRtl .dojoxGridFBarClearFilterBtn {
 	margin-left: 0;
 	margin-right: 10px;
+	float: right;
 }
 .dojoxGridRtl .dojoxGridFBarCloseBtn {
 	margin: 0 0 0 4px;
@@ -15,7 +17,6 @@
 	left: 2px;
 	right: auto;
 }
-/* filter def dialog */
 .dijitRtl .dojoxGridFDPaneRelation {
 	margin: 0 4px 3px 0;
 }  
@@ -43,8 +44,6 @@
 	margin-left: 0;
 	margin-right: 4px;
 }
-
-/* status tip */
 .dijitRtl .dojoxGridFStatusTipTitle {
 	margin-left: 1em;
 	margin-right: 0;
@@ -57,18 +56,13 @@
 	left: 0;
 	right: auto;
 }
-
-/* bool value box */
 .dijitRtl .dojoxGridTrueBox,
 .dijitRtl .dojoxGridFalseBox {
 	float: right;
 }
-
-/* For Claro */
 .claro .dojoxGridRtl .dojoxGridFBar {
 	border-right: 1px solid white;
 }
-
 .claro .dijitRtl .dojoxGridFStatusTip th div {
 	border-left: 1px solid #BCBCBC;
 	border-right: 1px solid white;

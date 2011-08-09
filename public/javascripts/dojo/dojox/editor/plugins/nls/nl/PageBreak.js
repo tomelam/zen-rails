@@ -1,4 +1,1 @@
-({
-	"pageBreak": "Paginaeinde"
-})
-
+({"pageBreak":"Paginaeinde"})

@@ -1,14 +1,1 @@
-({
-	"saveLabel": "Сақтау",
-	"saveSettingLabelOn": "Автосақтау аралығын орнату...",
-	"saveSettingLabelOff": "Автосақтауды өшіру",
-	"saveSettingdialogTitle": "Автосақтау",
-	"saveSettingdialogDescription": "Автосақтау аралығын көрсету",
-	"saveSettingdialogParamName": "Автосақтау аралығы",
-	"saveSettingdialogParamLabel": "мин",
-	"saveSettingdialogButtonOk": "Аралықты орнату",
-	"saveSettingdialogButtonCancel": "Болдырмау",
-	"saveMessageSuccess": "${0} сақталды",
-	"saveMessageFail": "${0} сақталмады"
-})
-
+({"saveLabel":"Сақтау","saveSettingdialogTitle":"Автосақтау","saveSettingdialogButtonOk":"Аралықты орнату","saveMessageSuccess":"${0} сақталды","saveSettingdialogButtonCancel":"Болдырмау","saveSettingdialogDescription":"Автосақтау аралығын көрсету","saveSettingLabelOn":"Автосақтау аралығын орнату...","saveSettingdialogParamLabel":"мин","saveSettingdialogParamName":"Автосақтау аралығы","saveMessageFail":"${0} сақталмады","saveSettingLabelOff":"Автосақтауды өшіру"})

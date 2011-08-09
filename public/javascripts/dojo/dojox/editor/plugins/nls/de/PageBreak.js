@@ -1,4 +1,1 @@
-({
-	"pageBreak": "Seitenumbruch"
-})
-
+({"pageBreak":"Seitenumbruch"})

@@ -1,3 +1,1 @@
-({
-	deleteButton: "[Poista]"
-})
+({"deleteButton":"[Poista]"})

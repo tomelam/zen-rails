@@ -1,6 +1,1 @@
-({
-	add: "Қосу",
-	addAuthor: "Авторды қосу",
-	addContributor: "Салымшыны қосу"
-})
-
+({"add":"Қосу","addAuthor":"Авторды қосу","addContributor":"Салымшыны қосу"})

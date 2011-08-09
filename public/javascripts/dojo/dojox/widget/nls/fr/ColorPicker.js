@@ -1,7 +1,1 @@
-({
-greenLabel: "v",
-hueLabel: "t",
-huePickerTitle: "Sélecteur de teinte",
-saturationPickerTitle: "Sélecteur de saturation"
-})
-
+({"hueLabel":"t","saturationPickerTitle":"Sélecteur de saturation","huePickerTitle":"Sélecteur de teinte","greenLabel":"v","valueLabel":"v","blueLabel":"b","saturationLabel":"s","redLabel":"r","hexLabel":"hex","degLabel":"°"})

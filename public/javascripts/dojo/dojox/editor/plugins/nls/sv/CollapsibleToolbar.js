@@ -1,5 +1,1 @@
-({
-	"collapse": "Komprimera redigerarverktygsfältet",
-	"expand": "Expandera redigerarverktygsfältet"
-})
-
+({"collapse":"Komprimera redigerarverktygsfältet","expand":"Expandera redigerarverktygsfältet"})

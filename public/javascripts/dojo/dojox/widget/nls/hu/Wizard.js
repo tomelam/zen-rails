@@ -1,5 +1,1 @@
-({
-next: "Következő",
-previous: "Előző",
-done: "Kész"
-})
+({"next":"Következő","done":"Kész","previous":"Előző"})

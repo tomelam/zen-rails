@@ -1,6 +1,1 @@
-({
-	doNew: "[Nytt]",
-	edit: "[Redigera]",
-	save: "[Spara]",
-	cancel: "[Avbryt]"
-})
+({"edit":"[Redigera]","save":"[Spara]","cancel":"[Avbryt]","doNew":"[Nytt]"})

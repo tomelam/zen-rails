@@ -1,11 +1,1 @@
-({
-	displayOptions: "[display options]",
-	title: "Title",
-	authors: "Authors",
-	contributors: "Contributors",
-	id: "ID",
-	close: "[close]",
-	updated: "Updated",
-	summary: "Summary",
-	content: "Content"
-})
+({"close":"[close]","title":"Title","authors":"Authors","summary":"Summary","content":"Content","contributors":"Contributors","updated":"Updated","displayOptions":"[display options]","id":"ID"})

@@ -1,3 +1,1 @@
-({
-	"blockquote": "块引用"
-})
+({"blockquote":"块引用"})

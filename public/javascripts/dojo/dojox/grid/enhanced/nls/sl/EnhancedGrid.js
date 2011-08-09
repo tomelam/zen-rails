@@ -1,8 +1,1 @@
-({
-	singleSort: "Posamezna razvrstitev",
-	nestedSort: "Ugnezdena razvrstitev",
-	ascending: "Naraščajoče",
-	descending: "Padajoče",
-	unsorted: "Ne razvrsti tega stolpca"
-})
-
+({"singleSort":"Enostavno razvrščanje","indirectSelectionRadio":"Vrstica ${0}, izbira enega elementa, okence z izbirnim gumbom","ascending":"Naraščajoče","indirectSelectionCheckBox":"Vrstica ${0}, izbira več elementov, okence s potrditvenimi polji","selectAll":"Izberi vse","descending":"Padajoče","nestedSort":"Ugnezdeno razvrščanje","unsorted":"Ne razvrščaj tega stolpca","sortingState":"${0} - ${1}"})

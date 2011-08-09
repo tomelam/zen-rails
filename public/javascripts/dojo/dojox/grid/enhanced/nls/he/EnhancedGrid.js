@@ -1,8 +1,1 @@
-({
-	singleSort: "מיון יחיד",
-	nestedSort: "מיון מקונן",
-	ascending: "עולה",
-	descending: "יורד",
-	unsorted: "לא למיין עמודה זו"
-})
-
+({"singleSort":"מיון יחיד","indirectSelectionRadio":"שורה ${0}, בחירה יחידה, תיבת בחירה","ascending":"עולה","indirectSelectionCheckBox":"שורה ${0}, בחירה מרובה, תיבת סימון","selectAll":"בחירת הכל","descending":"יורד","nestedSort":"מיון מקונן","unsorted":"אין למיין עמודה זו","sortingState":"${0} - ${1}"})

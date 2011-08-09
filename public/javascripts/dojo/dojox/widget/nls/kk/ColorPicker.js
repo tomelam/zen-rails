@@ -1,12 +1,1 @@
-({
-redLabel: "r",
-greenLabel: "д",
-blueLabel: "ә",
-hueLabel: "е",
-saturationLabel: "ң",
-valueLabel: "п", /* aka intensity or brightness */
-hexLabel: "алтылық",
-huePickerTitle: "Реңкті іріктеу",
-saturationPickerTitle: "Қанықтықты іріктеу"
-})
-
+({"saturationPickerTitle":"Қанықтықты іріктеу","valueLabel":"п","blueLabel":"ә","saturationLabel":"ң","greenLabel":"д","redLabel":"r","hueLabel":"е","hexLabel":"алтылық","huePickerTitle":"Реңкті іріктеу","degLabel":"°"})

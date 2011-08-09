@@ -1,11 +1,1 @@
-({
-	insertImageTitle: "Сурет кірістіру",
-	url: "Кескін",
-	browse: "Шолу...",
-	text: "Сипаттама",
-	set: "Кірістіру",
-	invalidMessage: "Кескін файлының түрі дұрыс емес",
-	prePopuTextUrl: "Кескіннің URL мекен-жайын енгізіңіз",
-	prePopuTextBrowse: " немесе жергілікті файлға өтіңіз."
-})
-
+({"set":"Кірістіру","text":"Сипаттама","insertImageTitle":"Сурет кірістіру","invalidMessage":"Кескін файлының түрі дұрыс емес","prePopuTextBrowse":" немесе жергілікті файлға өтіңіз.","browse":"Шолу...","prePopuTextUrl":"Кескіннің URL мекен-жайын енгізіңіз","url":"Кескін"})

@@ -1,17 +1,1 @@
-({
-	widgetLabel: "Bundtvis stavekontrol",
-	unfound: "Ikke fundet",
-	skip: "Spring over",
-	skipAll: "Spring alle over",
-	toDic: "Tilføj til ordbog",
-	suggestions: "Forslag",
-	replace: "Erstat",
-	replaceWith: "Erstat med",
-	replaceAll: "Erstat alle",
-	cancel: "Annullér",
-	msg: "Ingen stavefejl fundet",
-	iSkip: "Spring dette over",
-	iSkipAll: "Spring alle disse over",
-	iMsg: "Ingen forslag til stavning"
-})
-
+({"cancel":"Annullér","toDic":"Tilføj til ordbog","skip":"Spring over","iMsg":"Ingen forslag til stavning","replaceAll":"Erstat alle","widgetLabel":"Bundtvis stavekontrol","skipAll":"Spring alle over","suggestions":"Forslag","iSkipAll":"Spring alle disse over","replaceWith":"Erstat med","msg":"Ingen stavefejl fundet","replace":"Erstat","unfound":"Ikke fundet","iSkip":"Spring dette over"})

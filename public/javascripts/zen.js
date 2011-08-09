@@ -566,20 +566,23 @@ zen.init = function() {
 
     var ioIframeGetJson = function() {
 	dojo.io.iframe.send({
-	    //url: "toolbox.json.html",
-	    url: "http://localhost:5984/zen/toolbox",
+	    url: "toolbox.json.html",
+	    //url: "http://localhost:5984/zen/toolbox",
 	    method: "GET",
 	    timeoutSeconds: 5,
 	    preventCache: true,
-	    handleAs: "text",
+	    // handleAs: "text",
+	    handleAs: "json",
 	    handle: function(result, ioArgs){
 		if(!(result instanceof Error)){
 		    console.debug("AJAX call succeeded");
-		    smallToolbox = result.toolbox;
+		    //smallToolbox = result.toolbox;
+		    smallToolbox = result;
 		    zen.group("json iframe");
 		    zen.dir(result);
 		    zen.groupEnd();
-		    zen.renderTree(result.toolbox, zen.body);
+		    //zen.renderTree(result.toolbox, zen.body);
+		    zen.renderTree(result, zen.body);
 		}else{
 		    zen.error("json iframe error");
 		}

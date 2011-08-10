@@ -561,7 +561,7 @@ zen.init = function() {
 	 {label:"AccordionContainer w/ AccordionPanes, each w/ DIV",
 	  onClick:function(){test(tree9)}}, []],
 	["dijit.form.Button",
-	 {label:"AccordionContainer w/ AccordionPanes, each /w DIV",
+	 {label:"AccordionContainer w/ AccordionPanes, each w/ DIV",
 	  onClick:function(){test(tree10)}}, []]]]]];
 
     var ioIframeGetJson = function() {

@@ -10,14 +10,17 @@
       @import "javascripts/dojo/dojox/layout/resources/ResizeHandle.css";
       @import "stylesheets/zen.css";
     </style>
+  </head>
+  <body onload="zen.init()" class="tundra">
+    <form id="contentArrayTest" method="get" enctype="multipart/form-data"
+	  action=""><div/>
+    </form>
+    This is a non-optimized version of Zen. Please allow about 20 - 30
+    seconds for the page to load.
     <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js"
 	    djConfig="parseOnLoad: true, isDebug: true"></script>
     <script type="text/javascript" src="javascripts/new.js"></script>
     <script type="text/javascript" src="javascripts/zen.js"></script>
     <script type="text/javascript" src="javascripts/test.js"></script>
-  </head>
-  <body onload="zen.init()" class="tundra">
-    <form id="contentArrayTest" method="get" enctype="multipart/form-data">
-    </form>
   </body>
 </html>

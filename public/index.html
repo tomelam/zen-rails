@@ -1,13 +1,12 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Zen Notebook</title>
     <style type="text/css">
-      @import "javascripts/dojo/dijit/themes/tundra/tundra.css";
-      @import "javascripts/dojo/dojo/resources/dojo.css";
-      @import "javascripts/dojo/dojox/layout/resources/FloatingPane.css";
-      @import "javascripts/dojo/dojox/layout/resources/ResizeHandle.css";
+      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dijit/themes/tundra/tundra.css";
+      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojo/resources/dojo.css";
+      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojox/layout/resources/FloatingPane.css";
+      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojox/layout/resources/ResizeHandle.css";
       @import "stylesheets/zen.css";
     </style>
   </head>
@@ -15,12 +14,15 @@
     <form id="contentArrayTest" method="get" enctype="multipart/form-data"
 	  action=""><div/>
     </form>
-    This is a non-optimized version of Zen. Please allow about 20 - 30
-    seconds for the page to load.
-    <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js"
+    <script src="https://www.google.com/jsapi?key=ABQIAAAAvmYe20gMb-FECPqg1NBQWhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQHRH-V6rlCGMZcROUUf5124nHP3A"
+	    type="text/javascript"></script>
+    <script type="text/javascript"
 	    djConfig="parseOnLoad: true, isDebug: true"></script>
-    <script type="text/javascript" src="javascripts/new.js"></script>
-    <script type="text/javascript" src="javascripts/zen.js"></script>
-    <script type="text/javascript" src="javascripts/test.js"></script>
+    <script type="text/javascript">
+      google.load("dojo", "1.6.0");
+    </script>
+    <script type="text/javascript" src="javascripts/zen/new.js"></script>
+    <script type="text/javascript" src="javascripts/zen/zen.js"></script>
+    <script type="text/javascript" src="javascripts/zen/test.js"></script>
   </body>
 </html>

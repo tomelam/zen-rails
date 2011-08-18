@@ -16,8 +16,13 @@
     </form>
     <script src="https://www.google.com/jsapi?key=ABQIAAAAvmYe20gMb-FECPqg1NBQWhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQHRH-V6rlCGMZcROUUf5124nHP3A"
 	    type="text/javascript"></script>
-    <script type="text/javascript"
-	    djConfig="parseOnLoad: true, isDebug: true"></script>
+    <script type="text/javascript">
+      djConfig = {
+	  parseOnLoad: true,
+	  isDebug: true,
+	  dojoBlankHtmlUrl:'dojo/resources/blank.html'
+      };
+    </script>
     <script type="text/javascript">
       google.load("dojo", "1.6.0");
     </script>

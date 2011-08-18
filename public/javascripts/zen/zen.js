@@ -486,7 +486,7 @@ zen.createDijit = function(klass, initParms, topNode) {
 		    "A widget can have only one child if it's only HTML.");
 	    }
 	    widget.children = [child];
-	    return widget.setContent(child.domNode); // child is not Dojo widget
+	    return widget.set('content', child.domNode); // child is not Dojo widget
 	};
     };
     widget.destroyCompon = function() {

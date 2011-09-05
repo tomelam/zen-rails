@@ -1,5 +1,7 @@
-var zen = {};
-zen.test = {};
+dojo.provide("zen.zen");
+
+// NOTE: We can't just call dojo.require() in this file because that messes
+// up the loading of this module via dojo.require("zen.zen").
 
 zen.domNodeCompons = [];
 zen.widgets = [];
@@ -400,7 +402,6 @@ zen.clearTheCanvas = function (componsToDestroy, componsToSave) {
 		 });
     //zen.domNodeCompons = [];
     //zen.widgets = [];
-    //zen.test.topCompons = [];
     zen.debug("EXIT clearTheCanvas");
 };
 
@@ -443,7 +444,7 @@ zen.clearTheHierarchyDiagram = function () {
 zen.createDijit = function(klass, initParms, topNode) {
     zen.info("createDijit, klass => " + klass);
     var node = null, widget;
-    dojo.require(klass);
+    dojo.require.apply(null, [klass]); // To get zen to load via require().
     if (topNode) {
 	node = topNode.domNode;
     }
@@ -535,7 +536,7 @@ zen.requireSubtreeDijit = function(treeSpec) {
     zen.info("ENTER requireSubtreeDijits: rule => " + rule + ", componKind => " + componKind);
     zen.debug("createSubtree: treeSpec => " + treeSpec);
     if (rule === 'createDijit') {
-	dojo.require(componKind);
+	dojo.require.apply(null, [componKind]);
     };
 }
 
@@ -578,6 +579,6 @@ zen.init = function() {
     zen.initIRT();
     zen.body = createNew(zen.DomNodeCompon, dojo.body());
     zen.debug("zen.body => " + zen.body + ", zen.body.domNode => " + zen.body.domNode);
-    dojo.require("dojo.io.iframe");
-    dojo.ready(ioIframeGetJson);
+    dojo.require.apply(null, ["dojo.io.iframe"]);
+    dojo.addOnLoad(ioIframeGetJson);
 }

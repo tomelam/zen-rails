@@ -1,4 +1,4 @@
-    zen.test.topCompons = [];
+    topCompons = [];
 
     // Test createNew.
     Foo = function() {
@@ -189,7 +189,7 @@
       title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
-	 {label:"Clear the Canvas",onClick:zen.clearTheCanvas}, []],
+	 {label:"Clear the Canvas",onClick:function(){zen.clearTheCanvas();}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:sayHello}, []],
@@ -211,7 +211,7 @@
       title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
      [["center", {},
        [["dijit.form.Button",
-	 {label:"Clear the Canvas",onClick:zen.clearTheCanvas}, []],
+	 {label:"Clear the Canvas",onClick:function(){zen.clearTheCanvas();}}, []],
 	["br", {}, []],
 	["dijit.form.Button",
 	 {label:"Clear the Canvas",onClick:sayHello}, []],
@@ -300,10 +300,10 @@
 	zen.log("*** Testing creation and diagramming of a tree");
 
 	newComponent = zen.renderTree(tree, zen.body);
-	zen.test.topCompons.push(newComponent);
+	topCompons.push(newComponent);
 	if (zen.debugLevel > 0) {
 	    diagram = diagramTree(newComponent);
-	    zen.test.topCompons.push(diagram);
+	    topCompons.push(diagram);
 	};
 	zen.log("*** Done testing creation and rendering of a tree");
     };

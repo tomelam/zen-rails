@@ -10,7 +10,7 @@
       @import "stylesheets/zen.css";
     </style>
   </head>
-  <body onload="zen.init()" class="tundra">
+  <body onload="zenInit()" class="tundra">
     <form id="contentArrayTest" method="get" enctype="multipart/form-data"
 	  action=""><div/>
     </form>
@@ -20,14 +20,21 @@
       djConfig = {
 	  parseOnLoad: true,
 	  isDebug: true,
-	  dojoBlankHtmlUrl:'dojo/resources/blank.html'
+	  dojoBlankHtmlUrl:'javascripts/dojo/resources/blank.html',
+          baseUrl: "./",
+          modulePaths: { zen: "javascripts/zen" }
       };
     </script>
     <script type="text/javascript">
       google.load("dojo", "1.6.0");
     </script>
+    <script type="text/javascript">
+      zenInit = function() {
+	  dojo.require("zen.zen");
+	  dojo.addOnLoad(function() { zen.init(); });
+      };
+    </script>
     <script type="text/javascript" src="javascripts/zen/new.js"></script>
-    <script type="text/javascript" src="javascripts/zen/zen.js"></script>
     <script type="text/javascript" src="javascripts/zen/test.js"></script>
   </body>
 </html>

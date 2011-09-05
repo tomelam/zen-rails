@@ -1,3 +1,5 @@
+dojo.provide("zen.new");
+
     // Simplification and consolidation of a simulated 'new' operator
     // as given in Chapter 5 of _JavaScript: The Good Parts_, by
     // Douglas Crockford. Courtesy of Eric Bréchemier (on
@@ -19,7 +21,7 @@
     // changed every time the object creator is called. It looks like
     // this could easily be fixed by defining hiddenLink outside of
     // createNew.
-    function createNew() {
+    zen.createNew = function() {
 	// A function to explain the new operator.
 	//   var object = createNew(...);
 	//     is equivalent to
@@ -34,6 +36,8 @@
 	var args = Array.prototype.slice.call(arguments);
 	var constructor = args[0];
 	var constructorArgs = args.slice(1);
+	//zen.debug("createNew: args => " + args + ", constructor => " + constructor + ", constructorArgs => " + constructorArgs);
+	zen.info("ENTER createNew: constructor => " + constructor + ", constructorArgs => " + constructorArgs);
 	
 	// Step 1: Create a new empty object instance linked to the
 	//         prototype of provided constructor.
@@ -53,8 +57,10 @@
 	//         or the created instance.
 	if (typeof instance === 'object') {
 	    // CORRECTED: 'instance' was 'object'.
+	    zen.info("EXIT createNew: returning instance => " + instance);
 	    return instance;
 	} else {
+	    zen.info("EXIT createNew: returning object => " + object);
 	    // CORRECTED: 'object' was 'instance'.
 	    return object;
 	};

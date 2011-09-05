@@ -1,6 +1,7 @@
+    enableTreeDiagram = false; // Flag to enable tree diagramming
     topCompons = [];
 
-    // Test createNew.
+    // Test zen.createNew.
     Foo = function() {
 	var a = 1;
 	return {
@@ -14,7 +15,7 @@
     };
     testObjectCreator = function() {
 	zen.debug(".");
-	f = createNew(Foo);
+	f = zen.createNew(Foo);
 	zen.debug("f.a => " + f.a); // => undefined
 	zen.debug("f.getA() => " + f.getA()); // => 1
 	Bar = function() {
@@ -22,13 +23,13 @@
 	    return 1;
 	}
 	zen.debug(".");
-	b = createNew(Bar);
+	b = zen.createNew(Bar);
 	zen.debug("b.a => " + b.a); // => 1
 	Baz = function(z) {
 	    this.a = z;
 	}
 	zen.debug(".");
-	c = createNew(Baz, 3, 4);
+	c = zen.createNew(Baz, 3, 4);
 	zen.debug("c.a => " + c.a);
     }
     sayHello = function() { alert("Hi!"); }
@@ -238,11 +239,11 @@
 			      backgroundColor:"lightgreen"}},
      []];    
 
-    diagramTree = function(newComponent) {
+    treeDiagram = function(newComponent) {
 	var tblCompon, contentBox, floatingPaneContent;
 	var diagramPaneCompon, floatingPane;
 
-	zen.debug("*** Entering diagramTree");
+	zen.debug("*** Entering treeDiagram");
 	zen.info("############################");
 	zen.info("##### CREATING DIAGRAM #####");
 	zen.info("############################");
@@ -255,7 +256,7 @@
 				      {id:"componTbl"});
 	zen.debug("*** tblCompon => " + tblCompon +
 		  ", tblCompon.domNode => " + tblCompon.domNode);
-	diagramPaneCompon = createNew(zen.DomNodeCompon,
+	diagramPaneCompon = zen.createNew(zen.DomNodeCompon,
 				      dojo.byId("diagramPane"));
 	zen.debug("*** diagramPaneCompon => " + diagramPaneCompon);
 	dojo.require("dijit._base");
@@ -299,11 +300,22 @@
 
 	zen.log("*** Testing creation and diagramming of a tree");
 
-	newComponent = zen.renderTree(tree, zen.body);
-	topCompons.push(newComponent);
-	if (zen.debugLevel > 0) {
-	    diagram = diagramTree(newComponent);
-	    topCompons.push(diagram);
-	};
-	zen.log("*** Done testing creation and rendering of a tree");
+		    zen.walkZenSpec(
+			tree,
+			function() {
+			    zen.requireSubtreeDijit(arguments[0]);
+			});
+		    dojo.addOnLoad(
+			function() {
+			    newComponent = zen.renderTree(tree, zen.body);
+			    topCompons.push(newComponent);
+			    if (enableTreeDiagram) {
+				dojo.require("dojox.layout.FloatingPane");
+				dojo.addOnLoad(function() {
+				    diagram = treeDiagram(newComponent);
+				    topCompons.push(diagram);
+				});
+			    };
+			    zen.log("*** Done testing creation and rendering of a tree");
+			});
     };

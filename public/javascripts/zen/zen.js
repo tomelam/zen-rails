@@ -55,7 +55,7 @@ zen.dir = function() {
 }
 
 zen.DomNodeCompon = function(e) {
-    this.domNode = e;
+    this.domNode = e || null; // "null" reads nicer than "undefined".
     this.stringRep = "[zen.DomNodeCompon " + this.domNode + "]";
     this.children = [];
     this.toString = function () { // Without this, we get '[object Object]'.
@@ -147,7 +147,7 @@ zen.DomNodeCompon.fromDomNode = function (node) {
 //
 // FIXME: Can text nodes have attributes?
 zen.createTextNode = function(text, attributes) {
-    var domNodeCompon = createNew(zen.DomNodeCompon);
+    var domNodeCompon = zen.createNew(zen.DomNodeCompon);
     zen.log("*** zen.createTextNode: text => " + text + ", attributes => " + attributes);
     // FIXME: Use dojo.create, if appropriate.
     var domNode = document.createTextNode(text);
@@ -161,7 +161,7 @@ zen.createTextNode = function(text, attributes) {
 // FIXME: Consider using dojo.fromJSON here for safety.
 zen.createElement = function(kind, attributes) {
     zen.info("ENTER createElement: kind => " + kind);
-    var domNodeCompon = createNew(zen.DomNodeCompon);
+    var domNodeCompon = zen.createNew(zen.DomNodeCompon);
     zen.log("*** zen.createElement: kind => " + kind + ", attributes => " + attributes);
     // FIXME: Use dojo.create.
     var domNode = document.createElement(kind);
@@ -423,7 +423,7 @@ zen.clearTheHierarchyDiagram = function () {
     // have a Zen component so that we can use it. If we already have
     // a widget with that id, we can use that.
     if (!diagramPaneCompon) {
-	diagramPaneCompon = createNew(zen.DomNodeCompon,
+	diagramPaneCompon = zen.createNew(zen.DomNodeCompon,
 				      dojo.byId("diagramPane"));
     }
     var compons = diagramPaneCompon.getChildCompons();
@@ -448,7 +448,7 @@ zen.createDijit = function(klass, initParms, topNode) {
     if (topNode) {
 	node = topNode.domNode;
     }
-    widget = createNew(zen.rule2ref(klass), initParms, node);
+    widget = zen.createNew(zen.rule2ref(klass), initParms, node);
     zen.log("widget => " + widget);
     widget.isDojoWidget = true; // FIXME: Dumb.
     widget.kind = klass;
@@ -568,6 +568,7 @@ zen.init = function() {
 			function() {
 			    zen.renderTree(result, zen.body)
 			    //zen.renderTree(result.toolbox, zen.body);
+			    dojo.style("zenLoadingImg", "display", "none");
 			});
 		}else{
 		    zen.error("json iframe error");
@@ -577,7 +578,7 @@ zen.init = function() {
     }
 
     zen.initIRT();
-    zen.body = createNew(zen.DomNodeCompon, dojo.body());
+    zen.body = zen.createNew(zen.DomNodeCompon, dojo.body());
     zen.debug("zen.body => " + zen.body + ", zen.body.domNode => " + zen.body.domNode);
     dojo.require.apply(null, ["dojo.io.iframe"]);
     dojo.addOnLoad(ioIframeGetJson);

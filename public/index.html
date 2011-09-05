@@ -11,9 +11,10 @@
     </style>
   </head>
   <body onload="zenInit()" class="tundra">
-    <form id="contentArrayTest" method="get" enctype="multipart/form-data"
-	  action=""><div/>
+    <form method="get" enctype="multipart/form-data"
+	  action=""><div></div>
     </form>
+    <img id="zenLoadingImg" src="images/loading.gif" alt="loading"/>
     <script src="https://www.google.com/jsapi?key=ABQIAAAAvmYe20gMb-FECPqg1NBQWhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQHRH-V6rlCGMZcROUUf5124nHP3A"
 	    type="text/javascript"></script>
     <script type="text/javascript">
@@ -24,17 +25,17 @@
           baseUrl: "./",
           modulePaths: { zen: "javascripts/zen" }
       };
-    </script>
-    <script type="text/javascript">
       google.load("dojo", "1.6.0");
-    </script>
-    <script type="text/javascript">
       zenInit = function() {
-	  dojo.require("zen.zen");
-	  dojo.addOnLoad(function() { zen.init(); });
+	  dojo.require("zen.new");
+	  dojo.addOnLoad(function() {
+	      dojo.require("zen.zen");
+	      dojo.addOnLoad(function() {
+		  zen.init();
+	      });
+	  });
       };
     </script>
-    <script type="text/javascript" src="javascripts/zen/new.js"></script>
     <script type="text/javascript" src="javascripts/zen/test.js"></script>
   </body>
 </html>

@@ -1,7 +1,8 @@
 dojo.provide("zen.zen");
 
 // NOTE: We can't just call dojo.require() in this file because that messes
-// up the loading of this module via dojo.require("zen.zen").
+// up the loading of this module via dojo.require("zen.zen"). Instead, we
+// make a call like "dojo.require.apply(null, [klass]);".
 
 zen.domNodeCompons = [];
 zen.widgets = [];

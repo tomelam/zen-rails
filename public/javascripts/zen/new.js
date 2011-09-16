@@ -38,7 +38,8 @@ zen.createNew = function() {
     var args = Array.prototype.slice.call(arguments);
     var constructor = args[0];
     var constructorArgs = args.slice(1);
-    zen.info("ENTER createNew: constructor => " + constructor + ", constructorArgs => " + constructorArgs);
+    zen.debug("ENTER createNew: constructorArgs => " + constructorArgs);
+    zen.debug("  ... constructor => " + constructor);
     
     // Step 1: Create a new empty object instance linked to the
     //         prototype of provided constructor.
@@ -57,10 +58,10 @@ zen.createNew = function() {
     //         or the created instance.
     if (typeof instance === 'object') {
 	// CORRECTED: 'instance' was 'object'.
-	zen.info("EXIT createNew: returning instance => " + instance);
+	zen.debug("EXIT createNew: returning instance => " + instance);
 	return instance;
     } else {
-	zen.info("EXIT createNew: returning object => " + object);
+	zen.debug("EXIT createNew: returning object => " + object);
 	// CORRECTED: 'object' was 'instance'.
 	return object;
     };

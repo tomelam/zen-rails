@@ -1,0 +1,43 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>Zen Notebook</title>
+    <style type="text/css">
+      @import "javascripts/dojo/dijit/themes/tundra/tundra.css";
+      @import "javascripts/dojo/dojo/resources/dojo.css";
+      @import "javascripts/dojo/dojox/layout/resources/FloatingPane.css";
+      @import "javascripts/dojo/dojox/layout/resources/ResizeHandle.css";
+      @import "stylesheets/zen.css";
+    </style>
+  </head>
+  <body onload="zenInit()" class="tundra">
+    <form method="get" enctype="multipart/form-data"
+	  action=""><div></div>
+    </form>
+    <img id="zenLoadingImg" src="images/loading.gif" alt="loading"/>
+    <script type="text/javascript">
+      djConfig = {
+	  parseOnLoad: true,
+	  isDebug: false,
+	  //dojoBlankHtmlUrl:'javascripts/dojo/resources/blank.html',
+          //baseUrl: "./",
+          baseUrl: "./",
+          modulePaths: { dojo: "javascripts/dojo/dojo", dijit: "javascripts/dojo/dijit", dojox: "javascripts/dojo/dojox", zen: "javascripts/zen" }
+      };
+   </script>
+   <script>
+      //google.load("dojo", "1.6.0");
+      zenInit = function() {
+	  dojo.require("zen.new");
+	  dojo.addOnLoad(function() {
+	      dojo.require("zen.zen");
+	      dojo.addOnLoad(function() {
+		  zen.init();
+	      });
+	  });
+      };
+    </script>
+    <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js"></script>
+    <script type="text/javascript" src="javascripts/zen/test.js"></script>
+  </body>
+</html>

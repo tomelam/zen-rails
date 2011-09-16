@@ -255,8 +255,7 @@ treeDiagram = function(newComponent) {
 				  {id:"componTbl"});
     zen.debug("*** tblCompon => " + tblCompon +
 	      ", tblCompon.domNode => " + tblCompon.domNode);
-    diagramPaneCompon = zen.createNew(zen.DomNodeCompon,
-				      dojo.byId("diagramPane"));
+    diagramPaneCompon = zen.createNew(DomNodeCompon, dojo.byId("diagramPane"));
     zen.debug("*** diagramPaneCompon => " + diagramPaneCompon);
     dojo.require("dijit._base");
     floatingPane = dijit.byId("diagramPane");

@@ -29,7 +29,7 @@ testObjectCreator = function() {
     }
     zen.debug(".");
     c = zen.createNew(Baz, 3, 4);
-    zen.debug("c.a => " + c.a);
+    zen.debug("c.a => " + c.a); // => 3
 }
 sayHello = function() { alert("Hi!"); }
 //testObjectCreator();

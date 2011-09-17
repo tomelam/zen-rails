@@ -56,13 +56,16 @@ zen.createNew = function() {
     
     // Step 3: Check the result, and choose whether to return it
     //         or the created instance.
+    return typeof instance === "object" ? instance : object;
+    /*
     if (typeof instance === 'object') {
 	// CORRECTED: 'instance' was 'object'.
-	zen.debug("EXIT createNew: returning instance => " + instance);
+	zen.debug("EXIT createNew: returning instance => %s", instance);
 	return instance;
     } else {
-	zen.debug("EXIT createNew: returning object => " + object);
+	zen.debug("EXIT createNew: returning object => %s", object);
 	// CORRECTED: 'object' was 'instance'.
 	return object;
     };
+    */
 };

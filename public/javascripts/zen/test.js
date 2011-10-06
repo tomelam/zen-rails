@@ -1,5 +1,5 @@
-enableTreeDiagram = false; // Flag to enable tree diagramming
-topCompons = [];
+enableHierarchyDiagram = false; // Flag to enable tree diagramming
+topComponents = [];
 
 // Test zen.createNew.
 Foo = function() {
@@ -12,6 +12,7 @@ Foo = function() {
 	}
     };    
 };
+
 testObjectCreator = function() {
     zen.debug(".");
     f = zen.createNew(Foo);
@@ -236,55 +237,7 @@ var pane =
     ["dijit.layout.ContentPane",
      {id:"workingNode",style:{width:"100%",height:"200px",
 			      backgroundColor:"lightgreen"}},
-     []];    
-
-treeDiagram = function(newComponent) {
-    var tblCompon, contentBox, floatingPaneContent;
-    var diagramPaneCompon, floatingPane;
-
-    zen.debug("*** Entering treeDiagram");
-    zen.info("############################");
-    zen.info("##### CREATING DIAGRAM #####");
-    zen.info("############################");
-    zen.debug("*** dojo.byId('diagramPane') => " +
-	      dojo.byId("diagramPane"));
-    zen.clearTheHierarchyDiagram();
-    // FIXME: tblCompon = zen.createElement("table",
-    //			      {id:"componTbl",class:"boxTable"});
-    tblCompon = zen.createElement("table",
-				  {id:"componTbl"});
-    zen.debug("*** tblCompon => " + tblCompon +
-	      ", tblCompon.domNode => " + tblCompon.domNode);
-    diagramPaneCompon = zen.createNew(DomNodeCompon, dojo.byId("diagramPane"));
-    zen.debug("*** diagramPaneCompon => " + diagramPaneCompon);
-    dojo.require("dijit._base");
-    floatingPane = dijit.byId("diagramPane");
-    if (!floatingPane) {
-	floatingPane = zen.createDijit(
-	    "dojox.layout.FloatingPane",
-	    {title:"Hierarchy of Web Page Components",
-	     style:{backgroundColor:"yellow", zIndex:"10"},
-	     resizable:true},
-	    diagramPaneCompon);
-    };
-    zen.debug("*** Appended diagramPaneCompon");
-    tblCompon.appendMyselfToParent(floatingPane);
-    zen.debug("*** Appended tblCompon");
-
-    zen.boxTable([newComponent], tblCompon);
-    zen.debug("*** Created boxTable");
-    contentBox = dojo.contentBox("componTbl");
-    zen.debug("*** Got contentBox => " + contentBox);
-    floatingPane.startup();
-    zen.debug("*** Started up floatingPane");
-    floatingPane.resize({t:30, l:30, w:contentBox.w+5, h:contentBox.h+31});
-    zen.debug("*** Resized floatingPane");
-    floatingPaneContent = dojo.query(
-	"#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
-    zen.debug("*** floatingPaneContent => " + floatingPaneContent);
-    dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
-    return floatingPane;
-};
+     []];
 
 //FIXME: Should probably be broken into 2 parts: 1 to test the
 //creation of a tree & 1 to fill out the hierarchy of web page
@@ -294,26 +247,20 @@ treeDiagram = function(newComponent) {
 //conflicting element, so trying to delete a tree and add it or
 //another using the same id would be a good test.
 test = function(tree) {
-    var newComponent, diagram;
-
+    var newComponent, diagram, deferred = new dojo.Deferred();
     zen.log("*** Testing creation and diagramming of a tree");
-
-    zen.walkZenSpec(
-	tree,
-	function() {
-	    zen.requireSubtreeDijit(arguments[0]);
-	});
-    dojo.addOnLoad(
-	function() {
-	    newComponent = zen.renderTree(tree, zen.body);
-	    topCompons.push(newComponent);
-	    if (enableTreeDiagram) {
-		dojo.require("dojox.layout.FloatingPane");
-		dojo.addOnLoad(function() {
-		    diagram = treeDiagram(newComponent);
-		    topCompons.push(diagram);
-		});
-	    };
-	    zen.log("*** Done testing creation and rendering of a tree");
-	});
+    deferred.then(function(compon) {
+	topComponents.push(compon);
+	newComponent = compon;
+	if (enableHierarchyDiagram) {
+	    dojo.require("dojox.layout.FloatingPane");
+	    dojo.addOnLoad(function() {
+		diagram = zen.makeHierarchyDiagram(compon);
+	    });
+	}
+    }, function(err) {
+	console.error("Error in test()");
+    });
+    newComponent = zen.renderTree(tree, zen.body, true, deferred);
+    zen.log("*** Done testing creation and rendering of a tree");
 };

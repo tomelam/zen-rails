@@ -1,27 +1,31 @@
-<html>
-	<head>
-	</head>
-	<body>
-	    <textarea style="width: 100%; height: 100px;">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <title>HTML to contain some JSON code</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  </head>
+  <body>
+    <div><textarea style="width: 100%; height: 100px;" cols="1" rows="1">
     ["dijit.TitlePane",
      {id:"testRendering",
-      title:"Toolbar - Zen Notebook",
+      title:"Toolbar (click to expand) - Zen Notebook",
       style:{top:"30px",right:"30px"},closable:true,open:false},
      [["center", {},
        [["dijit.form.Button",
 	 {label:"Clear the Canvas",
 	  onClick:function() {
-	      zen.clearTheCanvas(topCompons);
+	      zen.clearTheCanvas(topComponents);
 	      topCompons = [];
 	  }},
 	 []],
 	["dijit.form.Button",
 	 {label:"Toggle Page Diagramming",
 	  onClick:function() {
-	      enableTreeDiagram = !enableTreeDiagram;
-	      alert("Page Diagramming is " + (enableTreeDiagram? "enabled" : "disabled"));
+	      enableHierarchyDiagram = !enableHierarchyDiagram;
+	      alert("Page Diagramming is " + (enableHierarchyDiagram? "enabled" : "disabled"));
 	  }},
 	 []],
+        ["br", {}, []],
 	["dijit.form.Button",
 	 {label:"red DIV",onClick:function(){test(tree1)}}, []],
 	["dijit.form.Button",
@@ -31,18 +35,21 @@
 	["dijit.form.Button",
 	 {label:"DIV with P and red ContentPane",
 	  onClick:function(){test(tree4)}}, []],
+        ["br", {}, []],
+	//FIXME: ["text", {}, []],
+        //["br", {}, []],
 	["dijit.form.Button",
-	 {label:"DIV with<br/>ContentPane (class:box)",
+	 {label:"DIV with&lt;br />ContentPane (class:box)",
 	  onClick:function(){test(tree5)}}, []],
 	["dijit.form.Button",
-	 {label:"DIV with P & red ContentPane<br/>with box ContentPane with DIV",
+	 {label:"DIV with P &amp; red ContentPane&lt;br />with box ContentPane with DIV",
 	  onClick:function(){test(tree6)}}, []],
 	["dijit.form.Button",
-	 {label:"AccordionContainer<br/>with AccordionPanes, each with DIV",
+	 {label:"AccordionContainer&lt;br />with AccordionPanes, each with DIV",
 	  onClick:function(){test(tree9)}}, []],
 	["dijit.form.Button",
-	 {label:"AccordionContainer<br/>with AccordionPanes, each with DIV",
+	 {label:"AccordionContainer&lt;br />with AccordionPanes, each with DIV",
 	  onClick:function(){test(tree10)}}, []]]]]]
-	    </textarea>
+	    </textarea></div>
 	</body>
 </html>

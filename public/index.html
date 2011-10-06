@@ -5,37 +5,36 @@
     <style type="text/css">
       @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dijit/themes/tundra/tundra.css";
       @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojo/resources/dojo.css";
-      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojox/layout/resources/FloatingPane.css";
-      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojox/layout/resources/ResizeHandle.css";
       @import "stylesheets/zen.css";
     </style>
   </head>
-  <body onload="zenInit()" class="tundra">
+  <body class="tundra">
     <form method="get" enctype="multipart/form-data"
 	  action=""><div></div>
     </form>
-    <img id="zenLoadingImg" src="images/loading.gif" alt="loading"/>
+
     <script src="https://www.google.com/jsapi?key=ABQIAAAAvmYe20gMb-FECPqg1NBQWhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQHRH-V6rlCGMZcROUUf5124nHP3A"
 	    type="text/javascript"></script>
+    <div>
+      <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
+    </div>
     <script type="text/javascript">
       djConfig = {
 	  parseOnLoad: true,
 	  isDebug: true,
-	  dojoBlankHtmlUrl:'javascripts/dojo/resources/blank.html',
+	  dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
           baseUrl: "./",
           modulePaths: { zen: "javascripts/zen" }
       };
-      google.load("dojo", "1.6.0");
-      zenInit = function() {
-	  dojo.require("zen.new");
-	  dojo.addOnLoad(function() {
-	      dojo.require("zen.zen");
-	      dojo.addOnLoad(function() {
-		  zen.init();
-	      });
-	  });
-      };
+      google.load("dojo", "1.6.0", { uncompressed:true } );
     </script>
-    <script type="text/javascript" src="javascripts/zen/test.js"></script>
+    <script type="text/javascript" src="javascripts/zen/test.js">/</script>
+    <script type="text/javascript">
+      dojo.addOnLoad(function() {
+	  dojo.require("dijit.form.Textarea");
+	  dojo.require("zen.dojo");
+	  dojo.require("zen");
+      });
+    </script>
   </body>
 </html>

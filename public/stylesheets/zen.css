@@ -1,3 +1,6 @@
+@import "../javascripts/dojo/dojox/layout/resources/FloatingPane.css";
+@import "../javascripts/dojo/dojox/layout/resources/ResizeHandle.css";
+
 .box {
     position: relative;
     height: 100px;

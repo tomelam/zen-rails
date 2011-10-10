@@ -82,6 +82,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             }
         } else {
             zen.error("DomNodeCompon.destroyCompon: couldn't find last ref");
+	    //FIXME: Remove this console output:
             console.group("zen.DomNodeCompon.domNodeCompons");
             console.dir(zen.DomNodeCompon.domNodeCompons);
             console.groupEnd();

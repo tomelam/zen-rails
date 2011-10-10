@@ -1,8 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <title>Zen Notebook</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <style type="text/css">
       @import "javascripts/dojo/dijit/themes/tundra/tundra.css";
       @import "javascripts/dojo/dojo/resources/dojo.css";
@@ -10,6 +9,12 @@
     </style>
   </head>
   <body class="tundra">
+    <form method="get" enctype="multipart/form-data"
+	  action=""><div></div>
+    </form>
+
+
+
     <div>
       <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
     </div>
@@ -17,13 +22,15 @@
       djConfig = {
           parseOnLoad: true,
           isDebug: true,
-          dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
-          baseUrl: "./",
-          modulePaths: { dojo: "javascripts/dojo/dojo", dijit: "javascripts/dojo/dijit", dojox: "javascripts/dojo/dojox", zen: "javascripts/zen" }
+          //dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
+
+          //modulePaths: { dojo: "javascripts/dojo/dojo", dijit: "javascripts/dojo/dijit", dojox: "javascripts/dojo/dojox", zen: "javascripts/zen" }
+          modulePaths: { zen: "../../zen" //, dojo: "javascripts/dojo/dojo"
+		       }
       };
     </script>
     <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js"></script>
-    <script type="text/javascript" src="javascripts/zen/test.js"></script>
+    <script type="text/javascript" src="javascripts/zen/test.js">/</script>
     <script type="text/javascript">
       dojo.addOnLoad(function() {
           dojo.require("dijit.form.Form");

@@ -261,6 +261,6 @@ test = function(tree) {
     }, function(err) {
 	console.error("Error in test()");
     });
-    newComponent = zen.renderTree(tree, zen.body, true, deferred);
+    newComponent = zen.renderTreeDeferred(tree, zen.body, deferred);
     zen.log("*** Done testing creation and rendering of a tree");
 };

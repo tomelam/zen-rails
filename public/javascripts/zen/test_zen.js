@@ -1,6 +1,6 @@
 dojo.provide("zen.test_zen");
 
-dojo.require("zen");
+//dojo.require("zen");
 
 
 tests.register(
@@ -20,7 +20,7 @@ tests.register(
     }
 },
 {
-    name: "2. createNew(...) passes an argument to the constructor",
+    name: "2. createNew(..., ...) passes an argument to the constructor",
     setUp: function() {
 	Person = function(name) {
 	    this.name = name;

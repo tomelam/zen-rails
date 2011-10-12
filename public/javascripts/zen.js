@@ -15,7 +15,7 @@ dojo.declare("zen.Compon", null, {
     },
     toString: function () { // Without this, we get '[object Object]'.
         zen.log("ENTER Compon.toString");
-        return String(this.domNode).replace(/^\[object /, "[Compon ").replace(/\]$/, "]");
+        return String(this.domNode).replace(/^\[object /, "[Zen Compon ").replace(/\]$/, "]");
     }
 });
 
@@ -23,7 +23,15 @@ dojo.declare("zen.DisplayCompon", zen.Compon, {
     getDomNode: function () {
         zen.log("Compon.getDomNode: domNode => %s", this.domNode);
         return this.domNode;
-    }
+    },
+    toString: function () { // Without this, we get '[object Object]'.
+        zen.log("ENTER Compon.toString");
+        return String(this.domNode).replace(/^\[object /, "[Display Compon ").replace(/\]$/, "]");
+    },
+    appendMyselfToParent: function () {	throw("Missing subclass"); },
+    appendChild: function () { throw("Missing subclass"); },
+    getChildCompons: function () { throw("Missing subclass"); },
+    destroyCompon: function () { throw("Missing subclass"); }
 });
 
 dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
@@ -36,7 +44,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     },
     toString: function () { // Without this, we get '[object Object]'.
         var rep;
-        rep = String(this.domNode).replace(/^\[object /, "[DomNodeCompon ").replace(/\]$/, "]");
+        rep = String(this.domNode).replace(/^\[object /, "[HTML Compon ").replace(/\]$/, "]");
         zen.debug("ENTER/EXIT DomNodeCompon.toString; returning %s", rep);
         return rep;
     },
@@ -302,27 +310,34 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
     //walkZenSpec(z.toolbox, console.info); // Example usage.
 
-    // If requireModules is true, a deferred must also be passed.
-    z.renderTree = function (tree, parent, requireModules, deferred) {
+    z.renderTree = function (tree, parent) {
         var newComponent;
-        if (requireModules) {
-            walkZenSpec(
-                tree,
-                function(tree) {
-                    requireSubtreeCompon(tree);
-                });
-        }
+        zen.log("ENTER renderTree, tree => %s, parent => %s", tree, parent);
+        newComponent = createSubtree(tree);
+        z.log("  renderTree: newComponent => %s", newComponent);
+        newComponent.appendMyselfToParent(parent);
+        z.startup();
+        z.log("EXIT renderTree");
+        return newComponent;
+    };
+
+    // Asynchonous Ajax requests will be made to retrieve JavaScript
+    // modules that will handle some rendering.
+    z.renderTreeDeferred = function (tree, parent, deferred) {
+        var newComponent;
+        walkZenSpec(
+            tree,
+            function(tree) {
+                requireSubtreeCompon(tree);
+            });
         dojo.addOnLoad(function() {
-            zen.log("ENTER renderTree, tree => %s, parent => %s", tree, parent);
+            zen.log("ENTER renderTreeDeferred, tree => %s, parent => %s", tree, parent);
             newComponent = createSubtree(tree);
             z.log("  renderTree: newComponent => %s", newComponent);
             newComponent.appendMyselfToParent(parent);
             z.startup();
-            z.log("EXIT renderTree");
-            //return newComponent;
-            if (requireModules) {
-                deferred.resolve(newComponent);
-            }
+            z.log("EXIT renderTreeDeferred");
+            deferred.resolve(newComponent);
         });
     };
 
@@ -533,7 +548,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                     z.group("json iframe");
                     z.dir(result);
                     z.groupEnd();
-                    z.renderTree(result, z.body, true, deferred);
+                    z.renderTreeDeferred(result, z.body, deferred);
                     //FIXME: Do this after the callback in
                     //z.renderTree completes.
                     dojo.style("zenLoadingImg", "display", "none");
@@ -586,7 +601,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         z.dir(z.body);
         z.groupEnd();
         dojo.require.apply(null, ["dojo.io.iframe"]);
-        dojo.addOnLoad(z.loadToolbox);
+        //dojo.addOnLoad(z.loadToolbox);
     });
 })(zen);
 

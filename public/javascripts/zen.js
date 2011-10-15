@@ -5,17 +5,21 @@ dojo.provide("zen");
 // dojo.require("zen"). Instead, we make a call like
 // "dojo.require.apply(null, [klass]);".
 
+zen.registry = { Compon : {}, DomNodeCompon : {} };
+
 dojo.declare("zen.Compon", null, {
-    constructor: function (domNode, id) {
+    constructor: function (id) {
+	if (zen.registry.Compon[id]) {
+	    throw "Error: trying to create a zen.Compon with an already-used ID";
+	}
         this.id = id || zen.getUniqueId("zen_Compon");
         zen.registry.Compon[this.id] = this;
-        this.domNode = domNode || null;
         zen.info("ENTER/EXIT Compon.constructor for %s, id %s", this, this.id);
         this.children = [];
     },
     toString: function () { // Without this, we get '[object Object]'.
         zen.log("ENTER Compon.toString");
-        return String(this.domNode).replace(/^\[object /, "[Zen Compon ").replace(/\]$/, "]");
+        return "[zen.Compon " + this.id + "]";
     }
 });
 
@@ -38,7 +42,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     constructor: function (domNode, id) {
         this.id = id || zen.getUniqueId("zen_DomNodeCompon");
         zen.registry.DomNodeCompon[this.id] = this;
-        this.domNode = domNode || 0; // "null" reads nicer than "undefined".
+        this.domNode = domNode || null; // "null" reads nicer than "undefined".
         zen.info("ENTER/EXIT DomNodeCompon.constructor for %s, id %s", this, this.id);
         this.children = [];
     },
@@ -162,13 +166,12 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return typeof instance === "object" ? instance : object;
     };
 
-    z.registry = { Compon : {}, DomNodeCompon : {} };
     var _instanceCounters = {};
     z.getUniqueId = function (objectType) { // objectType is a string
         var count;
-        if (typeof _instanceCounters.objectType === "undefined") {
+        if (typeof _instanceCounters[objectType] === "undefined") {
+	    count = 0;
             _instanceCounters[objectType] = count;
-            count = 0;
         } else {
             count = ++_instanceCounters[objectType];
         }

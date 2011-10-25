@@ -9,10 +9,10 @@ zen.registry = { Compon : {}, DomNodeCompon : {} };
 
 dojo.declare("zen.Compon", null, {
     constructor: function (id) {
-	if (zen.registry.Compon[id]) {
-	    throw "Error: trying to create a zen.Compon with an already-used ID";
-	}
-        this.id = id || zen.getUniqueId("zen_Compon");
+        if (zen.registry.Compon[id]) {
+            throw "Error: trying to create a zen.Compon with an already-used ID";
+        }
+        this.id = zen.getUniqueId("zen_Compon");
         zen.registry.Compon[this.id] = this;
         zen.info("ENTER/EXIT Compon.constructor for %s, id %s", this, this.id);
         this.children = [];
@@ -32,7 +32,7 @@ dojo.declare("zen.DisplayCompon", zen.Compon, {
         zen.log("ENTER Compon.toString");
         return String(this.domNode).replace(/^\[object /, "[Display Compon ").replace(/\]$/, "]");
     },
-    appendMyselfToParent: function () {	throw("Missing subclass"); },
+    appendMyselfToParent: function () { throw("Missing subclass"); },
     appendChild: function () { throw("Missing subclass"); },
     getChildCompons: function () { throw("Missing subclass"); },
     destroyCompon: function () { throw("Missing subclass"); }
@@ -94,7 +94,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             }
         } else {
             zen.error("DomNodeCompon.destroyCompon: couldn't find last ref");
-	    //FIXME: Remove this console output:
+            //FIXME: Remove this console output:
             console.group("zen.DomNodeCompon.domNodeCompons");
             console.dir(zen.DomNodeCompon.domNodeCompons);
             console.groupEnd();
@@ -106,15 +106,93 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     var z = zen;
 
     if (typeof zen.debugLevel === "undefined") {
-	z.debug = function () {};
-	z.log = function () {};
-	z.info = function () {};
-	z.warn = function () {};
-	z.error = function () {};
-	z.group = function () {};
-	z.groupEnd = function () {};
-	z.dir = function () {};
+        z.debug = function () {};
+        z.log = function () {};
+        z.info = function () {};
+        z.warn = function () {};
+        z.error = function () {};
+        z.group = function () {};
+        z.groupEnd = function () {};
+        z.dir = function () {};
     }
+
+    dojo.require("dijit.form.Button");
+    dojo.require("dijit.form.CheckBox");
+    dojo.require("dojo.parser");
+    dojo.require("dojox.lang.aspect");
+    var aop = dojox.lang.aspect, adviceHandle;
+    disconnect = function(handle) {
+        // Use a copy of the handle array because
+        // dojo.disconnect wipes out the first element.
+        var h = [], len = handle.length;
+        for (i = 0; i < len; i++) { h[i] = handle[i]; };
+        dojo.disconnect(h);
+    };
+    getHandlers = function() {
+        return handlers;
+    };
+    TraceArguments = {
+        before: function(){
+            var joinPoint = aop.getContext().joinPoint,
+            args = Array.prototype.join.call(arguments, ", ");
+            console.debug("=> " + joinPoint.targetName + "(" + args + ")");
+            if (!dojo.byId("kill").checked) {
+                console.debug("Pushing handler to list");
+                handlers.push(arguments);
+            } else {
+                console.debug("Not pushing handler to list");
+            };
+            console.info("Connecting handler");
+        }
+    };
+    TraceReturns = {
+        afterReturning: function(retVal){
+            var joinPoint = aop.getContext().joinPoint;
+            console.debug("<= " + joinPoint.targetName + " returns " + retVal);
+            if (!dojo.byId("kill").checked) {
+                console.debug("Pushing handle to list");
+                handles.push(retVal);
+            } else {
+                console.debug("Disconnecting handler");
+                dojo.disconnect(retVal);
+            };
+            console.info("Number of handlers = " + handlers.length);
+            console.info("Number of handles = " + handles.length);
+        },
+        afterThrowing: function(excp){
+            var joinPoint = aop.getContext().joinPoint;
+            console.debug("<= " + joinPoint.targetName + " throws: " + excp);
+        }
+    };
+    doChange = function() {
+        console.debug("doChange");
+        if (dojo.byId("kill").checked) {
+            console.info("Now in Edit Mode! Number of handles = " + handles.length);
+            dojo.forEach(handles, function(handle) {
+                // Use a copy of the handle array because
+                // dojo.disconnect wipes out the first element.
+                var h = [], len = handle.length;
+                for (i = 0; i < len; i++) { h[i] = handle[i]; };
+                dojo.disconnect(h);
+            });
+        } else {
+            console.info("Now in Run Mode! Number of handlers = " + handlers.length);
+            aop.unadvise(adviceHandle);
+            dojo.forEach(handlers, function(handler) {
+                console.debug('dojo.connect ' + handler[0] + " " +
+                              handler[1] + " " + handler[2]);
+                dojo.connect(handler[0], handler[1], handler[2]);
+            });
+            adviceHandle = aop.advise(frames[0].dojoi, "connect",
+                                      [TraceReturns, TraceArguments]);
+        };
+        return false; // FIXME: remove?
+    };
+
+
+    //zen.createTools(tools);
+    //adviceHandle = aop.advise(frames[0].dojoi, "connect", [TraceReturns, TraceArguments]);
+
 
     /* Simplification and consolidation of a simulated "new"
        operator as given in Chapter 5 of _JavaScript: The Good
@@ -170,7 +248,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     z.getUniqueId = function (objectType) { // objectType is a string
         var count;
         if (typeof _instanceCounters[objectType] === "undefined") {
-	    count = 0;
+            count = 0;
             _instanceCounters[objectType] = count;
         } else {
             count = ++_instanceCounters[objectType];
@@ -243,7 +321,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // of each property is the set (an array) of the kinds of
     // component that can be created using the rule.
     var rulesTable = {
-        createElement : [ "div", "table", "tr", "td", "p", "span",
+        createElement : [ "iframe", "div", "table", "tr", "td", "p", "span",
                           "center", "br" ],
         createDijit   : [ "dijit.TitlePane",
                           "dijit.layout.ContentPane",
@@ -459,14 +537,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         zen.info("##### CREATING DIAGRAM #####");
         zen.info("############################");
         z.debug("*** dojo.byId('diagramPane') => " +
-                  dojo.byId("diagramPane"));
+                dojo.byId("diagramPane"));
         zen.clearTheHierarchyDiagram();
         // FIXME: tblCompon = zen.createElement("table",
         //      {id:"componTbl",class:"boxTable"});
         tblCompon = zen.createElement("table",
                                       {id:"componTbl"});
         z.debug("*** tblCompon => " + tblCompon +
-                  ", tblCompon.domNode => " + tblCompon.domNode);
+                ", tblCompon.domNode => " + tblCompon.domNode);
         diagramPaneCompon = zen.createNew(zen.DomNodeCompon, dojo.byId("diagramPane"));
         z.debug("*** diagramPaneCompon => " + diagramPaneCompon);
         dojo.require.apply(null, ["dijit._base"]);
@@ -489,7 +567,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         z.debug("*** Got contentBox => " + contentBox);
         floatingPane.startup();
         z.debug("*** Started up floatingPane");
-        floatingPane.resize({t:30, l:30, w:contentBox.w+5, h:contentBox.h+31});
+        floatingPane.resize({t:5, l:5, w:contentBox.w+5, h:contentBox.h+31});
         z.debug("*** Resized floatingPane");
         floatingPaneContent = dojo.query(
             "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
@@ -512,7 +590,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                         duration: "750"
                     }
                 );
-            z.body.appendChild(diagramPaneElement);
+            z.zenDiv.appendChild(diagramPaneElement);
         }
         diagramPaneCompon = dijit.byId("diagramPane");
         // Even if an element with id 'diagramPane' exists, we need to
@@ -551,7 +629,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                     z.group("json iframe");
                     z.dir(result);
                     z.groupEnd();
-                    z.renderTreeDeferred(result, z.body, deferred);
+                    z.renderTreeDeferred(result, z.zenDiv, deferred);
                     //FIXME: Do this after the callback in
                     //z.renderTree completes.
                     dojo.style("zenLoadingImg", "display", "none");
@@ -599,12 +677,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             createTextNode : document.createTextNode,
             createDijit : z.createDijit
         };
-        z.body = z.createNew(zen.DomNodeCompon, dojo.body());
-        z.group("zen.body");
-        z.dir(z.body);
+        z.zenDiv = z.createNew(zen.DomNodeCompon, dojo.query("#zen")[0]);
+        z.ibody = z.createNew(zen.DomNodeCompon,
+                              dojo.query("body>iframe#iframe")[0].contentDocument.body);
+        z.group("zen.tools");
+        z.dir(z.tools);
         z.groupEnd();
         dojo.require.apply(null, ["dojo.io.iframe"]);
-        //dojo.addOnLoad(z.loadToolbox);
+        dojo.addOnLoad(z.loadToolbox);
     });
 })(zen);
 

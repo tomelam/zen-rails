@@ -25,7 +25,7 @@ dojo.provide("zen.debug");
 // Array.prototype.slice.call(arguments)) .  But
 // console.debug.apply, console.log.apply, etc. do not work in
 // Webkit-based browsers like Chrome and Safari.
-zen.debugLevel = 0; // No tracing except errors.
+zen.debugLevel = 3; // No tracing except errors.
 zen.debugDir = false; // No calls to console.dir.
 // Thanks to bart
 // (http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format).

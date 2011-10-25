@@ -124,7 +124,7 @@ var tree9 =
 	 {title:"pane 2"},
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
-var tree10 =
+ var tree10 =
     ["div", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
@@ -137,6 +137,9 @@ var tree10 =
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
 var tree11 =
+    ["iframe", {id:"iframe", src:"jquery.com", width:"100%", height:"100%"},
+     []];
+var tree12 =
     ["div", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {id:"ac0",style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
@@ -160,7 +163,7 @@ var tree11 =
 	 {id:"cp01",title:"pane 2"},
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
-var tree12 =
+var tree13 =
     ["dijit.layout.AccordionContainer",
      {id:"workingNode",
       style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
@@ -184,7 +187,7 @@ var tree12 =
        {id:"cp01",title:"pane 2"},
        [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	 []]]]]];
-var tree13 =
+var tree14 =
     ["dojox.layout.FloatingPane",
      {id:"workingNode",
       title:"Main Controls",style:{bottom:"30px",right:"30px"},closable:true},
@@ -261,6 +264,6 @@ test = function(tree) {
     }, function(err) {
 	console.error("Error in test()");
     });
-    newComponent = zen.renderTreeDeferred(tree, zen.body, deferred);
+    newComponent = zen.renderTreeDeferred(tree, zen.ibody, deferred);
     zen.log("*** Done testing creation and rendering of a tree");
 };

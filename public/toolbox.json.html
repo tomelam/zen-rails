@@ -45,6 +45,25 @@
 	 {label:"DIV with P &amp; red ContentPane&lt;br />with box ContentPane with DIV",
 	  onClick:function(){test(tree6)}}, []],
 	["dijit.form.Button",
+	 {label:"Iframe",
+	  onClick:function(){
+	    test(tree11);
+	  }}, []],	
+	["dijit.form.Button",
+	 {label:"Iframe click handler",
+	  onClick:function(){
+	    dojo.addOnLoad(function() {
+	      var ibody = dojo.query("body>iframe#iframe")[0].contentDocument.body;
+	      dojo.connect(
+		ibody,
+	        "onclick",
+	        null,
+	        function(ev) { alert('clicked on body'); dojo.stopEvent(ev); }
+	      );
+	    });
+	    alert("Added click handler for the Iframe");
+	  }}, []],	
+	["dijit.form.Button",
 	 {label:"AccordionContainer&lt;br />with AccordionPanes, each with DIV",
 	  onClick:function(){test(tree9)}}, []],
 	["dijit.form.Button",

@@ -12,7 +12,11 @@ dojo.declare("zen.Compon", null, {
         if (zen.registry.Compon[id]) {
             throw "Error: trying to create a zen.Compon with an already-used ID";
         }
-        this.id = zen.getUniqueId("zen_Compon");
+	if (!id) {
+            this.id = zen.getUniqueId("zen_Compon");
+	} else {
+	    this.id = id;
+	}
         zen.registry.Compon[this.id] = this;
         zen.info("ENTER/EXIT Compon.constructor for %s, id %s", this, this.id);
         this.children = [];
@@ -248,9 +252,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     z.getUniqueId = function (objectType) { // objectType is a string
         var count;
         if (typeof _instanceCounters[objectType] === "undefined") {
+	    console.debug("count = 0");
             count = 0;
             _instanceCounters[objectType] = count;
         } else {
+	    console.debug("count => " + count);
             count = ++_instanceCounters[objectType];
         }
         return objectType + "_" + count;
@@ -611,7 +617,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     z.loadToolbox = function () {
         var deferred = new dojo.Deferred();
         deferred.then(
-            function() { },
+            function() {
+		zen.info("Success in loading toolbox");
+	    },
             function(err) {
                 zen.error("Error in loading toolbox: error => " + err);
             });
@@ -638,6 +646,17 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                 }
             }
         });
+    };
+
+    z.init = function () {
+	z.zenDiv = z.createNew(zen.DomNodeCompon, dojo.query("#zen")[0]);
+        z.ibody = z.createNew(zen.DomNodeCompon,
+                              dojo.query("body>iframe#iframe")[0].contentDocument.body);
+        z.group("zen.tools");
+        z.dir(z.tools);
+        z.groupEnd();
+        dojo.require.apply(null, ["dojo.io.iframe"]);
+        dojo.addOnLoad(z.loadToolbox);
     };
 
     dojo.addOnLoad(function() {
@@ -677,14 +696,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             createTextNode : document.createTextNode,
             createDijit : z.createDijit
         };
-        z.zenDiv = z.createNew(zen.DomNodeCompon, dojo.query("#zen")[0]);
-        z.ibody = z.createNew(zen.DomNodeCompon,
-                              dojo.query("body>iframe#iframe")[0].contentDocument.body);
-        z.group("zen.tools");
-        z.dir(z.tools);
-        z.groupEnd();
-        dojo.require.apply(null, ["dojo.io.iframe"]);
-        dojo.addOnLoad(z.loadToolbox);
     });
 })(zen);
 

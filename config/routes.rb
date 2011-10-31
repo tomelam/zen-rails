@@ -6,8 +6,10 @@ ZenRails::Application.routes.draw do
   #   match 'products/:id' => 'catalog#view'
   # Keep in mind you can assign values other than :controller and :action
 
-  #get '/web/:page' => 'proxy#open'
-  get ':page' => 'proxy#open'
+  get '/web/:page' => 'proxy#open'
+  #get ':page' => 'proxy#open'
+
+  match '/config/:config' => 'proxy#cfg'
 
   # Sample of named route:
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase

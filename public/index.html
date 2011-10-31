@@ -11,15 +11,17 @@
   </head>
   <body class="tundra">
     <script src="https://www.google.com/jsapi?key=ABQIAAAAvmYe20gMb-FECPqg1NBQWhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQHRH-V6rlCGMZcROUUf5124nHP3A"
-	    type="text/javascript"></script>
+            type="text/javascript"></script>
     <div>
       <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
     </div>
+    <div id="zen"></div>
+    <iframe id="iframe" src="web/jquery.com" width="100%" height="400px"></iframe>
     <script type="text/javascript">
       djConfig = {
-	  parseOnLoad: true,
-	  isDebug: true,
-	  dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
+          parseOnLoad: true,
+          isDebug: true,
+          dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
           baseUrl: "./",
           modulePaths: { zen: "javascripts/zen" }
       };
@@ -28,8 +30,8 @@
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
     <script type="text/javascript">
       dojo.addOnLoad(function() {
-	  dojo.require("zen.dojo");
-	  dojo.require("zen");
+          dojo.require("zen.dojo");
+          dojo.require("zen");
       });
     </script>
   </body>

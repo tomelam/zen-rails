@@ -16,6 +16,7 @@
       <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
     </div>
     <div id="zen"></div>
+    <div id="diagramPane" style="width:1px; height:1px;"></div>
     <iframe id="iframe" src="web/jquery.com" width="100%" height="400px"></iframe>
     <script type="text/javascript">
       djConfig = {
@@ -32,6 +33,9 @@
       dojo.addOnLoad(function() {
           dojo.require("zen.dojo");
           dojo.require("zen");
+	  dojo.addOnLoad(function() {
+	      zen.init();
+	  });
       });
     </script>
   </body>

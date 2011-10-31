@@ -10,7 +10,7 @@ zen.registry = { Compon : {}, DomNodeCompon : {} };
 dojo.declare("zen.Compon", null, {
     constructor: function (id) {
         if (zen.registry.Compon[id]) {
-            throw "Error: trying to create a zen.Compon with an already-used ID";
+            throw "Error: trying to create a zen.Compon with an already-used ID " + id;
         }
 	if (!id) {
             this.id = zen.getUniqueId("zen_Compon");
@@ -43,7 +43,8 @@ dojo.declare("zen.DisplayCompon", zen.Compon, {
 });
 
 dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
-    constructor: function (domNode, id) {
+    constructor: function (id, domNode) {
+	zen.log("zen.DomNodeCompon: domNode => " + domNode + ", id => " + id);
         this.id = id || zen.getUniqueId("zen_DomNodeCompon");
         zen.registry.DomNodeCompon[this.id] = this;
         this.domNode = domNode || null; // "null" reads nicer than "undefined".
@@ -258,6 +259,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         } else {
 	    console.debug("count => " + count);
             count = ++_instanceCounters[objectType];
+	    console.debug("count => " + count);
         }
         return objectType + "_" + count;
     };
@@ -535,8 +537,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     z.makeHierarchyDiagram = function(newComponent) {
-        var tblCompon, contentBox, floatingPaneContent,
-        diagramPaneCompon, floatingPane;
+        //var tblCompon, contentBox, floatingPaneContent;
+        //diagramPaneCompon, floatingPane;
 
         z.debug("*** Entering treeDiagram");
         zen.info("############################");
@@ -547,12 +549,16 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         zen.clearTheHierarchyDiagram();
         // FIXME: tblCompon = zen.createElement("table",
         //      {id:"componTbl",class:"boxTable"});
-        tblCompon = zen.createElement("table",
-                                      {id:"componTbl"});
-        z.debug("*** tblCompon => " + tblCompon +
+	if (!dojo.byId("componTbl")) {
+	    z.log("zen.makeHierarchDiagram: trying to create table ...");
+            tblCompon = zen.createElement("table",
+					  {id:"componTbl"});
+	}
+        z.log("*** tblCompon => " + tblCompon +
                 ", tblCompon.domNode => " + tblCompon.domNode);
-        diagramPaneCompon = zen.createNew(zen.DomNodeCompon, dojo.byId("diagramPane"));
-        z.debug("*** diagramPaneCompon => " + diagramPaneCompon);
+	z.log("dojo.byId('diagramPane') => " + dojo.byId("diagramPane"));
+        diagramPaneCompon = zen.createNew(zen.DomNodeCompon, "diagramPane", dojo.byId("diagramPane"));
+        z.log("*** diagramPaneCompon => " + diagramPaneCompon);
         dojo.require.apply(null, ["dijit._base"]);
         floatingPane = dijit.byId("diagramPane");
         if (!floatingPane) {
@@ -563,30 +569,32 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                  resizable:true},
                 diagramPaneCompon);
         };
-        z.debug("*** Appended diagramPaneCompon");
-        tblCompon.appendMyselfToParent(floatingPane);
-        z.debug("*** Appended tblCompon");
+        z.log("*** Appended diagramPaneCompon");
+        //tblCompon.appendMyselfToParent(floatingPane);
+	floatingPane.domNode.appendChild(tblCompon.domNode);
+        z.log("*** Appended tblCompon");
 
         boxTable([newComponent], tblCompon);
-        z.debug("*** Created boxTable");
+        z.log("*** Created boxTable");
         contentBox = dojo.contentBox("componTbl");
-        z.debug("*** Got contentBox => " + contentBox);
+        z.log("*** Got contentBox => " + contentBox);
         floatingPane.startup();
-        z.debug("*** Started up floatingPane");
+        z.log("*** Started up floatingPane");
         floatingPane.resize({t:5, l:5, w:contentBox.w+5, h:contentBox.h+31});
-        z.debug("*** Resized floatingPane");
+        z.log("*** Resized floatingPane");
         floatingPaneContent = dojo.query(
             "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
-        z.debug("*** floatingPaneContent => " + floatingPaneContent);
+        z.log("*** floatingPaneContent => " + floatingPaneContent);
         dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
         return floatingPane;
     };
 
     z.clearTheHierarchyDiagram = function () {
-        var diagramPaneElement, diagramPaneCompon;
+        //var diagramPaneElement, diagramPaneCompon;
         z.log("ENTER clearTheHierarchyDiagram");
         diagramPaneElement = dojo.byId("diagramPane");
         if (!diagramPaneElement) {
+	    dojo.log("Creating #diagramPane");
             diagramPaneElement =
                 z.createElement(
                     "div",
@@ -602,15 +610,20 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         // Even if an element with id 'diagramPane' exists, we need to
         // have a Zen component so that we can use it. If we already have
         // a widget with that id, we can use that.
+	zen.log("Creating diagramPaneCompon if it doesn't exist ...");
         if (!diagramPaneCompon) {
-            diagramPaneCompon = z.createNew(zen.DomNodeCompon, dojo.byId("diagramPane"));
+	    zen.log("diagramPaneCompon doesn't exist; creating it ...");
+            //diagramPaneCompon = z.createNew(dojox.layout.FloatingPane, dojo.byId("diagramPane"));
+            diagramPaneCompon = z.createNew(dojox.layout.FloatingPane, {id:"diagramPane"});
         }
+	/*
         var compons = diagramPaneCompon.getChildCompons();
         z.log("compons => %s", compons);
         dojo.forEach(
             diagramPaneCompon.getChildCompons(),
             function (child) { z.log("Destroying %s", child); child.destroyCompon(); }
         );
+	*/
         z.log("EXIT clearTheHierarchyDiagram");
     };
 
@@ -649,8 +662,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     z.init = function () {
-	z.zenDiv = z.createNew(zen.DomNodeCompon, dojo.query("#zen")[0]);
-        z.ibody = z.createNew(zen.DomNodeCompon,
+	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
+        z.ibody = z.createNew(zen.DomNodeCompon, null,
                               dojo.query("body>iframe#iframe")[0].contentDocument.body);
         z.group("zen.tools");
         z.dir(z.tools);

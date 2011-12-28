@@ -15,7 +15,7 @@
     </div>
     <div id="zen"></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
-    <iframe id="iframe" src="web/jquery.com" width="100%" height="400px"></iframe>
+    <iframe id="ifr" src="web/orbitz.com" width="100%" height="400px"></iframe>
     <script type="text/javascript">
       djConfig = {
           parseOnLoad: true,
@@ -30,7 +30,9 @@
           dojo.require("zen.dojo");
           dojo.require("zen");
 	  dojo.addOnLoad(function() {
+	      console.debug("onLoad: calling zen.init()");
 	      zen.init();
+	      console.debug("returned from zen.init()");
 	  });
       });
     </script>

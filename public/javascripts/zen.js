@@ -18,22 +18,18 @@ dojo.declare("zen.Compon", null, {
 	    this.id = id;
 	}
         zen.registry.Compon[this.id] = this;
-        zen.info("ENTER/EXIT Compon.constructor for %s, id %s", this, this.id);
         this.children = [];
     },
     toString: function () { // Without this, we get '[object Object]'.
-        zen.log("ENTER Compon.toString");
         return "[zen.Compon " + this.id + "]";
     }
 });
 
 dojo.declare("zen.DisplayCompon", zen.Compon, {
     getDomNode: function () {
-        zen.log("Compon.getDomNode: domNode => %s", this.domNode);
         return this.domNode;
     },
     toString: function () { // Without this, we get '[object Object]'.
-        zen.log("ENTER Compon.toString");
         return String(this.domNode).replace(/^\[object /, "[Display Compon ").replace(/\]$/, "]");
     },
     appendMyselfToParent: function () { throw("Missing subclass"); },
@@ -44,31 +40,24 @@ dojo.declare("zen.DisplayCompon", zen.Compon, {
 
 dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     constructor: function (id, domNode) {
-	zen.log("zen.DomNodeCompon: domNode => " + domNode + ", id => " + id);
         this.id = id || zen.getUniqueId("zen_DomNodeCompon");
         zen.registry.DomNodeCompon[this.id] = this;
         this.domNode = domNode || null; // "null" reads nicer than "undefined".
-        zen.info("ENTER/EXIT DomNodeCompon.constructor for %s, id %s", this, this.id);
         this.children = [];
     },
     toString: function () { // Without this, we get '[object Object]'.
         var rep;
         rep = String(this.domNode).replace(/^\[object /, "[HTML Compon ").replace(/\]$/, "]");
-        zen.debug("ENTER/EXIT DomNodeCompon.toString; returning %s", rep);
         return rep;
     },
     appendMyselfToParent: function (parent) {
-        zen.log("DomNodeCompon.appendMyselfToParent: domNode => %s, parent => %s", this.domNode, parent);
         parent.appendChild(this);
     },
     appendChild: function (child) {
-        zen.log("DomNodeCompon.appendChild: child => %s, this => %s, this.id => %s",
-                child, this, this.id);
         this.domNode.appendChild(child.getDomNode());
         this.children.push(child);
     },
     getChildCompons: function () { //FIXME: WORKING ON THIS: WAS BROKEN!
-        zen.log("DomNodeCompon.getChildCompons");
         return this.children;
         /*
           zen.log("DomNodeCompon.getChildCompons: domNode => %s", this.domNode);
@@ -82,23 +71,19 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     },
     destroyCompon: function () {
         var compon, index;
-        zen.log("DomNodeCompon.destroyCompon: this => %s, domNode => %s", this, this.domNode);
         dojo.forEach(this.getChildCompons(),
                      function (child) { child.destroyCompon(); });
         dojo.destroy(this.domNode);
         index = zen.DomNodeCompon.domNodeCompons.indexOf(this);
         if (index >= 0) {
-            zen.log("...destroyCompon: index => %s, compon => %s, zen.DomNodeCompon.domNodeCompons.length => %s",
-                    index, zen.DomNodeCompon.domNodeCompons[index], zen.DomNodeCompon.domNodeCompons.length);
             delete zen.DomNodeCompon.domNodeCompons[index];
             compon = zen.DomNodeCompon.domNodeCompons.pop();
             if (index !== zen.DomNodeCompon.domNodeCompons.length) {
                 zen.DomNodeCompon.domNodeCompons[index] = compon;
             } else {
-                zen.warn("compon was last in the list; won't put it back!");
+                console.warn("compon was last in the list; won't put it back!");
             }
         } else {
-            zen.error("DomNodeCompon.destroyCompon: couldn't find last ref");
             //FIXME: Remove this console output:
             console.group("zen.DomNodeCompon.domNodeCompons");
             console.dir(zen.DomNodeCompon.domNodeCompons);
@@ -109,18 +94,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
 (function (zen) {
     var z = zen;
-
-    if (typeof zen.debugLevel === "undefined") {
-        z.debug = function () {};
-        z.log = function () {};
-        z.info = function () {};
-        z.warn = function () {};
-        z.error = function () {};
-        z.group = function () {};
-        z.groupEnd = function () {};
-        z.dir = function () {};
-    }
-
     dojo.require("dijit.form.Button");
     dojo.require("dijit.form.CheckBox");
     dojo.require("dojo.parser");
@@ -231,8 +204,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         var args = Array.prototype.slice.call(arguments);
         var constructor = args[0];
         var constructorArgs = args.slice(1);
-        z.debug("ENTER createNew: constructorArgs => " + constructorArgs);
-        z.debug("  ... constructor => " + constructor);
         // Step 1: Create a new empty object instance linked to the
         //         prototype of provided constructor.
         hiddenLink.prototype = constructor.prototype;
@@ -267,19 +238,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Consider using dojo.fromJSON here for safety.
     // FIXME: Replace zen.info, etc. with z.info, etc.?
     z.createElement = function (kind, attributes) {
-        zen.info("ENTER createElement: kind => %s", kind);
         var domNodeCompon = zen.createNew(zen.DomNodeCompon);
-        zen.log("createElement: kind => %s, attributes => %s", kind, attributes);
         // FIXME: Use dojo.create.
         var domNode = document.createElement(kind);
-        zen.log("createElement: domNode => %s", domNode);
         zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
-        zen.log("createElement: # of zen.DomNodeCompon.domNodeCompons => %s", zen.DomNodeCompon.domNodeCompons.length);
         attributes = attributes || {};
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
             delete attributes.klass;
-            zen.log("added class");
         }
         dojo.attr(domNode, attributes || {}); //FIXME: Check this.
         domNodeCompon.domNode = domNode;
@@ -294,33 +260,34 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Can text nodes have attributes?
     var createTextNode = function (text, attributes) {
         var domNodeCompon = z.createNew(zen.DomNodeCompon);
-        z.info("ENTER createTextNode: text => %s, attributes => %s", text, attributes);
         // FIXME: Use dojo.create, if appropriate.
         var domNode = document.createTextNode(text);
-        z.log("createTextNode: domNode => %s", domNode);
         z.DomNodeCompon.domNodeCompons.push(domNodeCompon);
-        z.log("createTextNode: # of zen.DomNodeCompon.domNodeCompons => %s", zen.DomNodeCompon.domNodeCompons.length);
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
     };
 
     var createSubtree = function (treeSpec) {
+	console.debug("createSubtree");
         var i, rule, parentCompon, compon, len, constructor;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
         rule = invertedRulesTable[componKind];
-        z.info("ENTER createSubtree: rule => %s, componKind => %s", rule, componKind);
-        z.debug("createSubtree: treeSpec => %s", treeSpec);
         constructor = z.rule2ref(rule);
-        z.debug("createSubtree: constructor => %s", constructor);
-        z.log("createSubtree: typeof => %s", typeof constructor);
+	console.debug("typeof constructor => " + typeof constructor);
+	console.debug("constructor => " + constructor);
+	console.debug("componKind => " + componKind);
+	console.group("initParms");
+	console.dir(initParms);
+	console.groupEnd();
         parentCompon = constructor.call(document, componKind, initParms);
-        z.log("createSubtree: parentCompon => %s", parentCompon);
+        //parentCompon = constructor.call(document, componKind, {});
+	console.debug("parentCompon => " + parentCompon);
         len = subtree.length;
         for (i = 0; i < len; i++) {
             compon = createSubtree(subtree[i]);
             compon.appendMyselfToParent(parentCompon);
         }
-        z.log("EXIT createSubtree, parentCompon => %s", parentCompon);
+	console.debug("return parentCompon");
         return parentCompon;
     };
 
@@ -352,12 +319,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // http://www.dojotoolkit.org/reference-guide/dojo/_base/json.html
     // for a safe way to evaluate JSON strings.
     z.rule2ref = function (rule) {
-        z.debug("ENTER rule2ref");
         var s, ref = null;
         for (s in zen.shortcutsTable) {
             if (zen.shortcutsTable.hasOwnProperty(s)) {
                 if (s === rule) {
-                    z.debug("rule2ref: rule from shortcutsTable => " + rule);
                     //ref = eval(z.shortcutsTable[rule]);
                     ref = dojo.fromJson(zen.shortcutsTable[rule]);
                 }
@@ -365,10 +330,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         }
         if (!ref) {
             //ref = eval(rule);
-            z.debug("rule2ref: rule (not from shortcutsTable) => " + rule);
             ref = dojo.fromJson(rule);
         }
-        z.debug("EXIT rule2ref: ref => %s", ref);
         return ref;
     };
 
@@ -378,8 +341,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         initParms = treeSpec[1],
         subtree = treeSpec[2];
         rule = invertedRulesTable[componKind];
-        zen.info("ENTER requireSubtreeCompon: rule => " + rule + ", componKind => " + componKind);
-        z.debug("requireSubtreeCompon: treeSpec => " + treeSpec);
         if (rule === "createDijit") {
             dojo.require.apply(null, [componKind]);
         };
@@ -401,12 +362,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.renderTree = function (tree, parent) {
         var newComponent;
-        zen.log("ENTER renderTree, tree => %s, parent => %s", tree, parent);
         newComponent = createSubtree(tree);
-        z.log("  renderTree: newComponent => %s", newComponent);
         newComponent.appendMyselfToParent(parent);
         z.startup();
-        z.log("EXIT renderTree");
         return newComponent;
     };
 
@@ -417,35 +375,32 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         walkZenSpec(
             tree,
             function(tree) {
+		console.debug("zen.walkZenSpec: tree => " + tree);
                 requireSubtreeCompon(tree);
             });
         dojo.addOnLoad(function() {
-            zen.log("ENTER renderTreeDeferred, tree => %s, parent => %s", tree, parent);
+	    console.debug("zen.renderTreeDeferred: loaded, now calling createSubtree");
             newComponent = createSubtree(tree);
-            z.log("  renderTree: newComponent => %s", newComponent);
+	    console.debug("zen.renderTreeDeferred: newComponent => " +
+			  newComponent);
             newComponent.appendMyselfToParent(parent);
             z.startup();
-            z.log("EXIT renderTreeDeferred");
-            deferred.resolve(newComponent);
+	    console.debug("zen.renderTreeDeferred: calling deferred.resolve()");
+            //deferred.resolve(newComponent);
         });
     };
 
     //FIXME: Use dojo.create.
     var boxCompon = function (component, tbl) {
-        z.log("ENTER boxCompon");
         var row = z.createElement("tr");
         var cell = z.createElement("td", {klass: "boxTD1"});
         var div = z.createElement("div", {klass: "visualRep"});
-        z.log("boxCompon: createTextNode %s", component);
         var text = createTextNode(component.toString());
-        z.log("boxCompon: createTextNode done, call dojo.attr");
         dojo.attr(
             cell.domNode,
             "mouseover",
             function () {
                 var domNode = component.getDomNode();
-                z.log("boxCompon: component => %s, domNode => %s, domNode.childNodes => %s",
-                      component, domNode, domNode.childNodes);
                 domNode.savedBackgroundColor = dojo.style(domNode, "backgroundColor");
                 dojo.style(domNode, { backgroundColor: "lightblue" });
                 dojo.forEach(domNode.childNodes,
@@ -464,48 +419,28 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                             );
             }
         );
-        z.log("boxCompon: called dojo.attr");
         tbl.appendChild(row);
-        z.log("boxCompon: appended row");
         row.appendChild(cell);
-        z.log("boxCompon: appended cell");
         cell.appendChild(div);
-        z.log("boxCompon: appended div");
         div.appendChild(text);
-        z.log("EXIT boxCompon: returning compon with domNode => %s", row.domNode);
         return row;
     };
 
     // FIXME: Use dojo.create.
     var boxTable = function (componList, tbl) {
         var tbl1, i, len = componList.length, compon, children, row, cell;
-        z.log("ENTER boxTable: len => %s", len);
         for (i = 0; i < len; i++) {
-            z.log("boxTable: i => %s", i);
-            z.group("boxTable: componList");
-            z.dir(componList);
-            z.groupEnd();
             compon = componList[i];
-            z.log("boxTable: compon => %s", compon);
             row = boxCompon(compon, tbl);
-            z.log("boxTable: compon => %s, compon.domNode => %s", compon, compon.domNode);
             children = compon.getChildCompons();
-            z.group("boxTable: component children");
-            z.dir(children);
-            z.groupEnd();
             if (children.length > 0) {
-                z.log("boxTable: create cell");
                 cell = z.createElement("td", { klass: "boxTD2" });
-                z.log("boxTable: row.domNode => %s", row.domNode);
                 row.appendChild(cell);
-                z.log("boxTable: create table");
                 tbl1 = z.createElement("table", { klass: "boxTable" });
-                z.log("boxTable: append table to cell");
                 cell.appendChild(tbl1);
                 boxTable(children, tbl1);
             }
         }
-        z.log("EXIT boxTable");
     };
 
     //FIXME: Maybe we could think up a good scheme for which components to
@@ -514,51 +449,31 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         if (typeof componsToSave === "undefined" || !componsToSave) {
             componsToSave = null;
         }
-        z.log("ENTER clearTheCanvas, destroying compons %s except for %s",
-              componsToDestroy, componsToSave);
-        z.log("componsToDestroy.length => %s", componsToDestroy.length);
-        z.group("componsToDestroy");
-        z.dir(componsToDestroy);
-        z.groupEnd();
         dojo.forEach(componsToDestroy,
-                     function (compon) { z.log("compon => %s", compon); }
+                     function (compon) { console.log("compon => %s", compon); }
                     );
-        z.log("Destroying ...");
         dojo.forEach(
             componsToDestroy,
             function (compon) {
-                z.log("compon => %s", compon);
                 if (!componsToSave || (componsToSave.indexOf(compon) < 0)) {
                     compon.destroyCompon();
                 }
             }
         );
-        z.log("EXIT clearTheCanvas");
     };
 
     z.makeHierarchyDiagram = function(newComponent) {
         //var tblCompon, contentBox, floatingPaneContent;
         //diagramPaneCompon, floatingPane;
 
-        z.debug("*** Entering treeDiagram");
-        zen.info("############################");
-        zen.info("##### CREATING DIAGRAM #####");
-        zen.info("############################");
-        z.debug("*** dojo.byId('diagramPane') => " +
-                dojo.byId("diagramPane"));
         zen.clearTheHierarchyDiagram();
         // FIXME: tblCompon = zen.createElement("table",
         //      {id:"componTbl",class:"boxTable"});
 	if (!dojo.byId("componTbl")) {
-	    z.log("zen.makeHierarchDiagram: trying to create table ...");
             tblCompon = zen.createElement("table",
 					  {id:"componTbl"});
 	}
-        z.log("*** tblCompon => " + tblCompon +
-                ", tblCompon.domNode => " + tblCompon.domNode);
-	z.log("dojo.byId('diagramPane') => " + dojo.byId("diagramPane"));
         diagramPaneCompon = zen.createNew(zen.DomNodeCompon, "diagramPane", dojo.byId("diagramPane"));
-        z.log("*** diagramPaneCompon => " + diagramPaneCompon);
         dojo.require.apply(null, ["dijit._base"]);
         floatingPane = dijit.byId("diagramPane");
         if (!floatingPane) {
@@ -569,32 +484,23 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                  resizable:true},
                 diagramPaneCompon);
         };
-        z.log("*** Appended diagramPaneCompon");
         //tblCompon.appendMyselfToParent(floatingPane);
 	floatingPane.domNode.appendChild(tblCompon.domNode);
-        z.log("*** Appended tblCompon");
 
         boxTable([newComponent], tblCompon);
-        z.log("*** Created boxTable");
         contentBox = dojo.contentBox("componTbl");
-        z.log("*** Got contentBox => " + contentBox);
         floatingPane.startup();
-        z.log("*** Started up floatingPane");
         floatingPane.resize({t:5, l:5, w:contentBox.w+5, h:contentBox.h+31});
-        z.log("*** Resized floatingPane");
         floatingPaneContent = dojo.query(
             "#diagramPane.dojoxFloatingPane > .dojoxFloatingPaneCanvas > .dojoxFloatingPaneContent")[0];
-        z.log("*** floatingPaneContent => " + floatingPaneContent);
         dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
         return floatingPane;
     };
 
     z.clearTheHierarchyDiagram = function () {
         //var diagramPaneElement, diagramPaneCompon;
-        z.log("ENTER clearTheHierarchyDiagram");
         diagramPaneElement = dojo.byId("diagramPane");
         if (!diagramPaneElement) {
-	    dojo.log("Creating #diagramPane");
             diagramPaneElement =
                 z.createElement(
                     "div",
@@ -610,9 +516,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         // Even if an element with id 'diagramPane' exists, we need to
         // have a Zen component so that we can use it. If we already have
         // a widget with that id, we can use that.
-	zen.log("Creating diagramPaneCompon if it doesn't exist ...");
         if (!diagramPaneCompon) {
-	    zen.log("diagramPaneCompon doesn't exist; creating it ...");
             //diagramPaneCompon = z.createNew(dojox.layout.FloatingPane, dojo.byId("diagramPane"));
             diagramPaneCompon = z.createNew(dojox.layout.FloatingPane, {id:"diagramPane"});
         }
@@ -624,17 +528,18 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             function (child) { z.log("Destroying %s", child); child.destroyCompon(); }
         );
 	*/
-        z.log("EXIT clearTheHierarchyDiagram");
     };
 
     z.loadToolbox = function () {
+	console.debug("Entered zen.loadToolbox");
+	//z.renderTree(tree9, z.zenDiv);
         var deferred = new dojo.Deferred();
         deferred.then(
             function() {
-		zen.info("Success in loading toolbox");
+		console.info("Success in loading toolbox");
 	    },
             function(err) {
-                zen.error("Error in loading toolbox: error => " + err);
+                console.error("Error in loading toolbox: error => " + err);
             });
         dojo.io.iframe.send({
             url: "toolbox.json.html",
@@ -645,17 +550,15 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             // handleAs: "text",
             handleAs: "json",
             handle: function (result) {
+		console.debug("Ajax result => " + result + ", zen.zenDiv => "
+			      + z.zenDiv);
                 if (!(result instanceof Error)) {
-                    z.log("dojo.io.iframe.send callback succeeded");
-                    z.group("json iframe");
-                    z.dir(result);
-                    z.groupEnd();
                     z.renderTreeDeferred(result, z.zenDiv, deferred);
                     //FIXME: Do this after the callback in
                     //z.renderTree completes.
                     dojo.style("zenLoadingImg", "display", "none");
                 } else {
-                    z.error("json iframe error");
+                    console.error("json iframe error");
                 }
             }
         });
@@ -664,11 +567,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     z.init = function () {
 	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
         z.ibody = z.createNew(zen.DomNodeCompon, null,
-                              dojo.query("body>iframe#iframe")[0].contentDocument.body);
-        z.group("zen.tools");
-        z.dir(z.tools);
-        z.groupEnd();
+                              dojo.query("body>iframe#ifr")[0].contentDocument.body);
         dojo.require.apply(null, ["dojo.io.iframe"]);
+	console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
         dojo.addOnLoad(z.loadToolbox);
     };
 

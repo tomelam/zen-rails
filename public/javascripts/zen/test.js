@@ -251,7 +251,7 @@ var pane =
 //another using the same id would be a good test.
 test = function(tree) {
     var newComponent, diagram, deferred = new dojo.Deferred();
-    zen.log("*** Testing creation and diagramming of a tree");
+    //zen.log("*** Testing creation and diagramming of a tree");
     deferred.then(function(compon) {
 	topComponents.push(compon);
 	newComponent = compon;
@@ -265,5 +265,5 @@ test = function(tree) {
 	console.error("Error in test()");
     });
     newComponent = zen.renderTreeDeferred(tree, zen.ibody, deferred);
-    zen.log("*** Done testing creation and rendering of a tree");
+    //zen.log("*** Done testing creation and rendering of a tree");
 };

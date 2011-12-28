@@ -25,51 +25,7 @@ dojo.provide("zen.debug");
 // Array.prototype.slice.call(arguments)) .  But
 // console.debug.apply, console.log.apply, etc. do not work in
 // Webkit-based browsers like Chrome and Safari.
-zen.debugLevel = 0; // No tracing except errors.
+zen.debugLevel = 3; // No tracing except errors.
 zen.debugDir = false; // No calls to console.dir.
 // Thanks to bart
 // (http://stackoverflow.com/questions/610406/javascript-equivalent-to-printf-string-format).
-zen.debug = function (format) {
-    if (zen.debugLevel > 3) {
-        var args = arguments, i = 1;
-        console.debug(format.replace(/%((%)|s)/g, function (m) { return m[2] || args[i++]; }));
-    }
-};
-zen.log = function (format) {
-    if (zen.debugLevel > 2) {
-        var args = arguments, i = 1;
-        console.log(format.replace(/%((%)|s)/g, function (m) { return m[2] || args[i++]; }));
-    }
-};
-zen.info = function (format) {
-    if (zen.debugLevel > 1) {
-        var args = arguments, i = 1;
-        console.info(format.replace(/%((%)|s)/g, function (m) { return m[2] || args[i++]; }));
-    }
-};
-zen.warn = function (format) {
-    if (zen.debugLevel > 0) {
-        var args = arguments, i = 1;
-        console.warn(format.replace(/%((%)|s)/g, function (m) { return m[2] || args[i++]; }));
-    }
-};
-zen.error = function (format) {
-    var args = arguments, i = 1;
-    console.error(format.replace(/%((%)|s)/g, function (m) { return m[2] || args[i++]; }));
-};
-zen.group = function (format) {
-    if (zen.debugDir) {
-        var args = arguments, i = 1;
-        console.group(format.replace(/%((%)|s)/g, function (m) { return m[2] || args[i++]; }));
-    }
-};
-zen.groupEnd = function () {
-    if (zen.debugDir) {
-        console.groupEnd();
-    }
-};
-zen.dir = function (value) {
-    if (zen.debugDir) {
-        console.dir(value);
-    }
-};

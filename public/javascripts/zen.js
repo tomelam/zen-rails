@@ -392,7 +392,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	if (node.nodeType == 3) {
 	    return ["text", node.textContent, []];
 	} else if (node.nodeType) {
-	    console.debug("nodeToObject: " + node + ", nodeType " + node.nodeType);
+	    //console.debug("nodeToObject: " + node + ", nodeType " + node.nodeType);
 	    var i = 0, attr = node.attributes, len, attributes = {};
 	    if (attr) {
 		len = attr.length;
@@ -606,7 +606,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             function(err) {
                 console.error("Error in loading toolbox: error => " + err);
             });
-	/*
+	
         dojo.io.iframe.send({
             url: "toolbox.json.html",
             //url: "http://localhost:5984/zen/toolbox",
@@ -616,6 +616,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             // handleAs: "text",
             handleAs: "json",
             handle: function (result) {
+		alert("Got toolbox");
 		console.debug("Ajax result => " + result + ", zen.zenDiv => "
 			      + z.zenDiv);
                 if (!(result instanceof Error)) {
@@ -632,7 +633,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                 }
             }
         });
-	*/
+
+	console.debug("Called dojo.io.iframe.send");
+	
 	var yellowJson = z.nodeToObject(z.yellow.domNode);
 	console.group("yellowJson");
 	console.debug(yellowJson);

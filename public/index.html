@@ -26,7 +26,7 @@
       </div>
     </div>
     <div id="zen"></div>
-    <div id="cp" data-dojo-type="dojox.layout.ContentPane"
+    <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
 	 data-dojo-props='href:"web/localhost/experiments/javascript/clone_dom/clone_dom_dojo.html"'>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
     <script type="text/javascript">
@@ -47,6 +47,13 @@
           dojo.require("zen");
 	  dojo.addOnLoad(function() {
 	      zen.init();
+	      var rwp = dijit.byId("remoteWebPage");
+	      rwp.onLoad = function () {
+		  console.debug("Hi, from the remote web page!");
+		  var remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent;
+		  var remoteContent = dojo.fromJson(remoteJson);
+		  zen.renderForest(remoteContent, zen.zenDiv);
+	      }
 	  });
       });
     </script>

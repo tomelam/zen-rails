@@ -15,9 +15,20 @@
     <div>
       <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
     </div>
+    <div id="blue" style="width:300px; height:300px; background-color:blue;"></div>
+    <div id="yellow" style="width:200px; height:200px; background-color:yellow;">
+      Yellow box
+      <div style="width:150px; height:150px; background-color:green;">
+	Green box
+	<div style="width:100px; height:100px; background-color:blue;">
+	  Blue box
+	</div>
+      </div>
+    </div>
     <div id="zen"></div>
+    <div id="cp" data-dojo-type="dojox.layout.ContentPane"
+	 data-dojo-props='href:"web/localhost/experiments/javascript/clone_dom/clone_dom_dojo.html"'>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
-    <iframe id="iframe" src="web/jquery.com" width="100%" height="400px"></iframe>
     <script type="text/javascript">
       djConfig = {
           parseOnLoad: true,
@@ -26,11 +37,12 @@
           baseUrl: "./",
           modulePaths: { zen: "javascripts/zen" }
       };
-      google.load("dojo", "1.6.0", { uncompressed:true } );
+      google.load("dojo", "1.6.0", { uncompressed:true });
     </script>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
     <script type="text/javascript">
       dojo.addOnLoad(function() {
+	  dojo.require("dojox.layout.ContentPane");
           dojo.require("zen.dojo");
           dojo.require("zen");
 	  dojo.addOnLoad(function() {

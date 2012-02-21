@@ -188,6 +188,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
        data, in detail.
     */
 
+    z.sayHello = function () {
+	alert("Greetings from Zen!");
+    }
+
     var hiddenLink = function () {};
     z.createNew = function () {
         // A function to explain (and replace) the "new" operator.
@@ -224,13 +228,13 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     z.getUniqueId = function (objectType) { // objectType is a string
         var count;
         if (typeof _instanceCounters[objectType] === "undefined") {
-	    console.debug("count = 0");
+	    //console.debug("count = 0");
             count = 0;
             _instanceCounters[objectType] = count;
         } else {
-	    console.debug("count => " + count);
+	    //console.debug("count => " + count);
             count = ++_instanceCounters[objectType];
-	    console.debug("count => " + count);
+	    //console.debug("count => " + count);
         }
         return objectType + "_" + count;
     };
@@ -258,20 +262,30 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // more future proof since an element can be handled in a clean way.
     //
     // FIXME: Can text nodes have attributes?
-    var createTextNode = function (text, attributes) {
-        var domNodeCompon = z.createNew(zen.DomNodeCompon);
+    z.createTextNode = function (kind, text) {
+        var domNodeCompon = zen.createNew(zen.DomNodeCompon);
         // FIXME: Use dojo.create, if appropriate.
         var domNode = document.createTextNode(text);
-        z.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+        zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
     };
 
     var createSubtree = function (treeSpec) {
-	console.debug("createSubtree");
+	console.info("Entering createSubtree: ");
+	console.group("treeSpec");
+	console.dir(treeSpec);
+	console.groupEnd();
         var i, rule, parentCompon, compon, len, constructor;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
+	console.debug("componKind => " + componKind);
+	console.debug("initParms => " + initParms);
+	console.group("initParms");
+	console.dir(initParms);
+	console.groupEnd();
+
         rule = invertedRulesTable[componKind];
+	console.debug("rule => " + rule);
         constructor = z.rule2ref(rule);
 	console.debug("typeof constructor => " + typeof constructor);
 	console.debug("constructor => " + constructor);
@@ -287,7 +301,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             compon = createSubtree(subtree[i]);
             compon.appendMyselfToParent(parentCompon);
         }
-	console.debug("return parentCompon");
+	//console.debug("return parentCompon");
         return parentCompon;
     };
 
@@ -295,9 +309,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // (i.e. method) for creating a kind of component. The value
     // of each property is the set (an array) of the kinds of
     // component that can be created using the rule.
+    // FIXME: Should not have to include upper case tag names.
     var rulesTable = {
-        createElement : [ "iframe", "div", "table", "tr", "td", "p", "span",
-                          "center", "br" ],
+        createElement : [ "iframe", "div", "DIV", "table", "tr", "td", "p", "span",
+                          "center", "br", "img", "IMG" ],
         createDijit   : [ "dijit.TitlePane",
                           "dijit.layout.ContentPane",
                           "dijit.layout.BorderContainer",
@@ -323,8 +338,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         for (s in zen.shortcutsTable) {
             if (zen.shortcutsTable.hasOwnProperty(s)) {
                 if (s === rule) {
+		    console.debug("Found rule in shortcutsTable");
                     //ref = eval(z.shortcutsTable[rule]);
                     ref = dojo.fromJson(zen.shortcutsTable[rule]);
+		    console.debug("rule => " + rule);
                 }
             }
         }
@@ -346,6 +363,16 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         };
     };
 
+    // As per Douglas Crockford.
+    var walkTheDOM = function (node, func) {
+        func(node); 
+        node = node.firstChild; 
+        while (node) { 
+            z.walkTheDOM(node, func); 
+            node = node.nextSibling; 
+        } 
+    } 
+
     //FIXME: Use this function where useful.
     var walkZen = function (compon, func) {
         func(compon);
@@ -360,6 +387,37 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
     //walkZenSpec(z.toolbox, console.info); // Example usage.
 
+    //FIXME: Try to use walkTheDOM.
+    z.nodeToObject = function (node) {
+	if (node.nodeType == 3) {
+	    return ["text", node.textContent, []];
+	} else if (node.nodeType) {
+	    console.debug("nodeToObject: " + node + ", nodeType " + node.nodeType);
+	    var i = 0, attr = node.attributes, len, attributes = {};
+	    if (attr) {
+		len = attr.length;
+		for (i ; i < len; i++) {
+		    if (attr[i].name == "class") {
+			attributes.klass = attr[i].value;
+		    } else {
+			attributes[attr[i].name] = attr[i].value;
+		    }
+		}
+	    }
+	    var children = [];
+	    i = 0, len = node.childNodes.length;
+	    for (i; i < len; i++) {
+		child = node.childNodes[i];
+		children[i] = z.nodeToObject(child);
+	    }
+	    return [node.tagName, attributes, children];
+	}
+    }
+
+    z.nodeToJson = function (obj) {
+	return dojo.toJson(nodeToObject(obj));
+    }
+
     z.renderTree = function (tree, parent) {
         var newComponent;
         newComponent = createSubtree(tree);
@@ -367,6 +425,13 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         z.startup();
         return newComponent;
     };
+
+    z.renderForest = function (forest, parent) {
+	var i, len = forest.length;
+	for (i=0; i<len; i++) {
+	    z.renderTree(forest[i], parent);
+	}
+    }
 
     // Asynchonous Ajax requests will be made to retrieve JavaScript
     // modules that will handle some rendering.
@@ -541,6 +606,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             function(err) {
                 console.error("Error in loading toolbox: error => " + err);
             });
+	/*
         dojo.io.iframe.send({
             url: "toolbox.json.html",
             //url: "http://localhost:5984/zen/toolbox",
@@ -557,18 +623,28 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                     //FIXME: Do this after the callback in
                     //z.renderTree completes.
                     dojo.style("zenLoadingImg", "display", "none");
+		    dojo.addOnLoad(function() {
+			z.ibody = z.createNew(zen.DomNodeCompon, null,
+					      dojo.query("#iframe")[0].contentDocument.body);
+		    });
                 } else {
                     console.error("json iframe error");
                 }
             }
         });
+	*/
+	var yellowJson = z.nodeToObject(z.yellow.domNode);
+	console.group("yellowJson");
+	console.debug(yellowJson);
+	console.groupEnd();
+	zen.renderTree(yellowJson, z.blue);
     };
 
     z.init = function () {
 	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
-        z.ibody = z.createNew(zen.DomNodeCompon, null,
-                              dojo.query("body>iframe#ifr")[0].contentDocument.body);
-        dojo.require.apply(null, ["dojo.io.iframe"]);
+	z.blue = z.createNew(zen.DomNodeCompon, null, dojo.query("#blue")[0]);//FIXME: debug
+	z.yellow = z.createNew(zen.DomNodeCompon, null, dojo.query("#yellow")[0]);//FIXME: debug
+        dojo.require.apply(null, ["dojo.io.iframe"]); // This is for dojo.io.iframe.send only!
 	console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
         dojo.addOnLoad(z.loadToolbox);
     };
@@ -607,7 +683,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         // extension could be used to keep zen.js modular and lean.
         z.shortcutsTable = {
             createElement : z.createElement,
-            createTextNode : document.createTextNode,
+            createTextNode : z.createTextNode,
             createDijit : z.createDijit
         };
     });

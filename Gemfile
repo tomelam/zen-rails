@@ -38,3 +38,6 @@ gem 'json'
 
 # Required for activecouch:
 gem 'rspec'
+
+gem 'open-uri-cached'
+gem 'watir-webdriver'

@@ -35,6 +35,10 @@ testObjectCreator = function() {
 sayHello = function() { alert("Hi!"); }
 //testObjectCreator();
 
+var textTree1 =
+    ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
+	     id:"workingNode",title:"Title"},
+     [["text", "This is text!", []]]];
 var tree1 =
     ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
 	     id:"workingNode",title:"Title"}, []];
@@ -137,7 +141,7 @@ var tree9 =
 	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
 var tree11 =
-    ["iframe", {id:"iframe", src:"jquery.com", width:"100%", height:"100%"},
+    ["iframe", {id:"iframe", src:"jquery.com", width:"100%", height:"400px"},
      []];
 var tree12 =
     ["div", {id:"workingNode"},
@@ -264,6 +268,7 @@ test = function(tree) {
     }, function(err) {
 	console.error("Error in test()");
     });
+    console.log("*** Rendering test tree in test.js:zen.ibody");
     newComponent = zen.renderTreeDeferred(tree, zen.ibody, deferred);
     //zen.log("*** Done testing creation and rendering of a tree");
 };

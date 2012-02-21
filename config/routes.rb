@@ -6,6 +6,7 @@ ZenRails::Application.routes.draw do
   #   match 'products/:id' => 'catalog#view'
   # Keep in mind you can assign values other than :controller and :action
 
+  # FIXME: Turn this back on!
   match "/web/:url" => 'proxy#open', :constraints => { :url => /[\/:.-_a-zA-Z0-9]*/ }
 
   match '/config/:config' => 'proxy#config'

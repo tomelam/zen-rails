@@ -311,8 +311,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // component that can be created using the rule.
     // FIXME: Should not have to include upper case tag names.
     var rulesTable = {
-        createElement : [ "iframe", "div", "DIV", "table", "tr", "td", "p", "span",
-                          "center", "br", "img", "IMG" ],
+        createElement : [ "IFRAME", "DIV", "DIV", "TABLE", "TR", "TD", "P", "SPAN",
+                          "CENTER", "BR", "IMG",
+			  "H1", "H2", "H3", "H4", "H5" ],
         createDijit   : [ "dijit.TitlePane",
                           "dijit.layout.ContentPane",
                           "dijit.layout.BorderContainer",

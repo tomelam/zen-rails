@@ -311,9 +311,26 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // component that can be created using the rule.
     // FIXME: Should not have to include upper case tag names.
     var rulesTable = {
-        createElement : [ "IFRAME", "DIV", "DIV", "TABLE", "TR", "TD", "P", "SPAN",
-                          "CENTER", "BR", "IMG",
-			  "H1", "H2", "H3", "H4", "H5" ],
+        createElement : [ 
+	    // Inline elements
+	    "A", "ABBR", "ACRONYM", "B", "BDO", "BIG", "BR", "CITE", "CODE",
+	    "DFN", "EM", "I", "IMG", "INPUT", "KBD", "LABEL", "Q", "SAMP",
+	    "SELECT", "SMALL", "SPAN", "STRONG", "SUB", "TEXTAREA", "TT",
+	    "VAR",
+	    // Block elements
+	    "IFRAME", "DIV", "P", "CENTER",
+	    "TABLE", "TR", "TD",
+	    // Defined as block-level components in HTML 4
+	    "ADDRESS", "BLOCKQUOTE", "DIV", "DL", "FIELDSET", "FORM",
+	    "H1", "H2", "H3", "H4", "H5",
+	    "NOSCRIPT", "OL", "P", "PRE", "TABLE", "UL",
+	    // Elements that may also be considered block-level
+	    // elements since they may contain block-level elements
+	    "DD", "DT", "LI", "TBODY", "TD", "TFOOT", "TH", "THEAD", "TR",
+	    // Elements that may be used as either block-level or
+	    // inline elements
+	    "BUTTON", "DEL", "INS", "MAP", "OBJECT", "SCRIPT"
+	],
         createDijit   : [ "dijit.TitlePane",
                           "dijit.layout.ContentPane",
                           "dijit.layout.BorderContainer",

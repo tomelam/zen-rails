@@ -46,7 +46,7 @@ class ProxyController < ApplicationController
     #zen.renderTree(o,zen.zenDiv.domNode);
     render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + @from_zen + '</div></object></body>'
 
-    #browser.close
+    browser.close
 
   end
 

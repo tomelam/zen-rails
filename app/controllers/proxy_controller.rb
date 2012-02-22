@@ -44,7 +44,7 @@ class ProxyController < ApplicationController
     #remoteJson=dojo.query("#foo")[0].firstChild.textContent;
     #o=dojo.fromJson(remoteJson);
     #zen.renderTree(o,zen.zenDiv.domNode);
-    render :inline => '<html><head><title></title></head><body>hey<div style="display:none" id="remoteJson">' + @from_zen + '</div></object></body>'
+    render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + @from_zen + '</div></object></body>'
 
     #browser.close
 

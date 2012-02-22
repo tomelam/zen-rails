@@ -597,7 +597,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.loadToolbox = function () {
 	console.debug("Entered zen.loadToolbox");
-	//z.renderTree(tree9, z.zenDiv);
         var deferred = new dojo.Deferred();
         deferred.then(
             function() {
@@ -616,7 +615,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             // handleAs: "text",
             handleAs: "json",
             handle: function (result) {
-		alert("Got toolbox");
 		console.debug("Ajax result => " + result + ", zen.zenDiv => "
 			      + z.zenDiv);
                 if (!(result instanceof Error)) {
@@ -635,18 +633,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         });
 
 	console.debug("Called dojo.io.iframe.send");
-	
-	var yellowJson = z.nodeToObject(z.yellow.domNode);
-	console.group("yellowJson");
-	console.debug(yellowJson);
-	console.groupEnd();
-	zen.renderTree(yellowJson, z.blue);
     };
 
     z.init = function () {
 	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
-	z.blue = z.createNew(zen.DomNodeCompon, null, dojo.query("#blue")[0]);//FIXME: debug
-	z.yellow = z.createNew(zen.DomNodeCompon, null, dojo.query("#yellow")[0]);//FIXME: debug
         dojo.require.apply(null, ["dojo.io.iframe"]); // This is for dojo.io.iframe.send only!
 	console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
         dojo.addOnLoad(z.loadToolbox);

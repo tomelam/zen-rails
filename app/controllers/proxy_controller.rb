@@ -31,7 +31,38 @@ class ProxyController < ApplicationController
     #page.gsub!(/(<a[^>]*href=\"(?!http))/, '\1/web/' + host + ':' + port.to_s + '/')
     #send_data page, :filename => 'x.png', :type => response.content_type, :disposition => 'inline'
 
-    @from_zen = browser.driver.execute_script('return allNodesToJson();')
+    @from_zen = browser.driver.execute_script <<-JS
+      nodeToObjectX = function (node) {
+	  if (node.nodeType == 3) {
+	      return ["text", node.textContent, []];
+	  } else if (node.nodeType) {
+	      console.debug("nodeToObject: " + node + ", nodeType " + node.nodeType);
+	      var i = 0, attr = node.attributes, len, attributes = {};
+	      if (attr) {
+		  len = attr.length;
+		  for (i ; i < len; i++) {
+		      if (attr[i].name == "class") {
+			  attributes.klass = attr[i].value;
+		      } else {
+			  attributes[attr[i].name] = attr[i].value;
+		      }
+		  }
+	      }
+	      var children = [];
+	      i = 0, len = node.childNodes.length;
+	      for (i; i < len; i++) {
+		  child = node.childNodes[i];
+		  children[i] = nodeToObjectX(child);
+	      }
+	      return [node.tagName, attributes, children];
+	  }
+      }
+      var x = [], ary = dojo.query("body>*");
+      for (var i=0; i<ary.length; i++) { x[i]=nodeToObjectX(ary[i]); }
+      return dojo.toJson(x);
+JS
+                                  
+    #@from_zen = browser.driver.execute_script('return allNodesToJson();')
     #@from_zen = browser.driver.execute_script('return nodeToJson(body);')
 
     #render :inline => '<html><head><title></title><script type="text/javascript">alert("hi");' +

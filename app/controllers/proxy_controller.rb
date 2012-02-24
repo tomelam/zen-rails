@@ -31,37 +31,69 @@ class ProxyController < ApplicationController
     #page.gsub!(/(<a[^>]*href=\"(?!http))/, '\1/web/' + host + ':' + port.to_s + '/')
     #send_data page, :filename => 'x.png', :type => response.content_type, :disposition => 'inline'
 
-    @from_zen = browser.driver.execute_script <<-JS
-      nodeToObjectX = function (node) {
-	  if (node.nodeType == 3) {
-	      return ["text", node.textContent, []];
-	  } else if (node.nodeType) {
-	      console.debug("nodeToObject: " + node + ", nodeType " + node.nodeType);
-	      var i = 0, attr = node.attributes, len, attributes = {};
-	      if (attr) {
-		  len = attr.length;
-		  for (i ; i < len; i++) {
-		      if (attr[i].name == "class") {
-			  attributes.klass = attr[i].value;
-		      } else {
-			  attributes[attr[i].name] = attr[i].value;
-		      }
-		  }
-	      }
-	      var children = [];
-	      i = 0, len = node.childNodes.length;
-	      for (i; i < len; i++) {
-		  child = node.childNodes[i];
-		  children[i] = nodeToObjectX(child);
-	      }
-	      return [node.tagName, attributes, children];
-	  }
-      }
-      var x = [], ary = dojo.query("body>*");
-      for (var i=0; i<ary.length; i++) { x[i]=nodeToObjectX(ary[i]); }
-      return dojo.toJson(x);
+    # Just add some functions to the foreign web page.
+    @zen_throwaway = browser.driver.execute_script <<-JS
+	nodeToObject = function (node) {
+	    if (node.nodeType == 3) {
+	        return ["text", node.textContent, []];
+	    } else if (node.nodeType) {
+	        var i = 0, attr = node.attributes, len, attributes = {};
+	        if (attr) {
+		    len = attr.length;
+		    for (i ; i < len; i++) {
+		        if (attr[i].name == "class") {
+			    attributes.klass = attr[i].value;
+		        } else {
+			    attributes[attr[i].name] = attr[i].value;
+		        }
+		    }
+	        }
+	        var children = [];
+	        i = 0, len = node.childNodes.length;
+	        for (i; i < len; i++) {
+		    child = node.childNodes[i];
+		    children[i] = nodeToObject(child);
+	        }
+	        return [node.tagName, attributes, children];
+	    }
+	}
+//alert("one function");
+	allNodesToJson = function () {
+	    var x = [], ary = document.getElementsByTagName("body")[0].childNodes;
+	    for (var i=0; i<ary.length; i++) { x[i]=nodeToObject(ary[i]); }
+	    //for (var i=0; i<4; i++) { x[i]=nodeToObject(ary[i]); }
+	    return JSON.stringify(x);
+	}
+//alert("two functions");
+openAlert = function() {
+  alert("open alert");
+  return "Returning from openAlert";
+}
+//alert("three functions");
+//openAlert();
+//alert("back from openAlert");
+	var jsonString = allNodesToJson(), jsonStringIndex = 0;
+	//var jsonString = "abcdefghijklmnopqrstuvwxyz", jsonStringIndex = 0;
+	getJsonChunk = function () {
+	    var lastJsonStringIndex = jsonStringIndex;
+	    jsonStringIndex += 200;
+	    return jsonString.slice(lastJsonStringIndex, jsonStringIndex);
+	}
+//alert("four functions");
+	return "Defined functions in foreign web page!";
+	//return jsonString.slice(0, 4);
 JS
-                                  
+
+    @from_zen = ""
+    begin
+        @json_chunk = browser.driver.execute_script('return getJsonChunk();')
+        puts @json_chunk
+        puts @json_chunk.nil?
+        @from_zen << @json_chunk
+    end while @json_chunk.length > 0
+
+puts @from_zen
+
     #@from_zen = browser.driver.execute_script('return allNodesToJson();')
     #@from_zen = browser.driver.execute_script('return nodeToJson(body);')
 
@@ -75,9 +107,9 @@ JS
     #remoteJson=dojo.query("#foo")[0].firstChild.textContent;
     #o=dojo.fromJson(remoteJson);
     #zen.renderTree(o,zen.zenDiv.domNode);
-    render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + @from_zen + '</div></object></body>'
+    render :inline => '<html><head><title></title></head><body><div style="display:block" id="remoteJson">' + @from_zen + '</div></object></body>'
 
-    #browser.close
+    browser.close
 
   end
 

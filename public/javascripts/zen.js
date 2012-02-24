@@ -272,30 +272,30 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     var createSubtree = function (treeSpec) {
-	console.info("Entering createSubtree: ");
-	console.group("treeSpec");
-	console.dir(treeSpec);
-	console.groupEnd();
+	//console.info("Entering createSubtree: ");
+	//console.group("treeSpec");
+	//console.dir(treeSpec);
+	//console.groupEnd();
         var i, rule, parentCompon, compon, len, constructor;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
-	console.debug("componKind => " + componKind);
-	console.debug("initParms => " + initParms);
-	console.group("initParms");
-	console.dir(initParms);
-	console.groupEnd();
+	//console.debug("componKind => " + componKind);
+	//console.debug("initParms => " + initParms);
+	//console.group("initParms");
+	//console.dir(initParms);
+	//console.groupEnd();
 
         rule = invertedRulesTable[componKind];
-	console.debug("rule => " + rule);
+	//console.debug("rule => " + rule);
         constructor = z.rule2ref(rule);
-	console.debug("typeof constructor => " + typeof constructor);
-	console.debug("constructor => " + constructor);
-	console.debug("componKind => " + componKind);
-	console.group("initParms");
-	console.dir(initParms);
-	console.groupEnd();
+	//console.debug("typeof constructor => " + typeof constructor);
+	//console.debug("constructor => " + constructor);
+	//console.debug("componKind => " + componKind);
+	//console.group("initParms");
+	//console.dir(initParms);
+	//console.groupEnd();
         parentCompon = constructor.call(document, componKind, initParms);
         //parentCompon = constructor.call(document, componKind, {});
-	console.debug("parentCompon => " + parentCompon);
+	//console.debug("parentCompon => " + parentCompon);
         len = subtree.length;
         for (i = 0; i < len; i++) {
             compon = createSubtree(subtree[i]);
@@ -310,7 +310,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // of each property is the set (an array) of the kinds of
     // component that can be created using the rule.
     // FIXME: Should not have to include upper case tag names.
-    var rulesTable = {
+    rulesTable = {
         createElement : [ 
 	    // Inline elements
 	    "A", "ABBR", "ACRONYM", "B", "BDO", "BIG", "BR", "CITE", "CODE",
@@ -318,7 +318,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    "SELECT", "SMALL", "SPAN", "STRONG", "SUB", "TEXTAREA", "TT",
 	    "VAR",
 	    // Block elements
-	    "IFRAME", "DIV", "P", "CENTER",
+	    "IFRAME", "DIV", "P", "CENTER", "HR", "EMBED",
 	    "TABLE", "TR", "TD",
 	    // Defined as block-level components in HTML 4
 	    "ADDRESS", "BLOCKQUOTE", "DIV", "DL", "FIELDSET", "FORM",
@@ -356,10 +356,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         for (s in zen.shortcutsTable) {
             if (zen.shortcutsTable.hasOwnProperty(s)) {
                 if (s === rule) {
-		    console.debug("Found rule in shortcutsTable");
+		    //console.debug("Found rule in shortcutsTable");
                     //ref = eval(z.shortcutsTable[rule]);
                     ref = dojo.fromJson(zen.shortcutsTable[rule]);
-		    console.debug("rule => " + rule);
+		    //console.debug("rule => " + rule);
                 }
             }
         }
@@ -458,17 +458,17 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         walkZenSpec(
             tree,
             function(tree) {
-		console.debug("zen.walkZenSpec: tree => " + tree);
+		//console.debug("zen.walkZenSpec: tree => " + tree);
                 requireSubtreeCompon(tree);
             });
         dojo.addOnLoad(function() {
-	    console.debug("zen.renderTreeDeferred: loaded, now calling createSubtree");
+	    //console.debug("zen.renderTreeDeferred: loaded, now calling createSubtree");
             newComponent = createSubtree(tree);
-	    console.debug("zen.renderTreeDeferred: newComponent => " +
-			  newComponent);
+	    //console.debug("zen.renderTreeDeferred: newComponent => " +
+	    //		    newComponent);
             newComponent.appendMyselfToParent(parent);
             z.startup();
-	    console.debug("zen.renderTreeDeferred: calling deferred.resolve()");
+	    //console.debug("zen.renderTreeDeferred: calling deferred.resolve()");
             //deferred.resolve(newComponent);
         });
     };

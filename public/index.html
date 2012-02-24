@@ -17,10 +17,10 @@
     </div>
     <div id="zen"></div>
     <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
-	 data-dojo-props='href:"web/localhost/experiments/javascript/clone_dom/clone_dom_dojo3.html"'>
+	 data-dojo-props='href:"web/localhost/experiments/html/body_script.html"'></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
     <script type="text/javascript">
-      djConfig = {
+      dojoConfig = {
           parseOnLoad: true,
           isDebug: true,
           dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
@@ -33,6 +33,7 @@
     <script type="text/javascript">
       dojo.addOnLoad(function() {
 	  dojo.require("dojox.layout.ContentPane");
+	  dojo.require("dojox.lang.aspect");
           dojo.require("zen.dojo");
           dojo.require("zen");
 	  dojo.addOnLoad(function() {
@@ -41,8 +42,14 @@
 	      rwp.onLoad = function () {
 		  console.debug("Hi, from the remote web page!");
 		  var remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent;
+		  console.debug("remoteJson => " + remoteJson);
 		  var remoteContent = dojo.fromJson(remoteJson);
+		  //var remoteContent = JSON.parse(remoteJson);
+		  console.group("remoteContent");
+		  console.dir(remoteContent);
+		  console.groupEnd();
 		  zen.renderForest(remoteContent, zen.zenDiv);
+		  console.debug("Returned from zen.renderForest");
 	      }
 	  });
       });

@@ -97,80 +97,28 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     dojo.require("dijit.form.Button");
     dojo.require("dijit.form.CheckBox");
     dojo.require("dojo.parser");
-    dojo.require("dojox.lang.aspect");
-    var aop = dojox.lang.aspect, adviceHandle;
-    disconnect = function(handle) {
-        // Use a copy of the handle array because
-        // dojo.disconnect wipes out the first element.
-        var h = [], len = handle.length;
-        for (i = 0; i < len; i++) { h[i] = handle[i]; };
-        dojo.disconnect(h);
-    };
-    getHandlers = function() {
+    var adviceHandle;
+    getHandlers = function() { //FIXME: Eliminate this, maybe.
         return handlers;
     };
     TraceArguments = {
         before: function(){
-            var joinPoint = aop.getContext().joinPoint,
+	    var joinPoint = aop.aspect.getContext().joinPoint,
             args = Array.prototype.join.call(arguments, ", ");
             console.debug("=> " + joinPoint.targetName + "(" + args + ")");
-            if (!dojo.byId("kill").checked) {
-                console.debug("Pushing handler to list");
-                handlers.push(arguments);
-            } else {
-                console.debug("Not pushing handler to list");
-            };
-            console.info("Connecting handler");
         }
     };
     TraceReturns = {
         afterReturning: function(retVal){
-            var joinPoint = aop.getContext().joinPoint;
-            console.debug("<= " + joinPoint.targetName + " returns " + retVal);
-            if (!dojo.byId("kill").checked) {
-                console.debug("Pushing handle to list");
-                handles.push(retVal);
-            } else {
-                console.debug("Disconnecting handler");
-                dojo.disconnect(retVal);
-            };
-            console.info("Number of handlers = " + handlers.length);
-            console.info("Number of handles = " + handles.length);
+            var joinPoint = aop.aspect.getContext().joinPoint;
+            console.debug("<= " + joinPoint.targetName + " returns " +
+			  ((typeof retVal == "function") ? "function" : retVal));
         },
         afterThrowing: function(excp){
-            var joinPoint = aop.getContext().joinPoint;
+            var joinPoint = aop.aspect.getContext().joinPoint;
             console.debug("<= " + joinPoint.targetName + " throws: " + excp);
         }
     };
-    doChange = function() {
-        console.debug("doChange");
-        if (dojo.byId("kill").checked) {
-            console.info("Now in Edit Mode! Number of handles = " + handles.length);
-            dojo.forEach(handles, function(handle) {
-                // Use a copy of the handle array because
-                // dojo.disconnect wipes out the first element.
-                var h = [], len = handle.length;
-                for (i = 0; i < len; i++) { h[i] = handle[i]; };
-                dojo.disconnect(h);
-            });
-        } else {
-            console.info("Now in Run Mode! Number of handlers = " + handlers.length);
-            aop.unadvise(adviceHandle);
-            dojo.forEach(handlers, function(handler) {
-                console.debug('dojo.connect ' + handler[0] + " " +
-                              handler[1] + " " + handler[2]);
-                dojo.connect(handler[0], handler[1], handler[2]);
-            });
-            adviceHandle = aop.advise(frames[0].dojoi, "connect",
-                                      [TraceReturns, TraceArguments]);
-        };
-        return false; // FIXME: remove?
-    };
-
-
-    //zen.createTools(tools);
-    //adviceHandle = aop.advise(frames[0].dojoi, "connect", [TraceReturns, TraceArguments]);
-
 
     /* Simplification and consolidation of a simulated "new"
        operator as given in Chapter 5 of _JavaScript: The Good
@@ -256,6 +204,21 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return domNodeCompon;
     };
 
+    z.createDummyElement = function (kind, attributes) {
+        var domNodeCompon = zen.createNew(zen.DomNodeCompon);
+        // FIXME: Use dojo.create.
+        var domNode = document.createElement("NOSCRIPT");
+        zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+        attributes = attributes || {};
+        if (typeof attributes.klass !== "undefined") {
+            dojo.addClass(domNode, attributes.klass);
+            delete attributes.klass;
+        }
+        dojo.attr(domNode, attributes || {}); //FIXME: Check this.
+        domNodeCompon.domNode = domNode;
+        return domNodeCompon;
+    };
+
     // Create a component that refers to an HTML text node or HTML
     // element. This avoids some conflict with Dojo that results when
     // trying to use prototype.js to add methods to an element. It also is
@@ -329,7 +292,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    "DD", "DT", "LI", "TBODY", "TD", "TFOOT", "TH", "THEAD", "TR",
 	    // Elements that may be used as either block-level or
 	    // inline elements
-	    "BUTTON", "DEL", "INS", "MAP", "OBJECT", "SCRIPT"
+	    "BUTTON", "DEL", "INS", "MAP", "OBJECT"
+	],
+	createDummyElement : [
+	    "SCRIPT"
 	],
         createDijit   : [ "dijit.TitlePane",
                           "dijit.layout.ContentPane",
@@ -446,6 +412,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.renderForest = function (forest, parent) {
 	var i, len = forest.length;
+	aop.aspect.advise(z, "createElement", [TraceReturns, TraceArguments]);
+	aop.aspect.advise(z, "createDummyElement", [TraceReturns, TraceArguments]);
+	aop.aspect.advise(z, "createTextNode", [TraceReturns, TraceArguments]);
+	aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
+	aop.aspect.advise(z, "rule2ref", [TraceReturns, TraceArguments]);
 	for (i=0; i<len; i++) {
 	    z.renderTree(forest[i], parent);
 	}
@@ -614,7 +585,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     z.loadToolbox = function () {
-	console.debug("Entered zen.loadToolbox");
+	//console.debug("Entered zen.loadToolbox");
         var deferred = new dojo.Deferred();
         deferred.then(
             function() {
@@ -633,30 +604,27 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             // handleAs: "text",
             handleAs: "json",
             handle: function (result) {
-		console.debug("Ajax result => " + result + ", zen.zenDiv => "
-			      + z.zenDiv);
+		//console.debug("Ajax result => " + result + ", zen.zenDiv => "
+		//	      + z.zenDiv);
                 if (!(result instanceof Error)) {
                     z.renderTreeDeferred(result, z.zenDiv, deferred);
                     //FIXME: Do this after the callback in
                     //z.renderTree completes.
                     dojo.style("zenLoadingImg", "display", "none");
-		    dojo.addOnLoad(function() {
-			z.ibody = z.createNew(zen.DomNodeCompon, null,
-					      dojo.query("#iframe")[0].contentDocument.body);
-		    });
                 } else {
                     console.error("json iframe error");
                 }
             }
         });
 
-	console.debug("Called dojo.io.iframe.send");
+	//console.debug("Called dojo.io.iframe.send");
     };
 
     z.init = function () {
 	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
         dojo.require.apply(null, ["dojo.io.iframe"]); // This is for dojo.io.iframe.send only!
-	console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
+	//console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
+	//aop.aspect.advise(console, "debug", [zen.TraceReturns, zen.TraceArguments]);
         dojo.addOnLoad(z.loadToolbox);
     };
 
@@ -694,6 +662,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         // extension could be used to keep zen.js modular and lean.
         z.shortcutsTable = {
             createElement : z.createElement,
+	    createDummyElement : z.createDummyElement,
             createTextNode : z.createTextNode,
             createDijit : z.createDijit
         };

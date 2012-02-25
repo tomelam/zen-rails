@@ -17,10 +17,10 @@ class ProxyController < ApplicationController
     new_url = scheme + host + ':' + port.to_s + path
 
     logger.debug "url is #{url}"
-    logger.debug "host is #{host}"
-    logger.debug "path is #{path}"
-    logger.debug "port is #{port}"
-    logger.debug "new_url is #{new_url}"
+    #logger.debug "host is #{host}"
+    #logger.debug "path is #{path}"
+    #logger.debug "port is #{port}"
+    #logger.debug "new_url is #{new_url}"
 
     browser.goto new_url
     logger.debug "browser.url is #{browser.url}"
@@ -31,8 +31,10 @@ class ProxyController < ApplicationController
     #page.gsub!(/(<a[^>]*href=\"(?!http))/, '\1/web/' + host + ':' + port.to_s + '/')
     #send_data page, :filename => 'x.png', :type => response.content_type, :disposition => 'inline'
 
-    # Just add some functions to the foreign web page.
-    @zen_throwaway = browser.driver.execute_script <<-JS
+    @from_zen = browser.driver.execute_script <<-JS
+	//scriptTag = document.createElement("script");
+	//scriptTag.src = "http://127.0.0.1/experiments/JSON-js/json2.js"
+	//document.body.appendChild(scriptTag);
 	nodeToObject = function (node) {
 	    if (node.nodeType == 3) {
 	        return ["text", node.textContent, []];
@@ -65,34 +67,10 @@ class ProxyController < ApplicationController
 	    return JSON.stringify(x);
 	}
 //alert("two functions");
-openAlert = function() {
-  alert("open alert");
-  return "Returning from openAlert";
-}
-//alert("three functions");
-//openAlert();
-//alert("back from openAlert");
-	var jsonString = allNodesToJson(), jsonStringIndex = 0;
-	//var jsonString = "abcdefghijklmnopqrstuvwxyz", jsonStringIndex = 0;
-	getJsonChunk = function () {
-	    var lastJsonStringIndex = jsonStringIndex;
-	    jsonStringIndex += 200;
-	    return jsonString.slice(lastJsonStringIndex, jsonStringIndex);
-	}
-//alert("four functions");
-	return "Defined functions in foreign web page!";
-	//return jsonString.slice(0, 4);
+	foreignJSON = allNodesToJson();
+	//obj = foreignJSON.parse();
+	return foreignJSON;
 JS
-
-    @from_zen = ""
-    begin
-        @json_chunk = browser.driver.execute_script('return getJsonChunk();')
-        puts @json_chunk
-        puts @json_chunk.nil?
-        @from_zen << @json_chunk
-    end while @json_chunk.length > 0
-
-puts @from_zen
 
     #@from_zen = browser.driver.execute_script('return allNodesToJson();')
     #@from_zen = browser.driver.execute_script('return nodeToJson(body);')

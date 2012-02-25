@@ -17,7 +17,7 @@
     </div>
     <div id="zen"></div>
     <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
-	 data-dojo-props='href:"web/yahoo.com"'></div>
+	 data-dojo-props='href:"web/google.com"'></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
     <script type="text/javascript">
       dojoConfig = {
@@ -45,9 +45,9 @@
 	      if (rwp) {
 		  rwp.onLoad = function () {
 		      console.debug("Greetings from the remote web page!");
-		      var remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent;
+		      remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent;
 		      //console.debug("remoteJson => " + remoteJson);
-		      var remoteContent = dojo.fromJson(remoteJson);
+		      remoteContent = dojo.fromJson(remoteJson);
 		      //var remoteContent = JSON.parse(remoteJson);
 		      //console.group("remoteContent");
 		      //console.dir(remoteContent);

@@ -412,11 +412,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.renderForest = function (forest, parent) {
 	var i, len = forest.length;
-	aop.aspect.advise(z, "createElement", [TraceReturns, TraceArguments]);
-	aop.aspect.advise(z, "createDummyElement", [TraceReturns, TraceArguments]);
-	aop.aspect.advise(z, "createTextNode", [TraceReturns, TraceArguments]);
-	aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
-	aop.aspect.advise(z, "rule2ref", [TraceReturns, TraceArguments]);
+	//aop.aspect.advise(z, "createElement", [TraceReturns, TraceArguments]);
+	//aop.aspect.advise(z, "createDummyElement", [TraceReturns, TraceArguments]);
+	//aop.aspect.advise(z, "createTextNode", [TraceReturns, TraceArguments]);
+	//aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
+	//aop.aspect.advise(z, "rule2ref", [TraceReturns, TraceArguments]);
 	for (i=0; i<len; i++) {
 	    z.renderTree(forest[i], parent);
 	}

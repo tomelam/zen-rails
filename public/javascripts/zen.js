@@ -235,7 +235,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     var createSubtree = function (treeSpec) {
-	//console.info("Entering createSubtree: ");
+	//console.debug("Entering createSubtree");
 	//console.group("treeSpec");
 	//console.dir(treeSpec);
 	//console.groupEnd();
@@ -279,23 +279,23 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    "A", "ABBR", "ACRONYM", "B", "BDO", "BIG", "BR", "CITE", "CODE",
 	    "DFN", "EM", "I", "IMG", "INPUT", "KBD", "LABEL", "Q", "SAMP",
 	    "SELECT", "SMALL", "SPAN", "STRONG", "SUB", "TEXTAREA", "TT",
-	    "VAR",
+	    "VAR", "LEGEND", "U", "NOBR", "OPTION", "BDI",
 	    // Block elements
 	    "IFRAME", "DIV", "P", "CENTER", "HR", "EMBED",
-	    "TABLE", "TR", "TD",
+	    "TABLE", "TR", "TD", "AREA",
 	    // Defined as block-level components in HTML 4
 	    "ADDRESS", "BLOCKQUOTE", "DIV", "DL", "FIELDSET", "FORM",
-	    "H1", "H2", "H3", "H4", "H5",
-	    "NOSCRIPT", "OL", "P", "PRE", "TABLE", "UL",
+	    "H1", "H2", "H3", "H4", "H5", "H6",
+	    "OL", "P", "PRE", "TABLE", "UL",
 	    // Elements that may also be considered block-level
 	    // elements since they may contain block-level elements
 	    "DD", "DT", "LI", "TBODY", "TD", "TFOOT", "TH", "THEAD", "TR",
 	    // Elements that may be used as either block-level or
 	    // inline elements
-	    "BUTTON", "DEL", "INS", "MAP", "OBJECT"
+	    "BUTTON", "DEL", "INS", "MAP", "OBJECT", "PARAM"
 	],
 	createDummyElement : [
-	    "SCRIPT"
+	    "SCRIPT", "NOSCRIPT", "STYLE", "FONT"
 	],
         createDijit   : [ "dijit.TitlePane",
                           "dijit.layout.ContentPane",
@@ -337,6 +337,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     var requireSubtreeCompon = function(treeSpec) {
+	//console.group("treeSpec");
+	//console.dir(treeSpec);
+	//console.groupEnd();
         var i, rule = "", parentCompon, compon, len, constructor, parentDomNode,
         componKind = treeSpec[0],
         initParms = treeSpec[1],
@@ -365,6 +368,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     var walkZenSpec = function (treeSpec, func) {
+	//console.group("treeSpec");
+	//console.dir(treeSpec);
+	//console.groupEnd();
         func(treeSpec);
         dojo.forEach(treeSpec[2],
                      function (subtree) { walkZenSpec(subtree, func); });
@@ -412,11 +418,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.renderForest = function (forest, parent) {
 	var i, len = forest.length;
-	//aop.aspect.advise(z, "createElement", [TraceReturns, TraceArguments]);
-	//aop.aspect.advise(z, "createDummyElement", [TraceReturns, TraceArguments]);
-	//aop.aspect.advise(z, "createTextNode", [TraceReturns, TraceArguments]);
 	//aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
-	//aop.aspect.advise(z, "rule2ref", [TraceReturns, TraceArguments]);
 	for (i=0; i<len; i++) {
 	    z.renderTree(forest[i], parent);
 	}

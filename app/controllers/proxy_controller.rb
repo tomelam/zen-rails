@@ -38,37 +38,59 @@ class ProxyController < ApplicationController
 	nodeToObject = function (node) {
 	    if (node.nodeType == 3) {
 	        return ["text", node.textContent, []];
-	    } else if (node.nodeType) {
+	    } else if (node.nodeType == 1) {
+                if (node.tagName == "SCRIPT") {
+                    return null;
+                }
 	        var i = 0, attr = node.attributes, len, attributes = {};
 	        if (attr) {
-		    len = attr.length;
+		    var len = attr.length;
 		    for (i ; i < len; i++) {
+                        var name = attr[i].name;
 		        if (attr[i].name == "class") {
 			    attributes.klass = attr[i].value;
-		        } else {
-			    attributes[attr[i].name] = attr[i].value;
+		        } else if (attr[i].name.slice(0,2) == "on") {
+                            attributes[name] = "";
+                        } else {
+			    attributes[name] = attr[i].value;
 		        }
 		    }
 	        }
-	        var children = [];
-	        i = 0, len = node.childNodes.length;
+	        var children = []; //FIXME: Incl. text nodes, so use better name.
+	        var i = 0, j = 0, len = node.childNodes.length;
 	        for (i; i < len; i++) {
-		    child = node.childNodes[i];
-		    children[i] = nodeToObject(child);
+		    var child = node.childNodes[i];
+		    //children[i] = nodeToObject(child);
+		    var obj = nodeToObject(child);
+                    if (obj) {
+                        children[j] = obj;
+                        j += 1;
+                    }
 	        }
 	        return [node.tagName, attributes, children];
-	    }
+	    } else {
+                return null;
+            }
 	}
 //alert("one function");
 	allNodesToJson = function () {
-	    var x = [], ary = document.getElementsByTagName("body")[0].childNodes;
-	    for (var i=0; i<ary.length; i++) { x[i]=nodeToObject(ary[i]); }
+	    var x = [], j = 0, ary = document.getElementsByTagName("body")[0].childNodes;
+	    //for (var i=0; i<ary.length; i++) { x[i]=nodeToObject(ary[i]); }
+	    for (var i=0; i<ary.length; i++) {
+                var obj = nodeToObject(ary[i]);
+                if (obj) {
+                    x[j] = obj;
+                    j += 1;
+                }
+            }
 	    //for (var i=0; i<4; i++) { x[i]=nodeToObject(ary[i]); }
 	    return JSON.stringify(x);
 	}
 //alert("two functions");
+        //foreignJSON = JSON.stringify(nodeToObject(document.getElementsByTagName("body")[0].childNodes[1]));
 	foreignJSON = allNodesToJson();
-	//obj = foreignJSON.parse();
+//alert(foreignJSON.length);
+	//obj = JSON.parse(foreignJSON);
 	return foreignJSON;
 JS
 
@@ -85,7 +107,7 @@ JS
     #remoteJson=dojo.query("#foo")[0].firstChild.textContent;
     #o=dojo.fromJson(remoteJson);
     #zen.renderTree(o,zen.zenDiv.domNode);
-    render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + @from_zen + '</div></object></body>'
+    render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + ERB::Util.html_escape(@from_zen) + '</div></object></body>'
 
     browser.close
 

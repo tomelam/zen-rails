@@ -48,11 +48,13 @@
 		      remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent;
 		      //console.debug("remoteJson => " + remoteJson);
 		      remoteContent = dojo.fromJson(remoteJson);
+		      //remoteContent = JSON.parse(remoteJson);
 		      //var remoteContent = JSON.parse(remoteJson);
 		      //console.group("remoteContent");
 		      //console.dir(remoteContent);
 		      //console.groupEnd();
 		      zen.renderForest(remoteContent, zen.zenDiv);
+		      //zen.renderTree(remoteContent, zen.zenDiv);
 		      //console.debug("Returned from zen.renderForest");
 		  }
 	      }

@@ -27,6 +27,8 @@
           baseUrl: "./",
           modulePaths: { zen: "javascripts/zen", aop: "javascripts/aop" }
       };
+      //google.load("dojo", "1.6.0", { uncompressed:true });
+      //google.load("dojo", "1.7.2", { uncompressed:true }); //FIXME.
       google.load("dojo", "1.6.0", { uncompressed:true });
     </script>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
@@ -37,9 +39,6 @@
           dojo.require("zen.dojo");
           dojo.require("zen");
 	  dojo.addOnLoad(function() {
-	      //console.group("aop");
-	      //console.dir(aop);
-	      //console.groupEnd();
 	      zen.init();
 	      var rwp = dijit.byId("remoteWebPage");
 	      if (rwp) {

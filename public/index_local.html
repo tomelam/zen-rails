@@ -8,31 +8,50 @@
       @import "javascripts/dojo/dojo/resources/dojo.css";
       @import "stylesheets/zen.css";
     </style>
+    <script type="text/javascript">
+      dojoConfig = {
+          parseOnLoad: true,
+          isDebug: true,
+          dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
+          modulePaths: { zen: "../../zen", aop: "../../aop" }
+      };
+    </script>
+    <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js">/</script>
   </head>
   <body class="tundra">
     <div>
       <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
     </div>
     <div id="zen"></div>
+    <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
+	 data-dojo-props='href:"web/google.com"'></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
-    <iframe id="ifr" src="web/orbitz.com" width="100%" height="400px"></iframe>
-    <script type="text/javascript">
-      djConfig = {
-          parseOnLoad: true,
-          isDebug: true,
-          modulePaths: { zen: "../../zen" }
-      };
-    </script>
-    <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js">/</script>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
     <script type="text/javascript">
       dojo.addOnLoad(function() {
+	  dojo.require("aop.aspect");
+	  dojo.require("dojox.layout.ContentPane");
           dojo.require("zen.dojo");
           dojo.require("zen");
 	  dojo.addOnLoad(function() {
-	      console.debug("onLoad: calling zen.init()");
 	      zen.init();
-	      console.debug("returned from zen.init()");
+	      var rwp = dijit.byId("remoteWebPage");
+	      if (rwp) {
+		  rwp.onLoad = function () {
+		      console.debug("Greetings from the remote web page!");
+		      remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent;
+		      //console.debug("remoteJson => " + remoteJson);
+		      remoteContent = dojo.fromJson(remoteJson);
+		      //remoteContent = JSON.parse(remoteJson);
+		      //var remoteContent = JSON.parse(remoteJson);
+		      //console.group("remoteContent");
+		      //console.dir(remoteContent);
+		      //console.groupEnd();
+		      zen.renderForest(remoteContent, zen.zenDiv);
+		      //zen.renderTree(remoteContent, zen.zenDiv);
+		      //console.debug("Returned from zen.renderForest");
+		  }
+	      }
 	  });
       });
     </script>

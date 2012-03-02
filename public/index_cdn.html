@@ -4,21 +4,14 @@
     <title>Zen Notebook</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <style type="text/css">
-      @import "javascripts/dojo/dijit/themes/tundra/tundra.css";
-      @import "javascripts/dojo/dojo/resources/dojo.css";
+      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dijit/themes/tundra/tundra.css";
+      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojo/resources/dojo.css";
       @import "stylesheets/zen.css";
     </style>
-    <script type="text/javascript">
-      dojoConfig = {
-          parseOnLoad: true,
-          isDebug: true,
-          dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
-          modulePaths: { zen: "../../zen", aop: "../../aop" }
-      };
-    </script>
-    <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js">/</script>
   </head>
   <body class="tundra">
+    <script src="https://www.google.com/jsapi?key=ABQIAAAAvmYe20gMb-FECPqg1NBQWhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQHRH-V6rlCGMZcROUUf5124nHP3A"
+            type="text/javascript"></script>
     <div>
       <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
     </div>
@@ -26,6 +19,18 @@
     <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
 	 data-dojo-props='href:"web/google.com"'></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
+    <script type="text/javascript">
+      dojoConfig = {
+          parseOnLoad: true,
+          isDebug: true,
+          dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
+          baseUrl: "./",
+          modulePaths: { zen: "javascripts/zen", aop: "javascripts/aop" }
+      };
+      //google.load("dojo", "1.6.0", { uncompressed:true });
+      //google.load("dojo", "1.7.2", { uncompressed:true }); //FIXME.
+      google.load("dojo", "1.7.2", { uncompressed:true });
+    </script>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
     <script type="text/javascript">
       dojo.addOnLoad(function() {

@@ -36,11 +36,11 @@ sayHello = function() { alert("Hi!"); }
 //testObjectCreator();
 
 var textTree1 =
-    ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
+    ["DIV", {style:{width:"180px",height:"180px",backgroundColor:"red"},
 	     id:"workingNode",title:"Title"},
      [["text", "This is text!", []]]];
 var tree1 =
-    ["div", {style:{width:"180px",height:"180px",backgroundColor:"red"},
+    ["DIV", {style:{width:"180px",height:"180px",backgroundColor:"red"},
 	     id:"workingNode",title:"Title"}, []];
 var tree2 =
     ["div", {id:"workingNode",
@@ -268,7 +268,7 @@ test = function(tree) {
     }, function(err) {
 	console.error("Error in test()");
     });
-    console.log("*** Rendering test tree in test.js:zen.ibody");
-    newComponent = zen.renderTreeDeferred(tree, zen.ibody, deferred);
+    console.log("*** test.js: Rendering test tree under zen.zenDiv");
+    newComponent = zen.renderTreeDeferred(tree, zen.zenDiv, deferred);
     //zen.log("*** Done testing creation and rendering of a tree");
 };

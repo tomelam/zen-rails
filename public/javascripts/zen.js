@@ -418,7 +418,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.renderForest = function (forest, parent) {
 	var i, len = forest.length;
-	//aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
+	aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
 	for (i=0; i<len; i++) {
 	    z.renderTree(forest[i], parent);
 	}
@@ -628,6 +628,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	//console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
 	//aop.aspect.advise(console, "debug", [zen.TraceReturns, zen.TraceArguments]);
         dojo.addOnLoad(z.loadToolbox);
+	z.printStyles();
+	z.addTestStyle();
+	//z.createStyleSearcher();
     };
 
     dojo.addOnLoad(function() {
@@ -675,6 +678,49 @@ zen.DomNodeCompon.domNodeCompons = [];
 
 dojo.require.apply(null, ["zen.debug"]);
 dojo.require.apply(null, ["zen.dojo"]);
+
+zen.printStyles = function () {
+    ruleStore = new dojox.data.CssRuleStore({'context': ['dijit/themes/tundra/tundra.css']});
+    var gotItems = function(items, request){
+	var i, len = items.length;
+	rules = items;
+	console.log("Number of items located in CssRuleStore: " + items.length);
+	/*
+	for (i = 0; i < len; i++) {
+	    items[i];
+	}
+	*/
+	console.debug("rules[0].rule.cssText => " + rules[0].rule.cssText);
+    };
+    ruleStore.fetch({onComplete: gotItems});
+}
+
+zen.addTestStyle = function () {
+    dojox.html.insertCssRule("#zen", "background-color: red");
+}
+
+zen.createStyleSearcher = function () {
+    ruleStore = new dojox.data.CssRuleStore({'context': ['dijit/themes/tundra/tundra.css']});
+    //console.group("ruleStore._allItems");
+    //console.dir(ruleStore._allItems);
+    //console.groupEnd();
+    ruleCombo = new dijit.form.ComboBox({'store': ruleStore, 'searchAttr': 'selector'}, dojo.byId('ruleCombo'));
+    
+    function setCssText(){
+	//alert('Entering setCssText');
+	var item = ruleCombo.item;
+	var text = dojo.byId("textLoc");
+	if(text){
+	    while(text.firstChild){
+		text.removeChild(text.firstChild);
+	    }
+	    if(item){
+		text.innerHTML = ruleStore.getValue(item, "cssText");
+	    }
+	}else {console.log("foo!")}
+    }
+    dojo.connect(ruleCombo, "onChange", setCssText);
+}
 
 // FIXME: Use the following function or delete it.
 /*

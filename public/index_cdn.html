@@ -4,41 +4,54 @@
     <title>Zen Notebook</title>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <style type="text/css">
-      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dijit/themes/tundra/tundra.css";
-      @import "https://ajax.googleapis.com/ajax/libs/dojo/1.6.0/dojo/resources/dojo.css";
+      @import "javascripts/dojo/dijit/themes/tundra/tundra.css";
+      @import "javascripts/dojo/dojo/resources/dojo.css";
       @import "stylesheets/zen.css";
     </style>
-  </head>
-  <body class="tundra">
-    <script src="https://www.google.com/jsapi?key=ABQIAAAAvmYe20gMb-FECPqg1NBQWhT2yXp_ZAY8_ufC3CFXhHIE1NvwkxQHRH-V6rlCGMZcROUUf5124nHP3A"
-            type="text/javascript"></script>
-    <div>
-      <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
-    </div>
-    <div id="zen"></div>
-    <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
-	 data-dojo-props='href:"web/google.com"'></div>
-    <div id="diagramPane" style="width:1px; height:1px;"></div>
-    <script type="text/javascript">
-      dojoConfig = {
-          parseOnLoad: true,
-          isDebug: true,
-          dojoBlankHtmlUrl:'javascripts/dojo/dojo/resources/blank.html',
-          baseUrl: "./",
-          modulePaths: { zen: "javascripts/zen", aop: "javascripts/aop" }
-      };
-      //google.load("dojo", "1.6.0", { uncompressed:true });
-      //google.load("dojo", "1.7.2", { uncompressed:true }); //FIXME.
-      google.load("dojo", "1.7.2", { uncompressed:true });
+
+    <!-- FIXME: Make module loading (esp. aop/aspect, zen/dojo, and zen)
+         work with async:true.
+
+    http://www.sitepen.com/blog/2012/02/01/dojo-1-7-tutorial-update/
+    http://dojotoolkit.org/blog/dojo-1-7-released
+    http://livedocs.dojotoolkit.org/
+    http://livedocs.dojotoolkit.org/releasenotes/1.7
+    http://livedocs.dojotoolkit.org/dojo/registerModulePath
+    http://staging.dojotoolkit.org/api/
+    http://dojotoolkit.org/reference-guide/releasenotes/1.7.html
+    http://dojotoolkit.org/reference-guide/dojo/config.html
+    http://dojotoolkit.org/reference-guide/dojo/registerModulePath.html
+    http://dojotoolkit.org/documentation/tutorials/1.7/hello_dojo/
+    http://dojotoolkit.org/documentation/tutorials/1.7/dojo_config/
+    http://dojotoolkit.org/documentation/tutorials/1.7/cdn/
+    -->
+    <script src="javascripts/dojo/dojo/dojo.js"
+	    data-dojo-config="parseOnLoad: true, async: false, modulePaths:{zen:'../../zen', aop:'../../aop'}">
     </script>
-    <script type="text/javascript" src="javascripts/zen/test.js">/</script>
-    <script type="text/javascript">
-      dojo.addOnLoad(function() {
-	  dojo.require("aop.aspect");
-	  dojo.require("dojox.layout.ContentPane");
-          dojo.require("zen.dojo");
-          dojo.require("zen");
-	  dojo.addOnLoad(function() {
+    
+    <script>
+      require([
+        "dojo/dom",        // needed for dojo.byId
+        "dijit/registry",  // needed for dijit.byId
+        "dojo/parser",     // needed for parseOnLoad to run
+        "dojo/_base/kernel",
+        "dojo/_base/loader",
+        "aop/aspect",
+	"dijit/form/ComboBox",
+        "dojox/layout/ContentPane",
+	"dojox/html/styles",
+	"dojox/data/CssRuleStore",
+        "zen/dojo",
+        "zen"
+      ],
+      // callback when above modules finish loading
+      function () {
+          console.debug("Modules are loaded");
+          dojo.addOnLoad(function () {
+	      //dojo.require("aop.aspect");
+	      //dojo.require("dojox.layout.ContentPane");
+              //dojo.require("zen.dojo");
+              //dojo.require("zen");
 	      zen.init();
 	      var rwp = dijit.byId("remoteWebPage");
 	      if (rwp) {
@@ -57,8 +70,32 @@
 		      //console.debug("Returned from zen.renderForest");
 		  }
 	      }
-	  });
+          });
       });
-    </script>
+ </script>
+
+  </head>
+  <body class="tundra">
+    <div>
+      <img id="zenLoadingImg" src="images/loading.gif" alt="loading" />
+    </div>
+<!--
+<b>Combo lookup of selectors (scoped to tundra.css)</b>
+<br>
+<br>
+<div id="ruleCombo"></div>
+<br>
+<br>
+<b>The css text associated with the rule: </b>
+<br>
+<span id="textLoc"></span>
+<br>
+<br>
+-->
+    <div id="zen"></div>
+    <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
+	 data-dojo-props='href:"web/google.com"'></div>
+    <div id="diagramPane" style="width:1px; height:1px;"></div>
+    <script type="text/javascript" src="javascripts/zen/test.js">/</script>
   </body>
 </html>

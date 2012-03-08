@@ -103,19 +103,19 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
     TraceArguments = {
         before: function(){
-	    var joinPoint = aop.aspect.getContext().joinPoint,
+	    var joinPoint = dojox.lang.aspect.getContext().joinPoint,
             args = Array.prototype.join.call(arguments, ", ");
             console.debug("=> " + joinPoint.targetName + "(" + args + ")");
         }
     };
     TraceReturns = {
         afterReturning: function(retVal){
-            var joinPoint = aop.aspect.getContext().joinPoint;
+            var joinPoint = dojox.lang.aspect.getContext().joinPoint;
             console.debug("<= " + joinPoint.targetName + " returns " +
 			  ((typeof retVal == "function") ? "function" : retVal));
         },
         afterThrowing: function(excp){
-            var joinPoint = aop.aspect.getContext().joinPoint;
+            var joinPoint = dojox.lang.aspect.getContext().joinPoint;
             console.debug("<= " + joinPoint.targetName + " throws: " + excp);
         }
     };
@@ -191,9 +191,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Replace zen.info, etc. with z.info, etc.?
     z.createElement = function (kind, attributes) {
         var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
-        // FIXME: Use dojo.create.
-	if (kind == "BODY") {
-	    domNode = document.getElementsByTagName("body")[0];
+        // FIXME: Use dojo.create. FIXME: Styles applied to the body won't work!
+	if (kind == "BODY") { // Fake this so it can be embedded anywhere.
+	    domNode = document.createElement("div");
 	} else {
             domNode = document.createElement(kind);
 	}
@@ -239,7 +239,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return domNodeCompon;
     };
 
-    var createSubtree = function (treeSpec) {
+    z.createSubtree = function (treeSpec) {
 	//console.debug("Entering createSubtree");
 	//console.group("treeSpec");
 	//console.dir(treeSpec);
@@ -266,7 +266,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	//console.debug("parentCompon => " + parentCompon);
         len = subtree.length;
         for (i = 0; i < len; i++) {
-            compon = createSubtree(subtree[i]);
+            compon = z.createSubtree(subtree[i]);
             compon.appendMyselfToParent(parentCompon);
         }
 	//console.debug("return parentCompon");
@@ -280,6 +280,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Should not have to include upper case tag names.
     rulesTable = {
         createElement : [ 
+	    // Head elements (nodes?)
+	    "META", "TITLE",
 	    // Inline elements
 	    "A", "ABBR", "ACRONYM", "B", "BDO", "BIG", "BR", "CITE", "CODE",
 	    "DFN", "EM", "I", "IMG", "INPUT", "KBD", "LABEL", "Q", "SAMP",
@@ -416,7 +418,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.renderTree = function (tree, parent) {
         var newComponent;
-        newComponent = createSubtree(tree);
+	//dojox.lang.aspect.advise(zen, "createSubtree", [TraceReturns, TraceArguments]);
+        newComponent = z.createSubtree(tree);
         newComponent.appendMyselfToParent(parent);
         z.startup();
         return newComponent;
@@ -424,7 +427,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.renderForest = function (forest, parent) {
 	var i, len = forest.length;
-	aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
+	//dojox.lang.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
 	for (i=0; i<len; i++) {
 	    z.renderTree(forest[i], parent);
 	}
@@ -451,7 +454,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             });
         dojo.addOnLoad(function() {
 	    //console.debug("zen.renderTreeDeferred: loaded, now calling createSubtree");
-            newComponent = createSubtree(tree);
+            newComponent = z.createSubtree(tree);
 	    //console.debug("zen.renderTreeDeferred: newComponent => " +
 	    //		    newComponent);
             newComponent.appendMyselfToParent(parent);
@@ -638,10 +641,25 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     z.init = function () {
+	/*
+	  FIXME
+	define(["dojo/aspect"], function(aspect){
+	    var signal = aspect.after(zen, "createSubtree", function(treeSpec){
+		// This will be called when targetObject.methodName()
+		// is called, after the original function is called.
+		console.debug("zen.createSubtree: treeSpec[0] => " + treeSpec[0]);
+	    });
+	});
+	*/
 	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
+	z.xclusion1 = dojo.byId("transclusion1");
+	z.head1 = z.createNew(zen.DomNodeCompon, null,
+			      z.xclusion1.contentDocument.head);
+	z.body1 = z.createNew(zen.DomNodeCompon, null,
+			      z.xclusion1.contentDocument.body);
         dojo.require.apply(null, ["dojo.io.iframe"]); // This is for dojo.io.iframe.send only!
 	//console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
-	//aop.aspect.advise(console, "debug", [zen.TraceReturns, zen.TraceArguments]);
+	//dojo.aspect.advise(console, "debug", [zen.TraceReturns, zen.TraceArguments]);
         dojo.addOnLoad(z.loadToolbox);
 	z.printStyles();
 	//z.createStyleSearcher();
@@ -695,15 +713,9 @@ dojo.require.apply(null, ["zen.dojo"]);
 
 zen.printStyles = function () {
     ruleStore = new dojox.data.CssRuleStore({'context': ['dijit/themes/tundra/tundra.css']});
-    var gotItems = function(items, request){
+    var gotItems = function (items, request) {
 	var i, len = items.length;
 	rules = items;
-	console.log("Number of items located in CssRuleStore: " + items.length);
-	/*
-	for (i = 0; i < len; i++) {
-	    items[i];
-	}
-	*/
 	console.debug("rules[0].rule.cssText => " + rules[0].rule.cssText);
     };
     ruleStore.fetch({onComplete: gotItems});

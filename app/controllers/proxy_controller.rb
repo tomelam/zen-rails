@@ -36,6 +36,7 @@ class ProxyController < ApplicationController
         // This technique of getting CSS rules is derived from
         // http://www.quirksmode.org/dom/changess.html . FIXME: Make this work
         // in more browsers.
+
         theRules = []; theStylesheetLengths = {};
         if (document.styleSheets.length > 0) {
             styleSheetsLen = document.styleSheets.length;
@@ -44,30 +45,19 @@ class ProxyController < ApplicationController
                 if (isIEorSafari) {
                     // For IE and Safari
                     //FIXME
-	            new Exception('not implemented');
+	            new Error('not implemented');
                 } else {
-                    rulesAryLen = document.styleSheets[i].cssRules.length;
-//alert("rulesAryLen => " + rulesAryLen);
-//rulesLen = (rulesAryLen * 7) / 8;
-rulesLen = rulesAryLen - 4;
-//rulesLen = rulesAryLen - 3;
-rulesLen = rulesAryLen;
-key = "stylesheet " + i;
-theStylesheetLengths["stylesheet_" + i] = [rulesAryLen, rulesLen];
+                    rulesLen = document.styleSheets[i].cssRules.length;
+                    //theStylesheetLengths["stylesheet_" + i] = rulesLen;
                     for (j=0; j<rulesLen; j++) {
-//alert("i => " + i + ", j => " + j);
                         rule = document.styleSheets[i].cssRules[j];
                         if (rule.type != 4) { // type 4 is for @media rules
                             theRules.push([rule.selectorText, rule.style.cssText]);
                         }
-                    };
-                    //alert("After loop");
-                };
-                //alert("After if");
-            };
-            //alert("After 2nd loop");
-        };
-        //alert("Grabbed rules: theRules.length => " + theRules.length);
+                    }
+                }
+            }
+        }
 
 	nodeToObject = function (node) {
 	    if (node.nodeType == 3) {
@@ -107,40 +97,23 @@ theStylesheetLengths["stylesheet_" + i] = [rulesAryLen, rulesLen];
             }
 	}
 
-	var theNodes = [], j = 0, ary = document.getElementsByTagName("body")[0].childNodes;
-	//for (var i=0; i<ary.length; i++) { theNodes[i]=nodeToObject(ary[i]); }
+	var theHeadNodes = [], j = 0, ary = document.head.childNodes;
 	for (var i=0; i<ary.length; i++) {
             var obj = nodeToObject(ary[i]);
-            if (obj) {
-                theNodes[j] = obj;
+            if (obj) { // Account for nodes that should not be included.
+                theHeadNodes[j] = obj;
                 j += 1;
             }
         }
-        theTree = nodeToObject(document.getElementsByTagName("body")[0]);
 
-	//foreignJSON = allNodesToJson();
-        //foreignJSON = JSON.stringify({theStylesheetLengths:theStylesheetLengths,
-        //                              theRules:theRules, theNodes:theNodes});
-        foreignJSON = JSON.stringify({theStylesheetLengths:theStylesheetLengths,
-                                      theRules:theRules, theTree:theTree});
-        //foreignJSON = JSON.stringify([a:1, b:2]);
-	//obj = JSON.parse(foreignJSON);
+        theBody = nodeToObject(document.body);
+
+        foreignJSON = JSON.stringify({theHeadNodes:theHeadNodes, theBody:theBody,
+                                      theWidth:document.body.clientWidth,
+                                      theHeight:document.body.clientHeight});
 	return foreignJSON;
 JS
 
-    #@from_zen = browser.driver.execute_script('return allNodesToJson();')
-    #@from_zen = browser.driver.execute_script('return nodeToJson(body);')
-
-    #render :inline => '<html><head><title></title><script type="text/javascript">alert("hi");' +
-    #  '</script></head><body>' + @from_zen + '</body>'
-
-    #render :inline => '<html><head><title></title><script type="text/javascript">alert("hi"); json=dojo.fromJson(' + @from_zen + '); zen.renderTree(json, document.body);</script></head><body>hey</body>'
-
-    #render :inline => '<html><head><title></title><script type="text/javascript">alert("hi"); zen.renderTree("[\"div\", {}, []]", document.body);</script></head><body>hey</body>'
-
-    #remoteJson=dojo.query("#foo")[0].firstChild.textContent;
-    #o=dojo.fromJson(remoteJson);
-    #zen.renderTree(o,zen.zenDiv.domNode);
     render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + ERB::Util.html_escape(@from_zen) + '</div></object></body>'
 
     browser.close

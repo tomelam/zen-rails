@@ -57,17 +57,25 @@
 	      if (rwp) {
 		  rwp.onLoad = function () {
 		      console.debug("Greetings from the remote web page!");
-		      remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent;
+		      //remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent.theNodes;
+		      remoteJson = dojo.byId("remoteJson").textContent;
 		      //console.debug("remoteJson => " + remoteJson);
-		      remoteContent = dojo.fromJson(remoteJson);
-		      //remoteContent = JSON.parse(remoteJson);
-		      //var remoteContent = JSON.parse(remoteJson);
-		      //console.group("remoteContent");
-		      //console.dir(remoteContent);
-		      //console.groupEnd();
-		      zen.renderForest(remoteContent, zen.zenDiv);
-		      //zen.renderTree(remoteContent, zen.zenDiv);
+
+		      remoteData = dojo.fromJson(remoteJson);
+		      console.group("remoteData");
+		      console.dir(remoteData);
+		      console.groupEnd();
+		      //remoteNodes = remoteData.theNodes;
+		      remoteTree = remoteData.theTree;
+		      remoteStyleRules = remoteData.theRules;
+
+		      //remoteNodes = JSON.parse(remoteJson);
+		      //var remoteNodes = JSON.parse(remoteJson);
+		      //zen.renderForest(remoteNodes, zen.zenDiv);
+		      zen.renderTree(remoteTree, zen.zenDiv);
 		      //console.debug("Returned from zen.renderForest");
+
+
 		  }
 	      }
           });

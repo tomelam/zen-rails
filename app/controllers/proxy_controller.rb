@@ -32,9 +32,43 @@ class ProxyController < ApplicationController
     #send_data page, :filename => 'x.png', :type => response.content_type, :disposition => 'inline'
 
     @from_zen = browser.driver.execute_script <<-JS
-	//scriptTag = document.createElement("script");
-	//scriptTag.src = "http://127.0.0.1/experiments/JSON-js/json2.js"
-	//document.body.appendChild(scriptTag);
+        //FIXME: Use script injection, if possible.
+        // This technique of getting CSS rules is derived from
+        // http://www.quirksmode.org/dom/changess.html . FIXME: Make this work
+        // in more browsers.
+        theRules = []; theStylesheetLengths = {};
+        if (document.styleSheets.length > 0) {
+            styleSheetsLen = document.styleSheets.length;
+            isIEorSafari = document.styleSheets[0].cssRules ? false : true;
+            for (i=0; i<styleSheetsLen; i++) {
+                if (isIEorSafari) {
+                    // For IE and Safari
+                    //FIXME
+	            new Exception('not implemented');
+                } else {
+                    rulesAryLen = document.styleSheets[i].cssRules.length;
+//alert("rulesAryLen => " + rulesAryLen);
+//rulesLen = (rulesAryLen * 7) / 8;
+rulesLen = rulesAryLen - 4;
+//rulesLen = rulesAryLen - 3;
+rulesLen = rulesAryLen;
+key = "stylesheet " + i;
+theStylesheetLengths["stylesheet_" + i] = [rulesAryLen, rulesLen];
+                    for (j=0; j<rulesLen; j++) {
+//alert("i => " + i + ", j => " + j);
+                        rule = document.styleSheets[i].cssRules[j];
+                        if (rule.type != 4) { // type 4 is for @media rules
+                            theRules.push([rule.selectorText, rule.style.cssText]);
+                        }
+                    };
+                    //alert("After loop");
+                };
+                //alert("After if");
+            };
+            //alert("After 2nd loop");
+        };
+        //alert("Grabbed rules: theRules.length => " + theRules.length);
+
 	nodeToObject = function (node) {
 	    if (node.nodeType == 3) {
 	        return ["text", node.textContent, []];
@@ -72,24 +106,24 @@ class ProxyController < ApplicationController
                 return null;
             }
 	}
-//alert("one function");
-	allNodesToJson = function () {
-	    var x = [], j = 0, ary = document.getElementsByTagName("body")[0].childNodes;
-	    //for (var i=0; i<ary.length; i++) { x[i]=nodeToObject(ary[i]); }
-	    for (var i=0; i<ary.length; i++) {
-                var obj = nodeToObject(ary[i]);
-                if (obj) {
-                    x[j] = obj;
-                    j += 1;
-                }
+
+	var theNodes = [], j = 0, ary = document.getElementsByTagName("body")[0].childNodes;
+	//for (var i=0; i<ary.length; i++) { theNodes[i]=nodeToObject(ary[i]); }
+	for (var i=0; i<ary.length; i++) {
+            var obj = nodeToObject(ary[i]);
+            if (obj) {
+                theNodes[j] = obj;
+                j += 1;
             }
-	    //for (var i=0; i<4; i++) { x[i]=nodeToObject(ary[i]); }
-	    return JSON.stringify(x);
-	}
-//alert("two functions");
-        //foreignJSON = JSON.stringify(nodeToObject(document.getElementsByTagName("body")[0].childNodes[1]));
-	foreignJSON = allNodesToJson();
-//alert(foreignJSON.length);
+        }
+        theTree = nodeToObject(document.getElementsByTagName("body")[0]);
+
+	//foreignJSON = allNodesToJson();
+        //foreignJSON = JSON.stringify({theStylesheetLengths:theStylesheetLengths,
+        //                              theRules:theRules, theNodes:theNodes});
+        foreignJSON = JSON.stringify({theStylesheetLengths:theStylesheetLengths,
+                                      theRules:theRules, theTree:theTree});
+        //foreignJSON = JSON.stringify([a:1, b:2]);
 	//obj = JSON.parse(foreignJSON);
 	return foreignJSON;
 JS

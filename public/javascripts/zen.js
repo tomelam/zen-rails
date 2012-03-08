@@ -190,9 +190,13 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Consider using dojo.fromJSON here for safety.
     // FIXME: Replace zen.info, etc. with z.info, etc.?
     z.createElement = function (kind, attributes) {
-        var domNodeCompon = zen.createNew(zen.DomNodeCompon);
+        var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
         // FIXME: Use dojo.create.
-        var domNode = document.createElement(kind);
+	if (kind == "BODY") {
+	    domNode = document.getElementsByTagName("body")[0];
+	} else {
+            domNode = document.createElement(kind);
+	}
         zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
         attributes = attributes || {};
         if (typeof attributes.klass !== "undefined") {
@@ -205,6 +209,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     z.createDummyElement = function (kind, attributes) {
+	console.debug("zen.createDummyElement: kind => " + kind + ", attributes => " + attributes);
         var domNodeCompon = zen.createNew(zen.DomNodeCompon);
         // FIXME: Use dojo.create.
         var domNode = document.createElement("NOSCRIPT");
@@ -279,9 +284,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    "A", "ABBR", "ACRONYM", "B", "BDO", "BIG", "BR", "CITE", "CODE",
 	    "DFN", "EM", "I", "IMG", "INPUT", "KBD", "LABEL", "Q", "SAMP",
 	    "SELECT", "SMALL", "SPAN", "STRONG", "SUB", "TEXTAREA", "TT",
-	    "VAR", "LEGEND", "U", "NOBR", "OPTION", "BDI",
+	    "VAR", "LEGEND", "U", "NOBR", "OPTION", "BDI", "NOSCRIPT",
 	    // Block elements
-	    "IFRAME", "DIV", "P", "CENTER", "HR", "EMBED",
+	    "BODY",
+	    "IFRAME", "DIV", "P", "CENTER", "HR", "EMBED", "FONT", "STYLE",
 	    "TABLE", "TR", "TD", "AREA",
 	    // Defined as block-level components in HTML 4
 	    "ADDRESS", "BLOCKQUOTE", "DIV", "DL", "FIELDSET", "FORM",
@@ -295,7 +301,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    "BUTTON", "DEL", "INS", "MAP", "OBJECT", "PARAM"
 	],
 	createDummyElement : [
-	    "SCRIPT", "NOSCRIPT", "STYLE", "FONT"
+	    "SCRIPT"
 	],
         createDijit   : [ "dijit.TitlePane",
                           "dijit.layout.ContentPane",
@@ -421,6 +427,15 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	aop.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
 	for (i=0; i<len; i++) {
 	    z.renderTree(forest[i], parent);
+	}
+    }
+
+    z.addClasses = function (styleRules) {
+	var i, stylesLen = styleRules.length, rule;
+	for (i=0; i<stylesLen; i++) {
+	    rule = styleRules[i];
+	    console.debug("zen.addClasses: selector => " + rule[0] + ", declaration => " + rule[1]);
+	    dojox.html.insertCssRule(rule[0], rule[1])
 	}
     }
 
@@ -629,7 +644,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	//aop.aspect.advise(console, "debug", [zen.TraceReturns, zen.TraceArguments]);
         dojo.addOnLoad(z.loadToolbox);
 	z.printStyles();
-	z.addTestStyle();
 	//z.createStyleSearcher();
     };
 

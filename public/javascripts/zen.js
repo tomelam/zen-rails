@@ -215,43 +215,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
 	/* FIXME */
 	if (attributes.style) {
-	    console.debug("************************************************");
-	    //attribute.style.background='url(http://google.co.in/images/srpr/logo3w.png)'
-	    console.debug("attributes.style => " + attributes.style);
-	    //var styleAttrs = attributes.style.split(";"), len = styleAttrs.length, i;
-	    var styleAttrs, len, i;
-	    //re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
-	    re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
-	    styleAttrs = attributes.style.split(re).filter(function(el) {
-		return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
-	    });
-	    len = styleAttrs.length;
-	    ////console.debug("styleAttrs.length => " + len);
-	    var styleSpec = [], foundBackgroundSpec = false;
-	    for (i = 0; i < len; i++) {
-		styleSpec[i] = styleAttrs[i].split(/(?!data)\:/);
-		////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
-		////console.debug("styleSpec[" + i + "].length => " + styleSpec[i].length);
-		if (styleSpec.length > 2) {
-		    styleSpec[i][1] = styleSpec[i].slice(1).join(':');
-		}
-		////console.debug("styleSpec[" + i + "][0] => " + styleSpec[i][0]);
-		////console.debug("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
-		if (styleSpec[i][0] == "background") {
-		    foundBackgroundSpec = true;
-		    console.debug("##### Found background: " + styleSpec[i][1]);
-		    if (styleSpec[i][1].search(/\(data:/) < 0) {
-			console.debug("##### zen.remoteURL => " + zen.remoteURL);
-			styleSpec[i][1] = styleSpec[i][1].replace(/\(/, "(" + zen.remoteURL);
-		    }
-		    console.debug("##### Replacement: " + styleSpec[i][1]);
-		    //alert("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
-		}
-		styleAttrs[i] = styleSpec[i].join(":");
-	    }
-	    if (foundBackgroundSpec) {
-		attributes.style = styleAttrs.join(";");
-	    }
+	    attributes.style = zen.fixCssClassUrl(attributes.style);
 	}
 
         if (typeof attributes.klass !== "undefined") {
@@ -486,6 +450,47 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	for (i=0; i<len; i++) {
 	    z.renderTree(forest[i], parent);
 	}
+    }
+
+    z.fixCssClassUrl = function (cssText) {
+	console.debug("************************************************");
+	//attribute.style.background='url(http://google.co.in/images/srpr/logo3w.png)'
+	console.debug("cssText => " + cssText);
+	//var styleAttrs = cssText.split(";"), len = styleAttrs.length, i;
+	var styleAttrs, len, i;
+	//re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
+	re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
+	styleAttrs = cssText.split(re).filter(function(el) {
+	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
+	});
+	len = styleAttrs.length;
+	////console.debug("styleAttrs.length => " + len);
+	var styleSpec = [], foundBackgroundSpec = false;
+	for (i = 0; i < len; i++) {
+	    styleSpec[i] = styleAttrs[i].split(/(?!data)\:/);
+	    ////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
+	    ////console.debug("styleSpec[" + i + "].length => " + styleSpec[i].length);
+	    if (styleSpec.length > 2) {
+		styleSpec[i][1] = styleSpec[i].slice(1).join(':');
+	    }
+	    ////console.debug("styleSpec[" + i + "][0] => " + styleSpec[i][0]);
+	    ////console.debug("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
+	    if (styleSpec[i][0] == "background") {
+		foundBackgroundSpec = true;
+		console.debug("##### Found background: " + styleSpec[i][1]);
+		if (styleSpec[i][1].search(/\(data:/) < 0) {
+		    console.debug("##### zen.remoteURL => " + zen.remoteURL);
+		    styleSpec[i][1] = styleSpec[i][1].replace(/\(/, "(" + zen.remoteURL);
+		}
+		console.debug("##### Replacement: " + styleSpec[i][1]);
+		//alert("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
+	    }
+	    styleAttrs[i] = styleSpec[i].join(":");
+	}
+	if (foundBackgroundSpec) {
+	    cssText = styleAttrs.join(";");
+	}
+	return cssText;
     }
 
     //FIXME: This is not used and not to be used.

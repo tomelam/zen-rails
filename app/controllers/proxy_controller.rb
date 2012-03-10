@@ -14,6 +14,7 @@ class ProxyController < ApplicationController
     host = URI.parse(scheme + url).host
     path = URI.parse(scheme + url).path
     port = URI.parse(scheme + url).port
+    @website_url = scheme + host + ':' + port.to_s + '/'
     new_url = scheme + host + ':' + port.to_s + path
 
     logger.debug "url is #{url}"
@@ -114,7 +115,7 @@ class ProxyController < ApplicationController
 	return foreignJSON;
 JS
 
-    render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + ERB::Util.html_escape(@from_zen) + '</div></object></body>'
+    render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + ERB::Util.html_escape(@from_zen) + '</div><div style="display:none" id="remoteWebsiteURL">' + ERB::Util.html_escape(@website_url) + '</div></body>'
 
     browser.close
 

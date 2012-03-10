@@ -57,7 +57,6 @@
 	      if (rwp) {
 		  rwp.onLoad = function () {
 		      console.debug("Greetings from the remote web page!");
-		      //remoteJson = dojo.query("#remoteJson")[0].firstChild.textContent.theNodes;
 		      remoteJson = dojo.byId("remoteJson").textContent;
 		      //console.debug("remoteJson => " + remoteJson);
 
@@ -72,6 +71,11 @@
 		      remoteHeight = remoteData.theHeight;
 
 		      zen.renderForest(remoteHeadNodes, zen.head1);
+
+		      zen.fixClassesURLs();
+
+		      zen.remoteURL = dojo.byId("remoteWebsiteURL").textContent;
+		      console.debug("remoteURL => " + zen.remoteURL);
 		      zen.renderTree(remoteBody, zen.body1);
 		      dojo.attr(zen.xclusion1, "style",
 		                "width:" + remoteWidth + "px; height:" +

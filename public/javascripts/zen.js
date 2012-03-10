@@ -187,8 +187,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return objectType + "_" + count;
     };
 
+    z.remoteURL = "";
+
     // FIXME: Consider using dojo.fromJSON here for safety.
     // FIXME: Replace zen.info, etc. with z.info, etc.?
+    // This method handles inline attributes (like style).
     z.createElement = function (kind, attributes) {
         var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
         // FIXME: Use dojo.create. FIXME: Styles applied to the body won't work!
@@ -199,6 +202,58 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
         zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
         attributes = attributes || {};
+	if (kind == "IMG") { // Turn a relative URL into an absolute one.
+	    //FIXME: Check if it's already absolute!!! This is broken!!!
+	    console.debug("zen.remoteURL => " + zen.remoteURL +
+			 ", attributes.src => " + attributes.src);
+	    attributes.src = zen.remoteURL + attributes.src;
+	    console.debug("attributes.src => " + attributes.src);
+	}
+	////console.debug("@@@@@ " + kind + " " + dojo.toJson(attributes));
+	if (dojo.toJson(attributes).indexOf("images/") >= 0) {
+	    console.debug("$$$$$ Image; kind => " + kind + " " + dojo.toJson(attributes));
+	}
+	/* FIXME */
+	if (attributes.style) {
+	    console.debug("************************************************");
+	    //attribute.style.background='url(http://google.co.in/images/srpr/logo3w.png)'
+	    console.debug("attributes.style => " + attributes.style);
+	    //var styleAttrs = attributes.style.split(";"), len = styleAttrs.length, i;
+	    var styleAttrs, len, i;
+	    //re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
+	    re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
+	    styleAttrs = attributes.style.split(re).filter(function(el) {
+		return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
+	    });
+	    len = styleAttrs.length;
+	    ////console.debug("styleAttrs.length => " + len);
+	    var styleSpec = [], foundBackgroundSpec = false;
+	    for (i = 0; i < len; i++) {
+		styleSpec[i] = styleAttrs[i].split(/(?!data)\:/);
+		////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
+		////console.debug("styleSpec[" + i + "].length => " + styleSpec[i].length);
+		if (styleSpec.length > 2) {
+		    styleSpec[i][1] = styleSpec[i].slice(1).join(':');
+		}
+		////console.debug("styleSpec[" + i + "][0] => " + styleSpec[i][0]);
+		////console.debug("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
+		if (styleSpec[i][0] == "background") {
+		    foundBackgroundSpec = true;
+		    console.debug("##### Found background: " + styleSpec[i][1]);
+		    if (styleSpec[i][1].search(/\(data:/) < 0) {
+			console.debug("##### zen.remoteURL => " + zen.remoteURL);
+			styleSpec[i][1] = styleSpec[i][1].replace(/\(/, "(" + zen.remoteURL);
+		    }
+		    console.debug("##### Replacement: " + styleSpec[i][1]);
+		    //alert("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
+		}
+		styleAttrs[i] = styleSpec[i].join(":");
+	    }
+	    if (foundBackgroundSpec) {
+		attributes.style = styleAttrs.join(";");
+	    }
+	}
+
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
             delete attributes.klass;
@@ -433,6 +488,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
     }
 
+    //FIXME: This is not used and not to be used.
     z.addClasses = function (styleRules) {
 	var i, stylesLen = styleRules.length, rule;
 	for (i=0; i<stylesLen; i++) {
@@ -440,6 +496,43 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    console.debug("zen.addClasses: selector => " + rule[0] + ", declaration => " + rule[1]);
 	    dojox.html.insertCssRule(rule[0], rule[1])
 	}
+    }
+
+    z.fixClassesURLs = function () {
+        theRules = []; theStylesheetLengths = {};
+	xclusion1 = dojo.byId("transclusion1").contentDocument;
+	//console.debug("document.styleSheets => " + dojo.toJson(xclusion1.styleSheets));
+	console.group("xclusion1.styleSheets");
+	console.dir(xclusion1.styleSheets);
+	console.groupEnd();
+        if (xclusion1.styleSheets.length > 0) {
+            styleSheetsLen = xclusion1.styleSheets.length;
+            isIEorSafari = !xclusion1.styleSheets[0].cssRules;
+            for (i=0; i<styleSheetsLen; i++) {
+                if (isIEorSafari) {
+                    // For IE and Safari
+                    //FIXME
+	            new Error('not implemented');
+                } else {
+                    rulesLen = xclusion1.styleSheets[i].cssRules.length;
+                    //theStylesheetLengths["stylesheet_" + i] = rulesLen;
+                    for (j=0; j<rulesLen; j++) {
+                        rule = xclusion1.styleSheets[i].cssRules[j];
+			console.debug("rule => " + rule.selectorText +
+				      " " + rule.cssText);
+			/*
+                        if (rule.type != 4) { // type 4 is for @media rules
+			    if (rule.style.cssText.indexOf("images") >= 0) {
+				console.debug("Found image URL in style: " +
+					      rule.style.cssText);
+			    }
+                            theRules.push([rule.selectorText, rule.style.cssText]);
+                        }
+			*/
+                    }
+                }
+            }
+        }
     }
 
     // Asynchonous Ajax requests will be made to retrieve JavaScript

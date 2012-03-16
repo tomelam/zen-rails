@@ -193,7 +193,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Replace zen.info, etc. with z.info, etc.?
     // This method handles inline attributes (like style).
     z.createElement = function (kind, attributes) {
-    try {
         var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
         // FIXME: Use dojo.create. FIXME: Styles applied to the body won't work!
 	if (kind == "BODY") { // Fake this so it can be embedded anywhere.
@@ -228,13 +227,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         dojo.attr(domNode, attributes || {}); //FIXME: Check this.
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
-    } catch(err) {
-	alert("Error: " + err);
-	console.debug("@@@@@ " + kind + " " + dojo.toJson(attributes));
-	console.group("tree spec");
-	console.dir(ts);
-	console.groupEnd();
-    }
     };
 
     z.createDummyElement = function (kind, attributes) {
@@ -270,10 +262,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.createSubtree = function (treeSpec) {
 	//console.debug("Entering createSubtree");
-	ts = treeSpec;
-	console.group("treeSpec");
-	console.dir(treeSpec);
-	console.groupEnd();
+	////console.group("treeSpec");
+	////console.dir(treeSpec);
+	////console.groupEnd();
         var i, rule, parentCompon, compon, len, constructor;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
 	//console.debug("componKind => " + componKind);
@@ -493,14 +484,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    ////console.group("styleAttrs");
 	    ////console.dir(styleAttrs);
 	    ////console.groupEnd();
-	    ////return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
-	    return (el != ';' && el != '' && typeof el != 'undefined');
+	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
+	    ////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
 	});
 	len = styleAttrs.length;
-	console.debug("styleAttrs.length => " + len);
+	////console.debug("styleAttrs.length => " + len);
 	var styleSpec = [], foundBackgroundSpec = false;
 	for (i = 0; i < len; i++) {
-	    console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
+	    ////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
 	    styleSpec[i] = styleAttrs[i].split(/(?!data)\:/);
 	    ////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
 	    ////console.debug("styleSpec[" + i + "].length => " + styleSpec[i].length);

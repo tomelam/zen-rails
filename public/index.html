@@ -54,15 +54,12 @@
               //dojo.require("zen");
 	      zen.init();
 	      var rwp = dijit.byId("remoteWebPage");
-	      
 	      if (rwp) {
 		  rwp.onLoad = function () {
-		      debugger;
 		      console.debug("Greetings from the remote web page!");
 		      remoteJson = dojo.byId("remoteJson").textContent;
 		      //console.debug("remoteJson => " + remoteJson);
 
-		      //remoteData = JSON.parse(remoteJson);
 		      remoteData = dojo.fromJson(remoteJson);
 		      //console.group("remoteData");
 		      //console.dir(remoteData);
@@ -116,7 +113,7 @@
             style="width:100%; height:500px">
     </iframe>
     <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
-	 data-dojo-props='href:"web/facebook.com"'></div>
+	 data-dojo-props='href:"web/google.com"'></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
   </body>

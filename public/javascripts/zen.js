@@ -209,15 +209,16 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    attributes.src = zen.remoteURL + attributes.src;
 	    console.debug("attributes.src => " + attributes.src);
 	}
-	////console.debug("@@@@@ " + kind + " " + dojo.toJson(attributes));
+	////console.debug("@@@@@ " + kind + ", attributes => " + dojo.toJson(attributes));
 	if (dojo.toJson(attributes).indexOf("images/") >= 0) {
-	    console.debug("$$$$$ Image; kind => " + kind + " " + dojo.toJson(attributes));
+	    console.debug("$$$$$ " + kind + ", attributes => " + dojo.toJson(attributes));
 	}
 	/* FIXME */
 	if (attributes.style) {
-	    ////console.debug("Calling zen.fixCssClassUrl");
+	    console.debug("************************************************");
+	    console.debug("Calling zen.fixCssClassUrl");
 	    attributes.style = zen.fixCssClassUrl(attributes.style);
-	    ////console.debug("Returned from zen.fixCssClassUrl");
+	    console.debug("Returned from zen.fixCssClassUrl");
 	}
 
         if (typeof attributes.klass !== "undefined") {
@@ -473,11 +474,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // cssText is unchanged.
     // FIXME: See fixCssClassURLs for more FIXMEs.
     z.fixCssClassUrl = function (cssText) {
-	console.debug("************************************************");
 	//attribute.style.background='url(http://google.co.in/images/srpr/logo3w.png)'
 	console.debug("cssText => " + cssText);
 	//var styleAttrs = cssText.split(";"), len = styleAttrs.length, i;
 	var styleAttrs, len, i;
+	// Use a regular expression to split out the attributes from a CSS declaration.
+	// Two patterns are used to match attributes: (1) background attributes
+	// with a URL -- something like 'url(...);' and (2) any other kind of
+	// attribute.
 	//re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
 	re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
 	styleAttrs = cssText.split(re).filter(function(el) {

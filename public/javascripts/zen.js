@@ -193,6 +193,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Replace zen.info, etc. with z.info, etc.?
     // This method handles inline attributes (like style).
     z.createElement = function (kind, attributes) {
+    try {
         var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
         // FIXME: Use dojo.create. FIXME: Styles applied to the body won't work!
 	if (kind == "BODY") { // Fake this so it can be embedded anywhere.
@@ -215,7 +216,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
 	/* FIXME */
 	if (attributes.style) {
+	    ////console.debug("Calling zen.fixCssClassUrl");
 	    attributes.style = zen.fixCssClassUrl(attributes.style);
+	    ////console.debug("Returned from zen.fixCssClassUrl");
 	}
 
         if (typeof attributes.klass !== "undefined") {
@@ -225,6 +228,13 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         dojo.attr(domNode, attributes || {}); //FIXME: Check this.
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
+    } catch(err) {
+	alert("Error: " + err);
+	console.debug("@@@@@ " + kind + " " + dojo.toJson(attributes));
+	console.group("tree spec");
+	console.dir(ts);
+	console.groupEnd();
+    }
     };
 
     z.createDummyElement = function (kind, attributes) {
@@ -260,9 +270,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     z.createSubtree = function (treeSpec) {
 	//console.debug("Entering createSubtree");
-	//console.group("treeSpec");
-	//console.dir(treeSpec);
-	//console.groupEnd();
+	ts = treeSpec;
+	console.group("treeSpec");
+	console.dir(treeSpec);
+	console.groupEnd();
         var i, rule, parentCompon, compon, len, constructor;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
 	//console.debug("componKind => " + componKind);
@@ -300,7 +311,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     rulesTable = {
         createElement : [ 
 	    // Head elements (nodes?)
-	    "META", "TITLE",
+	    "META", "TITLE", "LINK",
 	    // Inline elements
 	    "A", "ABBR", "ACRONYM", "B", "BDO", "BIG", "BR", "CITE", "CODE",
 	    "DFN", "EM", "I", "IMG", "INPUT", "KBD", "LABEL", "Q", "SAMP",
@@ -406,29 +417,41 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
     //FIXME: Try to use walkTheDOM.
     z.nodeToObject = function (node) {
-	if (node.nodeType == 3) {
-	    return ["text", node.textContent, []];
-	} else if (node.nodeType) {
-	    //console.debug("nodeToObject: " + node + ", nodeType " + node.nodeType);
-	    var i = 0, attr = node.attributes, len, attributes = {};
-	    if (attr) {
-		len = attr.length;
-		for (i ; i < len; i++) {
-		    if (attr[i].name == "class") {
-			attributes.klass = attr[i].value;
-		    } else {
-			attributes[attr[i].name] = attr[i].value;
+	    if (node.nodeType == 3) {
+	        return ["text", node.textContent, []];
+	    } else if (node.nodeType == 1) {
+                if (node.tagName == "SCRIPT") {
+                    return null;
+                }
+	        var i = 0, attr = node.attributes, len, attributes = {};
+	        if (attr) {
+		    var len = attr.length;
+		    for (i ; i < len; i++) {
+                        var name = attr[i].name;
+		        if (attr[i].name == "class") {
+			    attributes.klass = attr[i].value;
+		        } else if (attr[i].name.slice(0,2) == "on") {
+                            attributes[name] = "";
+                        } else if (attr[i].name != '"') {//Test for malformed attribute (as at yahoo.com)
+			    attributes[name] = attr[i].value;
+		        }
 		    }
-		}
-	    }
-	    var children = [];
-	    i = 0, len = node.childNodes.length;
-	    for (i; i < len; i++) {
-		child = node.childNodes[i];
-		children[i] = z.nodeToObject(child);
-	    }
-	    return [node.tagName, attributes, children];
-	}
+	        }
+	        var children = []; //FIXME: Incl. text nodes, so use better name.
+	        var i = 0, j = 0, len = node.childNodes.length;
+	        for (i; i < len; i++) {
+		    var child = node.childNodes[i];
+		    //children[i] = nodeToObject(child);
+		    var obj = nodeToObject(child);
+                    if (obj) {
+                        children[j] = obj;
+                        j += 1;
+                    }
+	        }
+	        return [node.tagName, attributes, children];
+	    } else {
+                return null;
+            }
     }
 
     z.nodeToJson = function (obj) {
@@ -452,6 +475,12 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
     }
 
+    // FIXME: Rename this something like rebaseStyleUrl and provide it with
+    // the new base. Typically this would be used to convert a relative
+    // path to an absolute path.
+    // FIXME: For convenience in zen.fixClassURLs, return null if the
+    // cssText is unchanged.
+    // FIXME: See fixCssClassURLs for more FIXMEs.
     z.fixCssClassUrl = function (cssText) {
 	console.debug("************************************************");
 	//attribute.style.background='url(http://google.co.in/images/srpr/logo3w.png)'
@@ -461,12 +490,17 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	//re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
 	re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
 	styleAttrs = cssText.split(re).filter(function(el) {
-	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
+	    ////console.group("styleAttrs");
+	    ////console.dir(styleAttrs);
+	    ////console.groupEnd();
+	    ////return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
+	    return (el != ';' && el != '' && typeof el != 'undefined');
 	});
 	len = styleAttrs.length;
-	////console.debug("styleAttrs.length => " + len);
+	console.debug("styleAttrs.length => " + len);
 	var styleSpec = [], foundBackgroundSpec = false;
 	for (i = 0; i < len; i++) {
+	    console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
 	    styleSpec[i] = styleAttrs[i].split(/(?!data)\:/);
 	    ////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
 	    ////console.debug("styleSpec[" + i + "].length => " + styleSpec[i].length);
@@ -493,6 +527,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	return cssText;
     }
 
+
     //FIXME: This is not used and not to be used.
     z.addClasses = function (styleRules) {
 	var i, stylesLen = styleRules.length, rule;
@@ -503,37 +538,82 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
     }
 
-    z.fixClassesURLs = function () {
-        theRules = []; theStylesheetLengths = {};
-	xclusion1 = dojo.byId("transclusion1").contentDocument;
-	//console.debug("document.styleSheets => " + dojo.toJson(xclusion1.styleSheets));
-	console.group("xclusion1.styleSheets");
-	console.dir(xclusion1.styleSheets);
+    // To get an iframe's document, access the iframe's contentDocument property.
+    // E.g., dojo.byId("transclusion1").contentDocument .
+    //
+    // We are changing a stylesheet, not editing the styles of a DOM node. See:
+    // http://o.sitepen.com/labs/code/dynamicStylesheets/demo.php - GREAT! What I chose.
+    // CSS: The Definitive Guide
+    // http://www.quirksmode.org/dom/tests/stylesheets.html
+    // http://www.quirksmode.org/dom/w3c_css.html#access
+    // http://www.quirksmode.org/dom/w3c_css.html#change
+    // http://www.quirksmode.org/dom/w3c_css.html
+    // http://www.quirksmode.org/dom/changess.html
+    // http://www.howtocreate.co.uk/tutorials/javascript/domstylesheets - great; huge amount of info
+    // http://www.hunlock.com/blogs/Totally_Pwn_CSS_with_Javascript
+    // http://www.javascriptkit.com/domref/stylesheet.shtml
+    // http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml - might contain bugs
+    // http://code.google.com/p/sheetup/ - ?
+    // http://stackoverflow.com/q/6683040 - criteria; critique of jQuery, Dojo, YUI
+    // http://stackoverflow.com/a/622193 - simple, but incomplete
+    // http://stackoverflow.com/a/1827524 - "bare essentials"; looks complete
+    // http://stackoverflow.com/a/7810217 - short, sweet & clean shortcut probably does what I need
+    // http://stackoverflow.com/q/2300084 - pertinent question
+    // dojo/dojox/html/style.js - only insert & remove rules in "dynamic stylesheets"
+    // http://dojotoolkit.org/reference-guide/dojox/data/CssRuleStore.html
+    //
+    // Doing some reading in some good places turns up some possibly good code:
+    // http://archive.plugins.jquery.com/project/jquerycssrule allows you to
+    //   $.rule('.classname', 'style').append('font-size: 30px');
+    // http://archive.plugins.jquery.com/project/jquerycssrule allows you to
+    //   var cssRuleText = " \
+    //       body { font-size: 16px; } \
+    //       * html body { font-size: 100%; } \
+    //     ";
+    //   $.tocssRule(cssRuleText);
+    // http://stackoverflow.com/q/3114859 - less.js; enhances CSS w/ variables, etc.
+    //
+    // There is also some bad code that ranks high in a Google query for
+    // "how to modify css rule":
+    // http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml
+    // http://www.rainbodesign.com/pub/css/css-javascript.html
+    //
+    // Cross-domain CSS:
+    // http://stackoverflow.com/q/5323604
+    //
+    // FIXME: Rename this something like rebaseStyleUrls or rebaseStylesheetUrls
+    // and see also fixCssClassUrl.
+    // FIXME: The argument should be a stylesheet, not a document.
+    // FIXME: Replace globals with locals (and that goes for other functions, too).
+    // FIXME: Replace 'cssText' with something like 'cssDeclaration'.
+    z.fixClassesURLs = function (doc) { // doc can be a document in an iframe.
+        styleSheets = doc.styleSheets; theRules = []; theStylesheetLengths = {};
+	//console.debug("styleSheets => " + dojo.toJson(styleSheets));
+	console.group("styleSheets");
+	console.dir(styleSheets);
 	console.groupEnd();
-        if (xclusion1.styleSheets.length > 0) {
-            styleSheetsLen = xclusion1.styleSheets.length;
-            isIEorSafari = !xclusion1.styleSheets[0].cssRules;
+        if (styleSheets.length > 0) {
+            styleSheetsLen = styleSheets.length;
+            isIEorSafari = !styleSheets[0].cssRules;
             for (i=0; i<styleSheetsLen; i++) {
                 if (isIEorSafari) {
                     // For IE and Safari
                     //FIXME
 	            new Error('not implemented');
                 } else {
-                    rulesLen = xclusion1.styleSheets[i].cssRules.length;
+                    rulesLen = styleSheets[i].cssRules.length;
                     //theStylesheetLengths["stylesheet_" + i] = rulesLen;
                     for (j=0; j<rulesLen; j++) {
-                        rule = xclusion1.styleSheets[i].cssRules[j];
-			console.debug("rule => " + rule.selectorText +
-				      " " + rule.cssText);
-			/*
+                        rule = styleSheets[i].cssRules[j];
                         if (rule.type != 4) { // type 4 is for @media rules
-			    if (rule.style.cssText.indexOf("images") >= 0) {
-				console.debug("Found image URL in style: " +
-					      rule.style.cssText);
+			    console.debug("rule => " + rule.selectorText +
+					  " { " + rule.cssText + " }");
+			    cssText = zen.fixCssClassUrl(rule.cssText);
+			    if (cssText != rule.cssText) {
+				// Just override the old rule, don't remove it.
+				dojox.html.insertCssRule(selector, cssText);
 			    }
-                            theRules.push([rule.selectorText, rule.style.cssText]);
                         }
-			*/
                     }
                 }
             }

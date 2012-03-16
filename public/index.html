@@ -25,11 +25,11 @@
     http://dojotoolkit.org/documentation/tutorials/1.7/dojo_config/
     http://dojotoolkit.org/documentation/tutorials/1.7/cdn/
     -->
-    <script src="javascripts/dojo/dojo/dojo.js"
+    <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js"
 	    data-dojo-config="parseOnLoad: true, async: false, modulePaths:{zen:'../../zen', aop:'../../aop'}">
     </script>
     
-    <script>
+    <script type="text/javascript">
       require([
         "dojo/dom",        // needed for dojo.byId
         "dijit/registry",  // needed for dijit.byId
@@ -54,12 +54,15 @@
               //dojo.require("zen");
 	      zen.init();
 	      var rwp = dijit.byId("remoteWebPage");
+	      
 	      if (rwp) {
 		  rwp.onLoad = function () {
+		      debugger;
 		      console.debug("Greetings from the remote web page!");
 		      remoteJson = dojo.byId("remoteJson").textContent;
 		      //console.debug("remoteJson => " + remoteJson);
 
+		      //remoteData = JSON.parse(remoteJson);
 		      remoteData = dojo.fromJson(remoteJson);
 		      //console.group("remoteData");
 		      //console.dir(remoteData);
@@ -82,6 +85,7 @@
 				remoteHeight + "px");
 		  }
 	      }
+	      
           });
       });
  </script>
@@ -112,7 +116,7 @@
             style="width:100%; height:500px">
     </iframe>
     <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
-	 data-dojo-props='href:"web/google.com"'></div>
+	 data-dojo-props='href:"web/facebook.com"'></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
   </body>

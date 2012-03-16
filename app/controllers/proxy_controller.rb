@@ -38,28 +38,6 @@ class ProxyController < ApplicationController
         // http://www.quirksmode.org/dom/changess.html . FIXME: Make this work
         // in more browsers.
 
-        theRules = []; theStylesheetLengths = {};
-        if (document.styleSheets.length > 0) {
-            styleSheetsLen = document.styleSheets.length;
-            isIEorSafari = document.styleSheets[0].cssRules ? false : true;
-            for (i=0; i<styleSheetsLen; i++) {
-                if (isIEorSafari) {
-                    // For IE and Safari
-                    //FIXME
-	            new Error('not implemented');
-                } else {
-                    rulesLen = document.styleSheets[i].cssRules.length;
-                    //theStylesheetLengths["stylesheet_" + i] = rulesLen;
-                    for (j=0; j<rulesLen; j++) {
-                        rule = document.styleSheets[i].cssRules[j];
-                        if (rule.type != 4) { // type 4 is for @media rules
-                            theRules.push([rule.selectorText, rule.style.cssText]);
-                        }
-                    }
-                }
-            }
-        }
-
 	nodeToObject = function (node) {
 	    if (node.nodeType == 3) {
 	        return ["text", node.textContent, []];
@@ -71,12 +49,12 @@ class ProxyController < ApplicationController
 	        if (attr) {
 		    var len = attr.length;
 		    for (i ; i < len; i++) {
-                        var name = attr[i].name;
+                        var name = attr[i].name; //FIXME: use name for DRYness.
 		        if (attr[i].name == "class") {
 			    attributes.klass = attr[i].value;
 		        } else if (attr[i].name.slice(0,2) == "on") {
                             attributes[name] = "";
-                        } else {
+                        } else if (attr[i].name != '"') {//Test for malformed attribute (as at yahoo.com)
 			    attributes[name] = attr[i].value;
 		        }
 		    }

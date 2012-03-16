@@ -202,7 +202,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
         zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
         attributes = attributes || {};
-	if (kind == "IMG") { // Turn a relative URL into an absolute one.
+
+	//////////////////////////////////////////////////////////////////////
+	// FROM THIS POINT ONWARDS, FIX UP THE ATTRIBUTES.
+	if (kind == "IMG" && attributes.src) { // Turn a relative URL into an absolute one.
 	    //FIXME: Check if it's already absolute!!! This is broken!!!
 	    console.debug("zen.remoteURL => " + zen.remoteURL +
 			 ", attributes.src => " + attributes.src);
@@ -210,16 +213,21 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    console.debug("attributes.src => " + attributes.src);
 	}
 	////console.debug("@@@@@ " + kind + ", attributes => " + dojo.toJson(attributes));
+
+	//FIXME: This was written to debug the Google snapshot.
 	if (dojo.toJson(attributes).indexOf("images/") >= 0) {
 	    console.debug("$$$$$ " + kind + ", attributes => " + dojo.toJson(attributes));
 	}
+
 	/* FIXME */
 	if (attributes.style) {
-	    console.debug("************************************************");
-	    console.debug("Calling zen.fixCssClassUrl");
-	    attributes.style = zen.fixCssClassUrl(attributes.style);
-	    console.debug("Returned from zen.fixCssClassUrl");
+	    ////console.debug("************************************************");
+	    ////console.debug("Calling zen.fixCssDeclUrl");
+	    attributes.style = zen.fixCssDeclUrl(attributes.style);
+	    ////console.debug("Returned from zen.fixCssDeclUrl");
 	}
+	// DONE FIXING UP ATTRIBUTES.
+	//////////////////////////////////////////////////////////////////////
 
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
@@ -471,57 +479,59 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // the new base. Typically this would be used to convert a relative
     // path to an absolute path.
     // FIXME: For convenience in zen.fixClassURLs, return null if the
-    // cssText is unchanged.
+    // cssDecl is unchanged.
     // FIXME: See fixCssClassURLs for more FIXMEs.
-    z.fixCssClassUrl = function (cssText) {
-	//attribute.style.background='url(http://google.co.in/images/srpr/logo3w.png)'
-	console.debug("cssText => " + cssText);
-	//var styleAttrs = cssText.split(";"), len = styleAttrs.length, i;
-	var styleAttrs, len, i;
+    //
+    // THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION ABSOLUTE
+    // so that an image file can be loaded from a different website.
+    z.fixCssDeclUrl = function (cssDecl) {
+	//console.debug("cssDecl => " + cssDecl);
+	var cssDeclParts, len, i;
+
 	// Use a regular expression to split out the attributes from a CSS declaration.
 	// Two patterns are used to match attributes: (1) background attributes
 	// with a URL -- something like 'url(...);' and (2) any other kind of
-	// attribute.
+	// attribute. A simpler regular expression would split a background
+	// attribute containing a URL into two parts, whereas we want only one
+	// part per attribute.
 	//re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
 	re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
-	styleAttrs = cssText.split(re).filter(function(el) {
-	    ////console.group("styleAttrs");
-	    ////console.dir(styleAttrs);
-	    ////console.groupEnd();
+	cssDeclParts = cssDecl.split(re).filter(function(el) {
 	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
 	    ////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
 	});
-	len = styleAttrs.length;
-	////console.debug("styleAttrs.length => " + len);
-	var styleSpec = [], foundBackgroundSpec = false;
+	//console.group("cssDeclParts");
+	//console.dir(cssDeclParts);
+	//console.groupEnd();
+	len = cssDeclParts.length;
+	var stylePropAndValue = [], foundBackgroundSpec = false;
 	for (i = 0; i < len; i++) {
-	    ////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
-	    styleSpec[i] = styleAttrs[i].split(/(?!data)\:/);
-	    ////console.debug("styleAttrs[" + i + "] => " + styleAttrs[i]);
-	    ////console.debug("styleSpec[" + i + "].length => " + styleSpec[i].length);
-	    if (styleSpec.length > 2) {
-		styleSpec[i][1] = styleSpec[i].slice(1).join(':');
-	    }
-	    ////console.debug("styleSpec[" + i + "][0] => " + styleSpec[i][0]);
-	    ////console.debug("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
-	    if (styleSpec[i][0] == "background") {
+	    // Split out the style properties from the attribute, making sure
+	    // not to mistake the colon in 'data:' for a property deliminator.
+	    //FIXME: Try to accomplish the same splitting without joining.
+	    idx = cssDeclParts[i].indexOf(":");
+	    stylePropAndValue[0] = cssDeclParts[i].slice(0, idx);
+	    stylePropAndValue[1] = cssDeclParts[i].slice(idx + 1);
+	    if (stylePropAndValue[0] == "background") {
 		foundBackgroundSpec = true;
-		console.debug("##### Found background: " + styleSpec[i][1]);
-		if (styleSpec[i][1].search(/\(data:/) < 0) {
+		console.debug("##### Found background: cssDeclParts[i] => " +
+			      cssDeclParts[i] + ", stylePropAndValue => " +
+			      stylePropAndValue + ", stylePropAndValue[1] => " +
+			      stylePropAndValue[1]);
+		if (stylePropAndValue[1].search(/\(\"data:/) < 0) {
 		    console.debug("##### zen.remoteURL => " + zen.remoteURL);
-		    styleSpec[i][1] = styleSpec[i][1].replace(/\(/, "(" + zen.remoteURL);
+		    stylePropAndValue[1] = stylePropAndValue[1].replace(/\(/, "(" + zen.remoteURL);
 		}
-		console.debug("##### Replacement: " + styleSpec[i][1]);
-		//alert("styleSpec[" + i + "][1] => " + styleSpec[i][1]);
+		console.debug("##### Replacement: " + stylePropAndValue[1]);
 	    }
-	    styleAttrs[i] = styleSpec[i].join(":");
+	    cssDeclParts[i] = stylePropAndValue.join(":");
 	}
 	if (foundBackgroundSpec) {
-	    cssText = styleAttrs.join(";");
+	    cssDecl = cssDeclParts.join(";");
+	    console.debug("##### Joined: cssDecl => " + cssDecl);
 	}
-	return cssText;
+	return cssDecl;
     }
-
 
     //FIXME: This is not used and not to be used.
     z.addClasses = function (styleRules) {
@@ -577,10 +587,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // http://stackoverflow.com/q/5323604
     //
     // FIXME: Rename this something like rebaseStyleUrls or rebaseStylesheetUrls
-    // and see also fixCssClassUrl.
+    // and see also fixCssDeclUrl.
     // FIXME: The argument should be a stylesheet, not a document.
     // FIXME: Replace globals with locals (and that goes for other functions, too).
-    // FIXME: Replace 'cssText' with something like 'cssDeclaration'.
     z.fixClassesURLs = function (doc) { // doc can be a document in an iframe.
         styleSheets = doc.styleSheets; theRules = []; theStylesheetLengths = {};
 	//console.debug("styleSheets => " + dojo.toJson(styleSheets));
@@ -603,7 +612,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                         if (rule.type != 4) { // type 4 is for @media rules
 			    console.debug("rule => " + rule.selectorText +
 					  " { " + rule.cssText + " }");
-			    cssText = zen.fixCssClassUrl(rule.cssText);
+			    cssText = zen.fixCssDeclUrl(rule.cssText);
 			    if (cssText != rule.cssText) {
 				// Just override the old rule, don't remove it.
 				dojox.html.insertCssRule(selector, cssText);

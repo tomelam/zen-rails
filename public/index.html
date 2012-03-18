@@ -72,10 +72,11 @@
 
 		      zen.renderForest(remoteHeadNodes, zen.head1);
 
-		      //zen.fixClassesURLs();
-
 		      zen.remoteURL = dojo.byId("remoteWebsiteURL").textContent;
 		      console.debug("remoteURL => " + zen.remoteURL);
+
+		      zen.fixClassesURLs(dojo.byId("transclusion1").contentDocument);
+
 		      zen.renderTree(remoteBody, zen.body1);
 		      dojo.attr(zen.xclusion1, "style",
 		                "width:" + remoteWidth + "px; height:" +

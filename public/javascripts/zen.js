@@ -207,10 +207,13 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	// FROM THIS POINT ONWARDS, FIX UP THE ATTRIBUTES.
 	if (kind == "IMG" && attributes.src) { // Turn a relative URL into an absolute one.
 	    //FIXME: Check if it's already absolute!!! This is broken!!!
-	    console.debug("zen.remoteURL => " + zen.remoteURL +
-			 ", attributes.src => " + attributes.src);
-	    attributes.src = zen.remoteURL + attributes.src;
-	    console.debug("attributes.src => " + attributes.src);
+	    src_split = attributes.src.split("http://");
+	    if (src_split.length < 2) {
+		console.debug("zen.remoteURL => " + zen.remoteURL +
+			      ", attributes.src => " + attributes.src);
+		attributes.src = zen.remoteURL + src_split;
+		console.debug("attributes.src => " + attributes.src);
+	    }
 	}
 	////console.debug("@@@@@ " + kind + ", attributes => " + dojo.toJson(attributes));
 
@@ -484,51 +487,70 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     //
     // THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION ABSOLUTE
     // so that an image file can be loaded from a different website.
-    z.fixCssDeclUrl = function (cssDecl) {
-	//console.debug("cssDecl => " + cssDecl);
+    z.fixCssDeclUrl = function (cssDecl, host, options) {
+	opt = options || {};
+	scheme = opt.scheme || 'http://';
+	user = opt.user || '';
+	password = opt.password || '';
+	console.debug("cssDecl => " + cssDecl);
 	var cssDeclParts, len, i;
 
 	// Use a regular expression to split out the attributes from a CSS declaration.
-	// Two patterns are used to match attributes: (1) background attributes
+	// Two patterns are used to match attributes: (1) a background attribute
 	// with a URL -- something like 'url(...);' and (2) any other kind of
 	// attribute. A simpler regular expression would split a background
 	// attribute containing a URL into two parts, whereas we want only one
 	// part per attribute.
 	//re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
-	re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
+	//FIXME: The next re leaves a ';' at the end of 1 match if there is 'data'.
+	//ALMOST OK? re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
+	//FIXME: This re mistakenly chops off the data URL at its ';'.
+	             re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
+	re = /;/;
 	cssDeclParts = cssDecl.split(re).filter(function(el) {
 	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
 	    ////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
 	});
+	console.debug("cssDeclParts => " + cssDeclParts);
 	//console.group("cssDeclParts");
 	//console.dir(cssDeclParts);
 	//console.groupEnd();
 	len = cssDeclParts.length;
-	var stylePropAndValue = [], foundBackgroundSpec = false;
+	var foundBackgroundSpec = false;
 	for (i = 0; i < len; i++) {
 	    // Split out the style properties from the attribute, making sure
 	    // not to mistake the colon in 'data:' for a property deliminator.
-	    //FIXME: Try to accomplish the same splitting without joining.
+	    //FIXME: Search for single-quote character (') below?
 	    idx = cssDeclParts[i].indexOf(":");
-	    stylePropAndValue[0] = cssDeclParts[i].slice(0, idx);
-	    stylePropAndValue[1] = cssDeclParts[i].slice(idx + 1);
-	    if (stylePropAndValue[0] == "background") {
+	    styleProp = cssDeclParts[i].slice(0, idx);
+	    styleValue = cssDeclParts[i].slice(idx + 1);
+	    console.debug("styleProp => " + styleProp + ", styleValue => " + styleValue);
+	    if (styleProp == "background") {
 		foundBackgroundSpec = true;
-		console.debug("##### Found background: cssDeclParts[i] => " +
-			      cssDeclParts[i] + ", stylePropAndValue => " +
-			      stylePropAndValue + ", stylePropAndValue[1] => " +
-			      stylePropAndValue[1]);
-		if (stylePropAndValue[1].search(/\(\"data:/) < 0) {
-		    console.debug("##### zen.remoteURL => " + zen.remoteURL);
-		    stylePropAndValue[1] = stylePropAndValue[1].replace(/\(/, "(" + zen.remoteURL);
+		console.debug("##### Found background: cssDeclParts[i] => " + cssDeclParts[i]);
+		if (styleValue.search(/\(\"data:/) < 0) {
+		    // A URL that starts with '//' is a protocol relative URL.
+		    // See http://paulirish.com/2010/the-protocol-relative-url/ .
+		    valueParts = styleValue.match('(url.*)(\".*)(\/\/.*)');
+		    console.debug("valueParts => " + valueParts);
+		    if (valueParts) {
+			styleValue = valueParts[1] + '"http:' + valueParts[3];
+		    } else if (styleValue.indexOf("http://") < 0) {
+			console.debug('styleValue.indexOf("http://") < 0');
+			styleValue = scheme + (user? (user + '@') : '') + (password? (password + ':') : '') + styleValue;
+		    }
+			
 		}
-		console.debug("##### Replacement: " + stylePropAndValue[1]);
+		console.debug("##### styleValue => " + styleValue);
 	    }
-	    cssDeclParts[i] = stylePropAndValue.join(":");
+	    cssDeclParts[i] = styleProp + ":" + styleValue;
+	    //console.debug("##### cssDeclParts[" + i + "] => " + cssDeclParts[i]);
 	}
 	if (foundBackgroundSpec) {
+	    cssDeclParts.push(""); // Ensures a ";" at the end of the join.
 	    cssDecl = cssDeclParts.join(";");
-	    console.debug("##### Joined: cssDecl => " + cssDecl);
+	    console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
+			  ", cssDecl => " + cssDecl);
 	}
 	return cssDecl;
     }
@@ -610,12 +632,13 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                     for (j=0; j<rulesLen; j++) {
                         rule = styleSheets[i].cssRules[j];
                         if (rule.type != 4) { // type 4 is for @media rules
-			    console.debug("rule => " + rule.selectorText +
-					  " { " + rule.cssText + " }");
-			    cssText = zen.fixCssDeclUrl(rule.cssText);
-			    if (cssText != rule.cssText) {
+			    //console.debug("rule => " + rule.selectorText +
+			    //		  " { " + rule.style.cssText + " }");
+			    //cssText = zen.fixCssDeclUrl(rule.cssText.match("{.*}")[0]);
+			    cssText = zen.fixCssDeclUrl(rule.style.cssText);
+			    if (cssText != rule.style.cssText) {
 				// Just override the old rule, don't remove it.
-				dojox.html.insertCssRule(selector, cssText);
+				dojox.html.insertCssRule(rule.selectorText, cssText);
 			    }
                         }
                     }

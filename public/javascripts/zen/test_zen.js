@@ -38,7 +38,7 @@ tests.register(
 		} catch(err) {
 		    error = err;
 		}
-		doh.assertEqual("Error: trying to create a zen.Compon with an already-used ID", error);
+		doh.assertEqual("Error: trying to create a zen.Compon with an already-used ID Jack", error);
 	    }
 	},
 	{

@@ -9,6 +9,8 @@ class ProxyController < ApplicationController
     #logger.debug "--------------------------------------------------"
     #logger.debug "browser.class.methods are #{browser.class.methods}"
 
+    # FIXME: Should these variables be prefixed with '@'?
+    # FIXME: How to adapt the scheme where appropriate?
     url = params[:url]
     scheme = 'http://'
     host = URI.parse(scheme + url).host

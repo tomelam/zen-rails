@@ -504,9 +504,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	// part per attribute.
 	//re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
 	//FIXME: The next re leaves a ';' at the end of 1 match if there is 'data'.
-	//ALMOST OK? re = /(background:.*?url\(.*?\).*?;)|((?!background:.*?url\(.*?\).*?);)/;
+	//ALMOST OK?
+	re = /(background:.*?url\(.*?\).*?;)/ //|((?!background:.*?url\(.*?\).*?);)/;
+	//re = /((?!background:.*?url\(.*?\).*?);)|/;
 	//FIXME: This re mistakenly chops off the data URL at its ';'.
-	             re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
+	//re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
 	re = /;/;
 	cssDeclParts = cssDecl.split(re).filter(function(el) {
 	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
@@ -529,7 +531,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    if (styleProp == "background") {
 		foundBackgroundSpec = true;
 		console.debug("##### Found background: cssDeclParts[i] => " + cssDeclParts[i]);
-		if (styleValue.search(/\(\"data:/) < 0) {
+		if (cssDeclParts[i].search(/\(\"data:/) < 0) {
 		    // A URL that starts with '//' is a protocol relative URL.
 		    // See http://paulirish.com/2010/the-protocol-relative-url/ .
 		    valueParts = styleValue.match('(url.*)(\".*)(\/\/.*)');
@@ -547,6 +549,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 			styleValue = 'url("' + scheme + (user? (user + '@') : '') + (password? (password + ':') : '') + host + (port? (':' + port) : '') + styleValue.slice(idx+1);
 		    }
 			
+		} else {
+		    console.debug("##### Found data URL");
+		    //FIXME
 		}
 		console.debug("##### styleValue => " + styleValue);
 	    }
@@ -554,7 +559,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    //console.debug("##### cssDeclParts[" + i + "] => " + cssDeclParts[i]);
 	}
 	if (foundBackgroundSpec) {
-	    cssDeclParts.push(""); // Ensures a ";" at the end of the join.
+	    //cssDeclParts.push(""); // Ensures a ";" at the end of the join. FIXME: Probably should not do this.
 	    cssDecl = cssDeclParts.join(";");
 	    console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
 			  ", cssDecl => " + cssDecl);

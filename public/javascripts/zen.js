@@ -490,6 +490,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     z.fixCssDeclUrl = function (cssDecl, host, options) {
 	opt = options || {};
 	scheme = opt.scheme || 'http://';
+	port = opt.port || '';
 	user = opt.user || '';
 	password = opt.password || '';
 	console.debug("cssDecl => " + cssDecl);
@@ -534,10 +535,16 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 		    valueParts = styleValue.match('(url.*)(\".*)(\/\/.*)');
 		    console.debug("valueParts => " + valueParts);
 		    if (valueParts) {
-			styleValue = valueParts[1] + '"http:' + valueParts[3];
+			// Convert protocol relative URL to absolute-path URL.
+			styleValue = valueParts[1] + '"' + scheme + valueParts[3].slice(2);
 		    } else if (styleValue.indexOf("http://") < 0) {
 			console.debug('styleValue.indexOf("http://") < 0');
-			styleValue = scheme + (user? (user + '@') : '') + (password? (password + ':') : '') + styleValue;
+			idx = styleValue.indexOf('"');
+			console.debug("idx => " + idx);
+			if (styleValue.charAt(idx) == '/') {
+			    idx += 1;
+			}
+			styleValue = 'url("' + scheme + (user? (user + '@') : '') + (password? (password + ':') : '') + host + (port? (':' + port) : '') + styleValue.slice(idx+1);
 		    }
 			
 		}

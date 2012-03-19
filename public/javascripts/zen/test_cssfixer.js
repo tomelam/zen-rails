@@ -44,7 +44,7 @@ tests.register(
 	{
 	    name: "6. Do not convert a 'data' URL (IETF RFC 2397)",
 	    runTest: function() {
-		var fixedDecl = zen.fixCssDeclUrl('background: url("data:image/gif;base64,R0lGODlhCgAEAMIEAP9BGP6pl") transparent; margin:0', 'example.com');
+		var fixedDecl = zen.fixCssDeclUrl('background: url("data:image/gif;base64,R0lGODlhCgAEAMIEAP9BGP6pl") transparent;margin:0', 'example.com');
 		doh.assertEqual('background: url("data:image/gif;base64,R0lGODlhCgAEAMIEAP9BGP6pl") transparent;margin:0', fixedDecl);
 	    }
 	}

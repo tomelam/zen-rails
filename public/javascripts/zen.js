@@ -510,6 +510,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	//FIXME: This re mistakenly chops off the data URL at its ';'.
 	//re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
 	re = /;/;
+
+	cssDecl = cssDecl.replace(/(background.*?url\("data:.*?);(.*?\))/,'$1#$2');
+	console.debug("cssDecl => " + cssDecl);
+
 	cssDeclParts = cssDecl.split(re).filter(function(el) {
 	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
 	    ////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
@@ -561,6 +565,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	if (foundBackgroundSpec) {
 	    //cssDeclParts.push(""); // Ensures a ";" at the end of the join. FIXME: Probably should not do this.
 	    cssDecl = cssDeclParts.join(";");
+	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?)#(.*?\))/,'$1\;$2')
 	    console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
 			  ", cssDecl => " + cssDecl);
 	}

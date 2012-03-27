@@ -13,11 +13,11 @@ class ProxyController < ApplicationController
     # FIXME: How to adapt the scheme where appropriate?
     url = params[:url]
     scheme = 'http://'
-    host = URI.parse(scheme + url).host
-    path = URI.parse(scheme + url).path
-    port = URI.parse(scheme + url).port
-    @website_url = scheme + host + ':' + port.to_s + '/'
-    new_url = scheme + host + ':' + port.to_s + path
+    @remote_host = URI.parse(scheme + url).host
+    @remote_path = URI.parse(scheme + url).path
+    @remote_port = URI.parse(scheme + url).port
+    #@website_url = scheme + host + ':' + port.to_s + '/'
+    new_url = scheme + @remote_host + ':' + @remote_port.to_s + @remote_path
 
     logger.debug "url is #{url}"
     #logger.debug "host is #{host}"
@@ -34,7 +34,7 @@ class ProxyController < ApplicationController
     #page.gsub!(/(<a[^>]*href=\"(?!http))/, '\1/web/' + host + ':' + port.to_s + '/')
     #send_data page, :filename => 'x.png', :type => response.content_type, :disposition => 'inline'
 
-    @from_zen = browser.driver.execute_script <<-JS
+    @json_from_watir = browser.driver.execute_script <<-JS
         //FIXME: Use script injection, if possible.
         // This technique of getting CSS rules is derived from
         // http://www.quirksmode.org/dom/changess.html . FIXME: Make this work
@@ -89,13 +89,13 @@ class ProxyController < ApplicationController
 
         theBody = nodeToObject(document.body);
 
-        foreignJSON = JSON.stringify({theHeadNodes:theHeadNodes, theBody:theBody,
+        jsonFromWatir = JSON.stringify({theHeadNodes:theHeadNodes, theBody:theBody,
                                       theWidth:document.body.clientWidth,
                                       theHeight:document.body.clientHeight});
-	return foreignJSON;
+	return jsonFromWatir;
 JS
 
-    render :inline => '<html><head><title></title></head><body><div style="display:none" id="remoteJson">' + ERB::Util.html_escape(@from_zen) + '</div><div style="display:none" id="remoteWebsiteURL">' + ERB::Util.html_escape(@website_url) + '</div></body>'
+    render :inline => '<html><head><title></title></head><body><div style="display:none" id="jsonFromWatir">' + ERB::Util.html_escape(@json_from_watir) + '</div><div style="display:none" id="remoteScheme">' + ERB::Util.html_escape("http://") + '</div><div style="display:none" id="remoteHost">' + ERB::Util.html_escape(@remote_host) + '</div><div style="display:none" id="remotePort">' + ERB::Util.html_escape(@remote_port) + '</div><div style="display:none" id="remotePath">' + ERB::Util.html_escape(@remote_path) + '</div></body>'
 
     browser.close
 

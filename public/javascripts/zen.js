@@ -7,6 +7,7 @@ dojo.provide("zen");
 
 zen.registry = { Compon : {}, DomNodeCompon : {} };
 
+//FIXME: zen.Compon is not necessary because all Zen components have a visible aspect.
 dojo.declare("zen.Compon", null, {
     constructor: function (id) {
         if (zen.registry.Compon[id]) {
@@ -25,6 +26,7 @@ dojo.declare("zen.Compon", null, {
     }
 });
 
+//FIXME: Not sure much if anything belongs in a "zen.DisplayCompon".
 dojo.declare("zen.DisplayCompon", zen.Compon, {
     getDomNode: function () {
         return this.domNode;
@@ -92,15 +94,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     }
 });
 
+//FIXME: Consider moving aside console.debug, console.info, etc. to implement
+//controllable debugging.
 (function (zen) {
     var z = zen;
     dojo.require("dijit.form.Button");
     dojo.require("dijit.form.CheckBox");
     dojo.require("dojo.parser");
-    var adviceHandle;
-    getHandlers = function() { //FIXME: Eliminate this, maybe.
-        return handlers;
-    };
+    //FIXME: Explore how to use dojox.lang.aspect for debugging.
     TraceArguments = {
         before: function(){
 	    var joinPoint = dojox.lang.aspect.getContext().joinPoint,
@@ -187,6 +188,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return objectType + "_" + count;
     };
 
+    //// zen.createElement
+    //// zen.createTextNode
+    //// Create a component that refers to an HTML text node or HTML
+    //// element. This avoids some conflict with Dojo that results
+    //// when trying to use prototype.js to add methods to an
+    //// element. It also is more future proof since an element can be
+    //// handled in a clean way.
+
     // FIXME: Consider using dojo.fromJSON here for safety.
     // FIXME: Replace zen.info, etc. with z.info, etc.?
     // This method handles inline attributes (like style).
@@ -204,10 +213,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
         attributes = attributes || {};
 
-	//////////////////////////////////////////////////////////////////////
-	// FROM THIS POINT ONWARDS, FIX UP THE ATTRIBUTES.
 	if (kind == "IMG" && attributes.src) { // Turn a relative URL into an absolute one.
-	    //FIXME: Check if it's already absolute!!! This is broken!!!
 	    src_split = attributes.src.split("http://");
 	    if (src_split.length < 2) { // No match: must be relative.
 		//console.debug("zen.remoteHost => " + zen.remoteHost +
@@ -218,22 +224,12 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
 	////console.debug("@@@@@ " + kind + ", attributes => " + dojo.toJson(attributes));
 
-	//FIXME: This was written to debug a Google snapshot.
-	/*
-	if (dojo.toJson(attributes).indexOf("images/") >= 0) {
-	    console.debug("$$$$$ " + kind + ", attributes => " + dojo.toJson(attributes));
-	}
-	*/
-
-	/* FIXME */
 	if (attributes.style) {
 	    ////console.debug("************************************************");
 	    ////console.debug("Calling zen.fixCssDeclUrl");
 	    attributes.style = zen.fixCssDeclUrl(attributes.style, zen.remoteHost);
 	    ////console.debug("Returned from zen.fixCssDeclUrl");
 	}
-	// DONE FIXING UP ATTRIBUTES.
-	//////////////////////////////////////////////////////////////////////
 
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
@@ -244,27 +240,18 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return domNodeCompon;
     };
 
-    //FIXME: See zen.createElement.
-    //FIXME: This is really bad, because a STYLE node can't be created from a single
-    //Zen tree node. (The STYLE node must have a TEXT node as a child.) Try not to use it.
-    z.createHeadNode = function (kind, attributes) {
-        var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
-	if (kind == "META" || kind == "TITLE" || kind == "STYLE") {
-            domNode = document.createElement(kind);
-	} else {
-	    new Error("zen.createHeadNode passed wrong node-kind: " + kind);
-	    return null;
-	}
-        attributes = attributes || {};
-
-	if (kind == "STYLE") {
-	    console.debug("===== STYLE: attributes => " + dojo.toJson(attributes));
-	}
-
-        dojo.attr(domNode, attributes || {}); //FIXME: Check this.
+    z.createTextNode = function (kind, text) {
+        var domNodeCompon = zen.createNew(zen.DomNodeCompon);
+	////console.debug("zen.createTextNode: text => " + text);
+        // FIXME: Use dojo.create, if appropriate.
+        var domNode = document.createTextNode(text);
+        zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
     };
+
+    //// createDummyElement
+    //// Convert troublesome elements to NOSCRIPT elements.
 
     z.createDummyElement = function (kind, attributes) {
 	console.debug("zen.createDummyElement: kind => " + kind + ", attributes => " + attributes);
@@ -282,53 +269,17 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return domNodeCompon;
     };
 
-    // Create a component that refers to an HTML text node or HTML
-    // element. This avoids some conflict with Dojo that results when
-    // trying to use prototype.js to add methods to an element. It also is
-    // more future proof since an element can be handled in a clean way.
-    //
-    // FIXME: Can text nodes have attributes?
-    z.createTextNode = function (kind, text) {
-        var domNodeCompon = zen.createNew(zen.DomNodeCompon);
-	////console.debug("zen.createTextNode: text => " + text);
-        // FIXME: Use dojo.create, if appropriate.
-        var domNode = document.createTextNode(text);
-        zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
-        domNodeCompon.domNode = domNode;
-        return domNodeCompon;
-    };
-
     z.createSubtree = function (treeSpec) {
-	//console.debug("Entering createSubtree");
-	////console.group("treeSpec");
-	////console.dir(treeSpec);
-	////console.groupEnd();
         var i, rule, parentCompon, compon, len, constructor;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
-	//console.debug("componKind => " + componKind);
-	//console.debug("initParms => " + initParms);
-	//console.group("initParms");
-	//console.dir(initParms);
-	//console.groupEnd();
-
         rule = invertedRulesTable[componKind];
-	//console.debug("rule => " + rule);
         constructor = z.rule2ref(rule);
-	//console.debug("typeof constructor => " + typeof constructor);
-	//console.debug("constructor => " + constructor);
-	//console.debug("componKind => " + componKind);
-	//console.group("initParms");
-	//console.dir(initParms);
-	//console.groupEnd();
         parentCompon = constructor.call(document, componKind, initParms);
-        //parentCompon = constructor.call(document, componKind, {});
-	//console.debug("parentCompon => " + parentCompon);
         len = subtree.length;
         for (i = 0; i < len; i++) {
             compon = z.createSubtree(subtree[i]);
             compon.appendMyselfToParent(parentCompon);
         }
-	//console.debug("return parentCompon");
         return parentCompon;
     };
 
@@ -380,8 +331,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // name as a key.
     var invertedRulesTable = {};
 
-    // FIXME: eval is not cool here. FaceBook and MySpace, for
-    // example, won't allow it in included JavaScript. See
+    // Note: the eval method is not used here because it can be
+    // unsafe. FaceBook and MySpace, for example, won't allow it in
+    // included JavaScript. See
     // http://www.dojotoolkit.org/reference-guide/dojo/_base/json.html
     // for a safe way to evaluate JSON strings.
     z.rule2ref = function (rule) {
@@ -389,10 +341,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         for (s in zen.shortcutsTable) {
             if (zen.shortcutsTable.hasOwnProperty(s)) {
                 if (s === rule) {
-		    //console.debug("Found rule in shortcutsTable");
-                    //ref = eval(z.shortcutsTable[rule]);
                     ref = dojo.fromJson(zen.shortcutsTable[rule]);
-		    //console.debug("rule => " + rule);
                 }
             }
         }
@@ -404,9 +353,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     };
 
     var requireSubtreeCompon = function (treeSpec) {
-	//console.group("treeSpec");
-	//console.dir(treeSpec);
-	//console.groupEnd();
         var i, rule = "", parentCompon, compon, len, constructor, parentDomNode,
         componKind = treeSpec[0],
         initParms = treeSpec[1],
@@ -422,11 +368,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	var kind = treeSpec[0], attributes = treeSpec[1];
 	//console.debug("zen.filterHeadNodesAndRender: kind => " +
 	//	      kind + ", attributes => " + attributes);
-	if (kind == "STYLE" || kind == "TITLE" || kind == "META") {
+	if (kind == "STYLE" || kind == "TITLE" || kind == "META" || kind == "LINK") {
 	    node = document.createElement(kind);
 	    dojo.attr(node, attributes || {}); //FIXME: check this.
 	    head.appendChild(node);
-	    if (kind != "META") {
+	    if (kind == "STYLE" || kind == "TITLE") {
 		z.headNode = node;
 	    }
 	    console.debug("Added style, title, or meta => " + z.headNode);
@@ -435,7 +381,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    z.headNode.appendChild(node);
 	    console.debug("Added text under style or title => " + z.headNode);
 	    z.headNode = null;
-	}	    
+	}
+	//console.debug("Exiting zen.filterHeadNodesAndRender");
     }
 
     // As per Douglas Crockford.
@@ -508,6 +455,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	return dojo.toJson(z.nodeToObject(obj));
     }
 
+    //FIXME: Unused.
     z.browserCollectionToArray = function (collection) {
 	console.debug("++++++++++ Entering zen.browserCollectionToArray");
 	console.debug("collection => " + collection);
@@ -538,15 +486,14 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
     }
 
+    // THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION ABSOLUTE
+    // so that an image file can be loaded from a different website.
     // FIXME: Rename this something like rebaseStyleUrl and provide it with
     // the new base. Typically this would be used to convert a relative
     // path to an absolute path.
     // FIXME: For convenience in zen.fixClassURLs, return null if the
     // cssDecl is unchanged.
     // FIXME: See fixClassesURLs for more FIXMEs.
-    //
-    // THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION ABSOLUTE
-    // so that an image file can be loaded from a different website.
     z.fixCssDeclUrl = function (cssDecl, host, options) {
 	opt = options || {};
 	scheme = opt.scheme || 'http://';
@@ -555,7 +502,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	password = opt.password || '';
 	//////console.debug("Entering zen.fixCssDeclUrl: cssDecl => " + cssDecl + ", host => " + host);
 	var cssDeclParts, len, i;
-
 	// Use a regular expression to split out the attributes from a CSS declaration.
 	// Two patterns are used to match attributes: (1) a background attribute
 	// with a URL -- something like 'url(...);' and (2) any other kind of
@@ -641,7 +587,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	return cssDecl;
     }
 
-    //FIXME: This is not used and not to be used. Change: Maybe use for body-embedded styles.
+    //FIXME: Unused. Maybe use for body-embedded styles.
     z.addClasses = function (styleRules) {
 	var i, stylesLen = styleRules.length, rule;
 	for (i=0; i<stylesLen; i++) {
@@ -651,29 +597,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
     }
 
-    // To get an iframe's document, access the iframe's contentDocument property.
-    // E.g., dojo.byId("transclusion1").contentDocument .
-    //
-    // We are changing a stylesheet, not editing the styles of a DOM node. See:
-    // http://o.sitepen.com/labs/code/dynamicStylesheets/demo.php - GREAT! What I chose.
-    // CSS: The Definitive Guide
-    // http://www.quirksmode.org/dom/tests/stylesheets.html
-    // http://www.quirksmode.org/dom/w3c_css.html#access
-    // http://www.quirksmode.org/dom/w3c_css.html#change
-    // http://www.quirksmode.org/dom/w3c_css.html
-    // http://www.quirksmode.org/dom/changess.html
-    // http://www.howtocreate.co.uk/tutorials/javascript/domstylesheets - great; huge amount of info
-    // http://www.hunlock.com/blogs/Totally_Pwn_CSS_with_Javascript
-    // http://www.javascriptkit.com/domref/stylesheet.shtml
-    // http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml - might contain bugs
-    // http://code.google.com/p/sheetup/ - ?
-    // http://stackoverflow.com/q/6683040 - criteria; critique of jQuery, Dojo, YUI
-    // http://stackoverflow.com/a/622193 - simple, but incomplete
-    // http://stackoverflow.com/a/1827524 - "bare essentials"; looks complete
-    // http://stackoverflow.com/a/7810217 - short, sweet & clean shortcut probably does what I need
-    // http://stackoverflow.com/q/2300084 - pertinent question
-    // dojo/dojox/html/style.js - only insert & remove rules in "dynamic stylesheets"
-    // http://dojotoolkit.org/reference-guide/dojox/data/CssRuleStore.html
+    z.setDoc = function() { //FIXME: For debugging.
+	doc = dojo.byId("transclusion1").contentDocument;
+    }
+    // Method to change a stylesheet.
+    // NOTE: We are not editing the styles of a DOM node here.
     //
     // Doing some reading in some good places turns up some possibly good code:
     // http://archive.plugins.jquery.com/project/jquerycssrule allows you to
@@ -684,15 +612,11 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     //       * html body { font-size: 100%; } \
     //     ";
     //   $.tocssRule(cssRuleText);
-    // http://stackoverflow.com/q/3114859 - less.js; enhances CSS w/ variables, etc.
     //
     // There is also some bad code that ranks high in a Google query for
     // "how to modify css rule":
     // http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml
     // http://www.rainbodesign.com/pub/css/css-javascript.html
-    //
-    // Cross-domain CSS:
-    // http://stackoverflow.com/q/5323604
     //
     // FIXME: Rename this something like rebaseStyleUrls or rebaseStylesheetUrls
     // and see also fixCssDeclUrl.
@@ -700,51 +624,35 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: Replace globals with locals (and that goes for other functions, too).
     z.fixClassesURLs = function (doc) { // doc can be a document in an iframe.
         styleSheets = doc.styleSheets; theRules = []; theStylesheetLengths = {};
-	//console.debug("styleSheets => " + dojo.toJson(styleSheets));
 	console.group("zen.fixClassesURLS: styleSheets");
 	console.dir(styleSheets);
 	console.groupEnd();
         if (styleSheets.length > 0) {
+	    console.debug("styleSheets.length");
             styleSheetsLen = styleSheets.length;
-            isIEorSafari = !styleSheets[0].cssRules;
+            isIEorSafari = typeof styleSheets[0].cssRules == "undefined" ? true : false;
+	    console.debug("isIEorSafari");
             for (i=0; i<styleSheetsLen; i++) {
-		////console.debug("&&&&& Next stylesheet, #" + i);
+		console.debug("zen.fixClassesURLs: i => " + i);
                 if (isIEorSafari) {
-                    // For IE and Safari
-                    //FIXME
-	            new Error('not implemented');
+	            new Error('not implemented'); //FIXME: For IE and Safari
                 } else {
                     rulesLen = styleSheets[i].cssRules.length;
-                    //theStylesheetLengths["stylesheet_" + i] = rulesLen;
                     for (j=0; j<rulesLen; j++) {
-			////console.debug("+++++ Next style rule, #" + j);
+			console.debug("zen.fixClassesURLs: j => " + j);
                         rule = styleSheets[i].cssRules[j];
                         if (rule.type != 4) { // type 4 is for @media rules
-			    //console.debug("rule => " + rule.selectorText +
-			    //		  " { " + rule.style.cssText + " }");
-			    //cssText = zen.fixCssDeclUrl(rule.cssText.match("{.*}")[0]);
-			    if (rule.selectorText.indexOf("#pmolnk") >= 0) {
-				alert("***** Found problem declaration: rule.selectorText => " +
-				      rule.selectorText + ", cssText => " + rule.style.cssText);
+			    console.debug("rule => " + rule.selectorText +
+			    		  " { " + rule.style.cssText + " }");
+			    if (rule.cssText.indexOf("pmolnk") >= 0) {
+				console.debug("********************* Found 'pmolnk' in cssText");
+				console.debug("rule.style.cssText => " + rule.style.cssText +
+					      ", rule.selectorText => " + rule.selectorText);
 			    }
-      if (rule.cssText.indexOf("pmolnk") >= 0) {
-          console.debug("********************* Found 'pmolnk' in cssText");
-	  console.debug("rule.style.cssText => " + rule.style.cssText + ", rule.selectorText => " +
-			rule.selectorText);
-      }
 			    cssText = zen.fixCssDeclUrl(rule.style.cssText, zen.remoteHost);
 			    if (cssText != rule.style.cssText) {
-				/*
-				if (zen.rulesMap[rule.selectorText]) {
-				    console.debug("***************** Found old rule! WTF!");
-				    dojox.html.removeCssRule(rule.selector, rule.style.cssText);
-				}
-				*/
-				// Just override the old rule, don't remove it.
 				dojo.withDoc(doc,
-					     function() {
-						 dojox.html.insertCssRule(rule.selectorText, cssText);
-					     },
+					     function() { dojox.html.insertCssRule(rule.selectorText, cssText); },
 					     window,
 					     null);
 				zen.rulesMap[rule.selectorText] = cssText;

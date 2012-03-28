@@ -58,6 +58,8 @@
 	      var rwp = dijit.byId("remoteWebPage");
 	      if (rwp) {
 		  rwp.onLoad = function () {
+		      zen.setDoc();
+
 		      console.debug("Greetings from the remote web page!");
 		      jsonFromWatir = dojo.byId("jsonFromWatir").textContent;
 		      //console.debug("jsonFromWatir => " + jsonFromWatir);
@@ -139,7 +141,6 @@
 		      // for STYLE nodes in the body. One of those
 		      // nodes contains the style selector #pmolnk .
 		      zen.renderTree(remoteBody, zen.body1);
-
 
 		      dojo.attr(zen.xclusion1, "style",
 		                "width:" + remoteWidth + "px; height:" +

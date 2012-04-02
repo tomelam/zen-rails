@@ -77,21 +77,52 @@ class ProxyController < ApplicationController
                 return null;
             }
 	}
+//alert('Here: defined function via Watir');
 
-	var theHeadNodes = [], j = 0, ary = document.head.childNodes;
+	var theHead = [], j = 0, ary = document.head.childNodes;
+//alert('Here: got array of head nodes');
 	for (var i=0; i<ary.length; i++) {
-            var obj = nodeToObject(ary[i]);
-            if (obj) { // Account for nodes that should not be included.
-                theHeadNodes[j] = obj;
-                j += 1;
+            // Exclude nodes of type "STYLE" and "LINK" because of
+            // cross-origin resource sharing policy. (See
+            // http://www.w3.org/TR/cors/ .) We will copy the rules
+            // from the stylesheets and send them instead of the
+            // links to the stylesheets.
+            if (ary[i].nodeType != "STYLE" && ary[i].nodeType != "LINK") {
+                var obj = nodeToObject(ary[i]);
+                if (obj) { // Account for nodes that should not be included.
+                    theHead[j] = obj;
+                    j += 1;
+                }
             }
         }
+//alert('Here: filled theHead');
+
+        var theCssRules = [], styleSheets = document.styleSheets;
+//alert('Here: got stylesheets');
+        for (i=0; i<styleSheets.length; i++) {
+//alert('Here: got length: ' + styleSheets.length);
+            cssRules = styleSheets[i].cssRules;
+alert('Here: got rules');
+            for (j=0; j<cssRules.length; j++) {
+alert('Here: got cssRules.length');
+                rule = cssRules[j];
+alert('Here: got rule');
+                if (rule.type != 4) { // type 4 is for @media rules
+                    theCssRules.push([rule.selectorText, rule.style.cssText]);
+alert('Here: pushed rule');
+                }
+            }
+        }
+alert('Here: got rules');
 
         theBody = nodeToObject(document.body);
+alert('Here: got body');
 
-        jsonFromWatir = JSON.stringify({theHeadNodes:theHeadNodes, theBody:theBody,
-                                      theWidth:document.body.clientWidth,
-                                      theHeight:document.body.clientHeight});
+        jsonFromWatir = JSON.stringify({theHead:theHead, theBody:theBody,
+                                        theCssRules:theCssRules,
+                                        theWidth:document.body.clientWidth,
+                                        theHeight:document.body.clientHeight});
+alert('Here: stringified data');
 	return jsonFromWatir;
 JS
 

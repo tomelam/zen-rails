@@ -44,113 +44,12 @@
         "zen/dojo",
         "zen"
       ],
-      // callback when above modules finish loading
+      // Callback for when above modules finish loading
       function () {
           console.debug("Modules are loaded");
-          dojo.addOnLoad(function () {
-	      //dojo.require("aop.aspect");
-	      //dojo.require("dojox.layout.ContentPane");
-              //dojo.require("zen.dojo");
-              //dojo.require("zen");
-	      zen.init();
-	      zen.remoteHost = "";
-	      zen.rulesMap = {};
-	      var rwp = dijit.byId("remoteWebPage");
-	      if (rwp) {
-		  rwp.onLoad = function () {
-		      zen.setDoc();
-
-		      console.debug("Greetings from the remote web page!");
-		      jsonFromWatir = dojo.byId("jsonFromWatir").textContent;
-		      //console.debug("jsonFromWatir => " + jsonFromWatir);
-
-		      remoteData = dojo.fromJson(jsonFromWatir);
-		      //console.group("remoteData");
-		      //console.dir(remoteData);
-		      //console.groupEnd();
-		      //remoteStyleRules = remoteData.theRules;
-		      remoteHeadNodes = remoteData.theHeadNodes;
-		      remoteBody = remoteData.theBody;
-		      remoteWidth = remoteData.theWidth;
-		      remoteHeight = remoteData.theHeight;
-
-		      zen.remoteScheme = dojo.byId("remoteScheme").textContent;
-		      console.debug("remoteScheme => " + zen.remoteScheme);
-		      zen.remoteHost = dojo.byId("remoteHost").textContent;
-		      console.debug("remoteHost => " + zen.remoteHost);
-		      zen.remotePath = dojo.byId("remotePath").textContent;
-		      console.debug("remotePath => " + zen.remotePath);
-		      zen.remotePort = dojo.byId("remotePort").textContent;
-		      console.debug("remotePort => " + zen.remotePort);
-
-		      console.debug("++++++++++ Add style nodes defined in head");
-		      console.group("remoteHeadNodes");
-		      console.dir(remoteHeadNodes);
-		      console.groupEnd();
-		      //zen.renderForest(remoteHeadNodes, zen.head1);
-		      for (i = 0; i < remoteHeadNodes.length; i++) {
-			  zen.walkZenSpec(
-			      remoteHeadNodes[i],
-			      function(tree) {
-				  //console.debug("zen.walkZenSpec: tree => " + tree);
-				  zen.filterHeadNodesAndRender(tree, zen.head1.domNode);
-			      });
-		      }
-
-		      console.debug("++++++++++ Add style nodes defined in body");
-		      zen.walkZenSpec(
-			  remoteBody,
-			  function(tree) {
-			      //console.debug("zen.walkZenSpec: tree => " + tree);
-			      zen.filterHeadNodesAndRender(tree, zen.head1.domNode);
-			  });
-
-		      /*
-		      styleElementsFromHead = zen.browserCollectionToArray(transclusion1.getElementsByTagName("style")).filter(
-			  function(node) { return (node.parentNode == transclusion1.head); });
-		      console.debug("Got %d styleElementsFromHead", styleElementsFromHead.length);
-		      styleElementsFromBody = zen.browserCollectionToArray(transclusion1.getElementsByTagName("style")).filter(
-			  function(node) { return (node.parentNode != transclusion1.head); });
-		      console.debug("Got %d styleElementsFromBody", styleElementsFromBody.length);
-		      styleElementsFromBody.forEach(function(se) {
-			  se = se.innerHTML.replace(/(background.*?url\("data:.*?);(.*?\))/g, '$1#$2');
-			  rules = se.split("}");
-			  for (i = 0; i < rules.length; i++) {
-			      console.debug("rules[" + i + "] => " + rules[i]);
-			      declStart = rules[i].indexOf("{");
-			      selectorText = rules[i].substr(0, declStart)
-			      cssText = rules[i].substr(declStart+1);
-			      cssText1 = zen.fixCssDeclUrl(cssText, zen.remoteHost);
-			      if (cssText1 != cssText) {
-				  if (zen.rulesMap[selectorText]) {
-				      dojox.html.removeCssRule(selector, cssText);
-				      console.debug("selector, text " + selector + "," + cssText + " removed");
-				  }				  
-				  dojox.html.insertCssRule(selectorText, cssText1);
-				  zen.rulesMap[selectorText] = cssText1;
-			      }
-			  }
-		      });
-		      */
-		      console.debug("++++++++++ Nodes added");
-
-		      transclusion1 = dojo.byId("transclusion1").contentDocument;
-		      zen.fixClassesURLs(transclusion1);
-
-		      // zen.renderTree will call zen.createElement
-		      // for STYLE nodes in the body. One of those
-		      // nodes contains the style selector #pmolnk .
-		      zen.renderTree(remoteBody, zen.body1);
-
-		      dojo.attr(zen.xclusion1, "style",
-		                "width:" + remoteWidth + "px; height:" +
-				remoteHeight + "px");
-		  }
-	      }
-	      
-          });
+          dojo.addOnLoad(zen.init);
       });
- </script>
+    </script>
 
   </head>
   <body class="tundra">
@@ -177,8 +76,8 @@
     <iframe id="transclusion1" src="iframed.html"
             style="width:100%; height:500px">
     </iframe>
-    <div id="remoteWebPage" data-dojo-type="dojox.layout.ContentPane"
-	 data-dojo-props='href:"web/google.com"'></div>
+    <div id="jsonPage" data-dojo-type="dojox.layout.ContentPane"
+	 data-dojo-props='href:"web/facebook.com"'></div>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
   </body>

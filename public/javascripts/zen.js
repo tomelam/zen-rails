@@ -218,7 +218,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    if (src_split.length < 2) { // No match: must be relative.
 		//console.debug("zen.remoteHost => " + zen.remoteHost +
 		//	      ", attributes.src => " + attributes.src);
-		attributes.src = "http://" + zen.remoteHost + src_split;
+		attributes.src = "http://" + dojo.byId("remoteHost").textContent + src_split;
 		console.debug("fixed new IMG URL: attributes.src => " + attributes.src);
 	    }
 	}
@@ -227,7 +227,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	if (attributes.style) {
 	    ////console.debug("************************************************");
 	    ////console.debug("Calling zen.fixCssDeclUrl");
-	    attributes.style = zen.fixCssDeclUrl(attributes.style, zen.remoteHost);
+	    attributes.style = zen.fixCssDeclUrl(attributes.style, dojo.byId("remoteHost").textContent);
 	    ////console.debug("Returned from zen.fixCssDeclUrl");
 	}
 
@@ -379,7 +379,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	} else if (treeSpec[0] == "text" && zen.headNode) {
 	    node = document.createTextNode(attributes);
 	    z.headNode.appendChild(node);
-	    console.debug("Added text under style or title => " + z.headNode);
+	    console.debug("Added text under style or title => " + z.headNode + ", attributes => " +
+			 attributes);
 	    z.headNode = null;
 	}
 	//console.debug("Exiting zen.filterHeadNodesAndRender");
@@ -578,6 +579,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
 	if (foundBackgroundSpec) {
 	    //cssDeclParts.push(""); // Ensures a ";" at the end of the join. FIXME: Probably should not do this.
+	    cssDeclParts.push("");
 	    cssDecl = cssDeclParts.join(";");
 	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?)#(.*?\))/,'$1\;$2')
 	    //console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
@@ -597,10 +599,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
     }
 
-    z.setDoc = function() { //FIXME: For debugging.
-	doc = dojo.byId("transclusion1").contentDocument;
-    }
-    // Method to change a stylesheet.
+    // Method to adjust the URLs in a web page's stylesheets to work
+    // on a different domain.
     // NOTE: We are not editing the styles of a DOM node here.
     //
     // Doing some reading in some good places turns up some possibly good code:
@@ -623,7 +623,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
     // FIXME: The argument should be a stylesheet, not a document.
     // FIXME: Replace globals with locals (and that goes for other functions, too).
     z.fixClassesURLs = function (doc) { // doc can be a document in an iframe.
-        styleSheets = doc.styleSheets; theRules = []; theStylesheetLengths = {};
+        styleSheets = doc.styleSheets;
 	console.group("zen.fixClassesURLS: styleSheets");
 	console.dir(styleSheets);
 	console.groupEnd();
@@ -650,18 +650,27 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 					      ", rule.selectorText => " + rule.selectorText);
 			    }
 			    cssText = zen.fixCssDeclUrl(rule.style.cssText, zen.remoteHost);
-			    if (cssText != rule.style.cssText) {
+			    if (cssText != rule.style.cssText) {//FIXME: Bug: true even for inconsequential differences.
+				console.debug("????? Will insert CSS rule: cssText => " + cssText +
+					      "rule.style.cssText => " + rule.style.cssText +
+					      "lengths: " + cssText.length + ", " + rule.style.cssText.length +
+					      "rule.selectorText => " + rule.selectorText);
+				console.debug("..............................................................");
+				console.debug("????? index of similarity: " + rule.style.cssText.indexOf(cssText));
 				dojo.withDoc(doc,
 					     function() { dojox.html.insertCssRule(rule.selectorText, cssText); },
 					     window,
 					     null);
-				zen.rulesMap[rule.selectorText] = cssText;
 			    }
                         }
                     }
                 }
             }
         }
+	console.debug("zen.fixClassesURLs: exiting");
+	console.group("zen.fixClassesURLS: styleSheets");
+	console.dir(styleSheets);
+	console.groupEnd();
     }
 
     // Asynchonous Ajax requests will be made to retrieve JavaScript
@@ -874,18 +883,69 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	});
 	*/
 	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
-	z.xclusion1 = dojo.byId("transclusion1");
+	z.transclusion1 = dojo.byId("transclusion1");
 	z.head1 = z.createNew(zen.DomNodeCompon, null,
-			      z.xclusion1.contentDocument.head);
+			      z.transclusion1.contentDocument.head);
 	z.body1 = z.createNew(zen.DomNodeCompon, null,
-			      z.xclusion1.contentDocument.body);
+			      z.transclusion1.contentDocument.body);
         dojo.require.apply(null, ["dojo.io.iframe"]); // This is for dojo.io.iframe.send only!
 	//console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
 	//dojo.aspect.advise(console, "debug", [zen.TraceReturns, zen.TraceArguments]);
         dojo.addOnLoad(z.loadToolbox);
-	z.printStyles();
-	//z.createStyleSearcher();
-    };
+
+	var jp = dijit.byId("jsonPage");
+	jp.render = zen.makeDocumentRenderer(dojo.byId("transclusion1").contentDocument);	      
+	if (jp) {
+	    jp.onLoad = function() {
+		console.debug("Greetings from the remote web page!");
+		jsonFromWatir = dojo.byId("jsonFromWatir").textContent;
+		remoteData = dojo.fromJson(jsonFromWatir);
+		remoteHead = remoteData.theHead;
+		remoteBody = remoteData.theBody;
+		remoteWidth = remoteData.theWidth + 20;
+		remoteHeight = remoteData.theHeight + 15;
+		jp.render();
+	    }
+	}
+    }
+    
+    z.makeDocumentRenderer = function (document) {
+	return function() {
+	    var options = {}, host = dojo.byId("remoteHost").textContent;
+	    options.scheme = dojo.byId("remoteScheme").textContent;
+	    options.path = dojo.byId("remotePath").textContent;
+	    options.port = dojo.byId("remotePort").textContent;
+	    //options.user = dojo.byId("remoteUser").textContent;
+	    //options.password = dojo.byId("remotePassword").textContent;
+	    console.group("document.styleSheets");
+	    console.dir(document.styleSheets);
+	    console.groupEnd();
+	    
+	    dojo.withDoc(
+		document,
+		function() {
+		    var cssSelector, cssDeclaration;
+		    for (i = 0; i < remoteData.theCssRules.length; i++) {
+			cssSelector = remoteData.theCssRules[i][0];
+			cssDeclaration = remoteData.theCssRules[i][1];
+			cssDeclFixed = z.fixCssDeclUrl(cssDeclaration, host, options);
+       	 		dojox.html.insertCssRule(cssSelector, cssDeclFixed);
+		    }
+		},
+		window,
+		null
+	    );
+	    
+	    // zen.renderTree will call zen.createElement
+	    // for STYLE nodes in the body. One of those
+	    // nodes contains the style selector #pmolnk .
+	    zen.renderTree(remoteBody, zen.body1);
+	    
+	    dojo.attr(zen.transclusion1, "style",
+		      "width:" + remoteWidth + "px; height:" +
+		      remoteHeight + "px");
+	}
+    }
 
     dojo.addOnLoad(function() {
         var components, c, rule, len;
@@ -930,45 +990,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 
 zen.DomNodeCompon.domNodeCompons = [];
 
-dojo.require.apply(null, ["zen.debug"]);
-dojo.require.apply(null, ["zen.dojo"]);
-
-zen.printStyles = function () {
-    ruleStore = new dojox.data.CssRuleStore({'context': ['dijit/themes/tundra/tundra.css']});
-    var gotItems = function (items, request) {
-	var i, len = items.length;
-	rules = items;
-	//console.debug("rules[0].rule.cssText => " + rules[0].rule.cssText);
-    };
-    ruleStore.fetch({onComplete: gotItems});
-}
-
-zen.addTestStyle = function () {
-    dojox.html.insertCssRule("#zen", "background-color: red");
-}
-
-zen.createStyleSearcher = function () {
-    ruleStore = new dojox.data.CssRuleStore({'context': ['dijit/themes/tundra/tundra.css']});
-    //console.group("ruleStore._allItems");
-    //console.dir(ruleStore._allItems);
-    //console.groupEnd();
-    ruleCombo = new dijit.form.ComboBox({'store': ruleStore, 'searchAttr': 'selector'}, dojo.byId('ruleCombo'));
-    
-    function setCssText(){
-	//alert('Entering setCssText');
-	var item = ruleCombo.item;
-	var text = dojo.byId("textLoc");
-	if(text){
-	    while(text.firstChild){
-		text.removeChild(text.firstChild);
-	    }
-	    if(item){
-		text.innerHTML = ruleStore.getValue(item, "cssText");
-	    }
-	}else {console.log("foo!")}
-    }
-    dojo.connect(ruleCombo, "onChange", setCssText);
-}
+//dojo.require.apply(null, ["zen.debug"]);
+//dojo.require.apply(null, ["zen.dojo"]);
 
 // FIXME: Use the following function or delete it.
 /*

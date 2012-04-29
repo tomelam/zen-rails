@@ -107,7 +107,6 @@ require(['dojo/_base/declare'], function(declare) {
 //FIXME: Consider moving aside console.debug, console.info, etc. to implement
 //controllable debugging.
 (function (zen) {
-    console.warn("Do zen module preliminaries");
     var z = zen;
     TraceArguments = {
 	//FIXME: Explore how to use dojox.lang.aspect for debugging.
@@ -132,8 +131,6 @@ require(['dojo/_base/declare'], function(declare) {
     dojo.require("dijit.form.Button");
     dojo.require("dijit.form.CheckBox");
     dojo.require("dojo.parser");
-
-    console.warn("Define zen.createNew");
     var hiddenLink = function () {};
     z.createNew = function () {
 	////
@@ -184,8 +181,6 @@ require(['dojo/_base/declare'], function(declare) {
         //         or the created instance.
         return typeof instance === "object" ? instance : object;
     };
-
-    console.warn("Define zen.createElement");
     var _instanceCounters = {};
     z.getUniqueId = function (objectType) { // objectType is a string
         var count;
@@ -245,8 +240,6 @@ require(['dojo/_base/declare'], function(declare) {
 	////console.log("zen.createElement returning " + domNodeCompon);
         return domNodeCompon;
     };
-
-    console.warn("Define zen.createTextNode");
     z.createTextNode = function (kind, text) {
         var domNodeCompon = zen.createNew(zen.DomNodeCompon);
         // FIXME: Use dojo.create, if appropriate.
@@ -255,8 +248,6 @@ require(['dojo/_base/declare'], function(declare) {
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
     };
-
-    console.warn("Define zen.createDummyElement");
     z.createDummyElement = function (kind, attributes) {
 	console.warn("zen.createDummyElement: kind => " + kind + ", attributes => " + attributes);
         var domNodeCompon = zen.createNew(zen.DomNodeCompon);
@@ -294,8 +285,6 @@ require(['dojo/_base/declare'], function(declare) {
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
     };
-
-    console.warn("Define zen.createSubtree");
     z.createSubtree = function (treeSpec) {
         var i, rule, parentCompon, compon, len, constructor, element;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
@@ -337,8 +326,6 @@ require(['dojo/_base/declare'], function(declare) {
         }
         return parentCompon;
     };
-
-    console.warn("Define rulesTable and invertedRulesTable");
     rulesTable = {
 	// Each property of rulesTable is the name of a rule
 	// (i.e. function) for creating a kind of component. The value
@@ -389,8 +376,6 @@ require(['dojo/_base/declare'], function(declare) {
 	// This is a table for looking up a rule given a component
 	// name as a key.
     };
-
-    console.warn("Define zen.rule2ref");
     z.rule2ref = function (rule) {
 	// Note: the eval method is not used here because it can be
 	// unsafe. FaceBook and MySpace, for example, won't allow it
@@ -411,7 +396,6 @@ require(['dojo/_base/declare'], function(declare) {
         }
         return ref;
     };
-
     var requireSubtreeCompon = function (treeSpec) {
         var i, rule = "", parentCompon, compon, len, constructor, parentDomNode,
         componKind = treeSpec[0],
@@ -426,7 +410,6 @@ require(['dojo/_base/declare'], function(declare) {
             dojo.require.apply(null, [componKind]);
         };
     };
-
     //z.headNode = null;
     //FIXME: Check whether a STYLE node could contain more than one TEXT nodes.
     /*z.filterHeadNodesAndRender = function (treeSpec, head) {
@@ -450,8 +433,6 @@ require(['dojo/_base/declare'], function(declare) {
 	}
 	//console.debug("Exiting zen.filterHeadNodesAndRender");
     }*/
-
-    console.warn("Define walkTheDOM, walkZen, and zen.walkZenSpec");
     var walkTheDOM = function (node, func) {
 	// As per Douglas Crockford.
         func(node); 
@@ -473,8 +454,6 @@ require(['dojo/_base/declare'], function(declare) {
         dojo.forEach(treeSpec[2],
                      function (subtree) { z.walkZenSpec(subtree, func); });
     };
-
-    console.warn("Define zen.nodeToObject, zen.nodeToJson, and zen.browserCollectionToArray");
     z.nodeToObject = function (node) {
 	//FIXME: Try to use walkTheDOM.
 	if (node.nodeType == 3) {
@@ -526,8 +505,6 @@ require(['dojo/_base/declare'], function(declare) {
 	}
 	return ary;
     }
-
-    console.warn("Define zen.renderTree, zen.renderTreeDeferred and zen.renderForest");
     z.renderTree = function (tree, parent) {
         var newComponent;
 	//dojox.lang.aspect.advise(zen, "createSubtree", [TraceReturns, TraceArguments]);
@@ -568,181 +545,6 @@ require(['dojo/_base/declare'], function(declare) {
 	    z.renderTree(forest[i], parent);
 	}
     }
-
-    console.warn("Define zen.fixCssDeclUrl and zen.fixClassesURLs");
-    z.fixCssDeclUrl = function (cssDecl, host, options) {
-	// THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION
-	// ABSOLUTE so that an image file can be loaded from a
-	// different website.  FIXME: Rename this something like
-	// rebaseStyleUrl and provide it with the new base. Typically
-	// this would be used to convert a relative path to an
-	// absolute path.  FIXME: For convenience in zen.fixClassURLs,
-	// return null if the cssDecl is unchanged.  FIXME: See
-	// fixClassesURLs for more FIXMEs.
-	i = null;
-	j = 0;
-	opt = options || {};
-	scheme = opt.scheme || 'http://';
-	port = opt.port || '';
-	user = opt.user || '';
-	password = opt.password || '';
-	console.log("Entering zen.fixCssDeclUrl: cssDecl => " + cssDecl + ", host => " + host +
-		    ", typeof cssDecl => " + typeof cssDecl);
-	var cssDeclParts, len, i;
-	if (typeof cssDecl == "string") {
-	    // Use a regular expression to split out the attributes from a CSS declaration.
-	    // Two patterns are used to match attributes: (1) a background attribute
-	    // with a URL -- something like 'url(...);' and (2) any other kind of
-	    // attribute. A simpler regular expression would split a background
-	    // attribute containing a URL into two parts, whereas we want only one
-	    // part per attribute.
-	    //re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
-	    //FIXME: The next re leaves a ';' at the end of 1 match if there is 'data'.
-	    //ALMOST OK?
-	    re = /(background:.*?url\(.*?\).*?;)/ //|((?!background:.*?url\(.*?\).*?);)/;
-	    //re = /((?!background:.*?url\(.*?\).*?);)|/;
-	    //FIXME: This re mistakenly chops off the data URL at its ';'.
-	    //re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
-	    re = /;/;	    
-	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?);(.*?\))/,'$1#$2');
-	    ////console.debug("cssDecl => " + cssDecl);
-	    cssDeclParts = cssDecl.split(re).filter(function(el) {
-		return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
-		////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
-	    });
-	} else {
-	    cssDeclParts = [];
-	    for (i in cssDecl) {
-		cssDeclParts[j] = i + ":" + cssDecl[i] + "; ";
-	    }
-	}
-	////console.debug("cssDeclParts => " + cssDeclParts);
-	//console.group("cssDeclParts");
-	//console.dir(cssDeclParts);
-	//console.groupEnd();
-	len = cssDeclParts.length;
-	var foundBackgroundSpec = false;
-	for (i = 0; i < len; i++) {
-	    // Split out the style properties from the attribute, making sure
-	    // not to mistake the colon in 'data:' for a property deliminator.
-	    //FIXME: Search for single-quote character (') below?
-	    idx = cssDeclParts[i].indexOf(":");
-	    styleProp = cssDeclParts[i].slice(0, idx);
-	    styleValue = cssDeclParts[i].slice(idx + 1);
-	    ////console.debug("styleProp => " + styleProp + ", styleValue => " + styleValue);
-	    if (styleProp == "background") {
-		foundBackgroundSpec = true;
-		console.warn("##### Found background: cssDeclParts[i] => " + cssDeclParts[i]);
-		if (cssDeclParts[i].search(/\(\"data:/) < 0) {
-		    // A URL that starts with '//' is a protocol relative URL.
-		    // See http://paulirish.com/2010/the-protocol-relative-url/ .
-		    valueParts = styleValue.match('(url.*)(\".*)(\/\/.*)');
-		    ////console.debug("valueParts => " + valueParts);
-		    if (valueParts) {
-			// Convert protocol relative URL to absolute-path URL.
-			styleValue = valueParts[1] + '"' + scheme + valueParts[3].slice(2);
-		    } else if (styleValue.indexOf("url(") >= 0 && styleValue.indexOf("http://") < 0) {
-			// Convert a relative-path URL to an absolute-path URL.
-			////console.debug('styleValue.indexOf("http://") < 0');
-			idx = styleValue.indexOf('(') + 1;
-			console.debug("Get index of relative URL in style: idx => " + idx);
-			quoteUsed = styleValue.charAt(idx) == '"'? true : false;
-			if (quoteUsed) {
-			    idx += 1;
-			}
-			if (styleValue.charAt(idx) == '/') {
-			    console.debug("Incremented index by one for full path URL (which includes root /)");
-			    idx += 1;
-			}
-			styleValue = 'url(' + (quoteUsed? '"' : '') + scheme + (user? (user+'@') : '') + (password? (password+':') : '') +
-			    host + (port? (':'+port) : '') + '/' + styleValue.slice(idx);
-			console.debug("styleValue (with host, scheme, etc.) => " + styleValue);
-		    }			
-		} /* else {
-		    console.debug("##### Found data URL => cssDecl => " + cssDecl + ", cssDeclParts[i] => " + cssDeclParts[i]);
-		    //FIXME
-		} */
-		////console.debug("##### styleValue => " + styleValue);
-	    }
-	    cssDeclParts[i] = styleProp + ":" + styleValue;
-	    //console.debug("##### cssDeclParts[" + i + "] => " + cssDeclParts[i]);
-	}
-	if (foundBackgroundSpec) {
-	    //cssDeclParts.push(""); // Ensures a ";" at the end of the join. FIXME: Probably should not do this.
-	    cssDeclParts.push("");
-	    cssDecl = cssDeclParts.join(";");
-	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?)#(.*?\))/,'$1\;$2')
-	    //console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
-	    //		  ", cssDecl => " + cssDecl);
-	}
-	console.debug("Leaving zen.fixCssDeclUrl: cssDecl => " + cssDecl);
-	return cssDecl;
-    }
-    z.fixClassesURLs = function (doc) { // doc can be a document in an iframe.
-	// Method to adjust the URLs in a web page's stylesheets to work
-	// on a different domain.
-	// NOTE: We are not editing the styles of a DOM node here.
-	//
-	// Doing some reading in some good places turns up some possibly good code:
-	// http://archive.plugins.jquery.com/project/jquerycssrule allows you to
-	//   $.rule('.classname', 'style').append('font-size: 30px');
-	// http://archive.plugins.jquery.com/project/jquerycssrule allows you to
-	//   var cssRuleText = " \
-	//       body { font-size: 16px; } \
-	//       * html body { font-size: 100%; } \
-	//     ";
-	//   $.tocssRule(cssRuleText);
-	//
-	// There is also some bad code that ranks high in a Google query for
-	// "how to modify css rule":
-	// http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml
-	// http://www.rainbodesign.com/pub/css/css-javascript.html
-	//
-	// FIXME: Rename this something like rebaseStyleUrls or rebaseStylesheetUrls
-	// and see also fixCssDeclUrl.
-	// FIXME: The argument should be a stylesheet, not a document.
-	// FIXME: Replace globals with locals (and that goes for other functions, too).
-        styleSheets = doc.styleSheets;
-	console.group("zen.fixClassesURLS: styleSheets");
-	console.dir(styleSheets);
-	console.groupEnd();
-        if (styleSheets.length > 0) {
-	    console.debug("styleSheets.length");
-            styleSheetsLen = styleSheets.length;
-            isIEorSafari = typeof styleSheets[0].cssRules == "undefined" ? true : false;
-	    console.debug("isIEorSafari");
-            for (i=0; i<styleSheetsLen; i++) {
-		console.debug("zen.fixClassesURLs: i => " + i);
-                if (isIEorSafari) {
-	            new Error('not implemented'); //FIXME: For IE and Safari
-                } else {
-                    rulesLen = styleSheets[i].cssRules.length;
-		    console.warn("zen.fixClassesURLs: rulesLen => " + rulesLen);
-                    for (j=0; j<rulesLen; j++) {
-			console.debug("zen.fixClassesURLs: j => " + j);
-                        rule = styleSheets[i].cssRules[j];
-                        if (rule.type != 4) { // type 4 is for @media rules
-			    console.debug("rule => " + rule.selectorText +
-			    		  " { " + rule.style.cssText + " }");
-			    cssText = zen.fixCssDeclUrl(rule.style.cssText, zen.remoteHost);
-			    if (cssText != rule.style.cssText) {//FIXME: Bug: true even for inconsequential differences.
-				dojo.withDoc(doc,
-					     function() { dojox.html.insertCssRule(rule.selectorText, cssText); },
-					     window,
-					     null);
-			    }
-                        }
-                    }
-                }
-            }
-        }
-	console.debug("zen.fixClassesURLs: exiting");
-	console.group("zen.fixClassesURLS: styleSheets");
-	console.dir(styleSheets);
-	console.groupEnd();
-    }
-
-    console.warn("Define diagramming functions");
     var boxCompon = function (component, tbl) {
 	//FIXME: Use dojo.create.
         var row = z.createElement("tr");
@@ -882,8 +684,6 @@ require(['dojo/_base/declare'], function(declare) {
         );
 	*/
     };
-
-    console.warn("Define zen.loadToolbox");
     z.loadToolbox = function () {
 	//console.debug("Entered zen.loadToolbox");
         var deferred = new dojo.Deferred();
@@ -919,8 +719,6 @@ require(['dojo/_base/declare'], function(declare) {
 
 	//console.debug("Called dojo.io.iframe.send");
     };
-
-    console.warn("Define zen.init");
     z.init = function () {
 	/*
 	  FIXME
@@ -945,6 +743,219 @@ require(['dojo/_base/declare'], function(declare) {
 	//E.g.: targetBody = zen.createNew(zen.DomNodeCompon, "targetBody", win.body());
 	// Arguments to zen.createNew here are zen.DomNodeCompon, an id, and a node to append to.
 	unrendered = zen.createNew(zen.DomNodeCompon, "unrendered", dojo.create("div"));
+    }
+    dojo.addOnLoad(function() {
+        var components, c, rule, len;
+        for (rule in rulesTable) {
+            if (rulesTable.hasOwnProperty(rule)) {
+                components = rulesTable[rule];
+                len = components.length;
+                for (c = 0; c < len; c++) {
+                    invertedRulesTable[components[c]] = rule;
+                }
+            }
+        }
+
+        // These shortcuts make it easy to specify methods for
+        // creating various kinds of components. FIXME: it might be
+        // better to use a Dojo function to create a TextNode instead
+        // of using document.createTextNode() directly.  FIXME: This
+        // shortcutsTable used to be worth something, but it looks all
+        // messed up now: (1) Shouldn't it be possible to encapsulate
+        // any class-based widget from any JavaScript library in a Zen
+        // Compon container, without having a specific Zen class for
+        // it (like DomNodeCompon)? If this is indeed possible, I
+        // think this shortcutsTable should be useful by making it
+        // easier to hand-code the JSON specification of a chunk of a
+        // web page by providing shortcut references to anticipated
+        // types of components. (2) It looks like z.createElement
+        // could simply be replaced by createElement. (3) If we decide
+        // to use document.createTextNode as a value in this table, it
+        // is a perfect example of a method that needs a shortcut
+        // reference (simply 'createTextNode' or something
+        // similar). (4) An important idea about this shortcutsTable
+        // is that it should be extensible at run time. This run-time
+        // extension could be used to keep zen.js modular and lean.
+        z.shortcutsTable = {
+            createElement : z.createElement,
+	    createDummyElement : z.createDummyElement,
+            createTextNode : z.createTextNode,
+            createDijit : z.createDijit
+        };
+    });
+
+    console.warn("Define zen.fixCssDeclUrl and zen.fixClassesURLs");
+    z.fixCssDeclUrl = function (cssDecl, host, options) {
+	// THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION
+	// ABSOLUTE so that an image file can be loaded from a
+	// different website.  FIXME: Rename this something like
+	// rebaseStyleUrl and provide it with the new base. Typically
+	// this would be used to convert a relative path to an
+	// absolute path.  FIXME: For convenience in zen.fixClassURLs,
+	// return null if the cssDecl is unchanged.  FIXME: See
+	// fixClassesURLs for more FIXMEs.
+	i = null;
+	j = 0;
+	opt = options || {};
+	scheme = opt.scheme || 'http://';
+	port = opt.port || '';
+	user = opt.user || '';
+	password = opt.password || '';
+	console.log("Entering zen.fixCssDeclUrl: cssDecl => " + cssDecl + ", host => " + host +
+		    ", typeof cssDecl => " + typeof cssDecl);
+	var cssDeclParts, len, i;
+	if (typeof cssDecl == "string") {
+	    // Use a regular expression to split out the attributes from a CSS declaration.
+	    // Two patterns are used to match attributes: (1) a background attribute
+	    // with a URL -- something like 'url(...);' and (2) any other kind of
+	    // attribute. A simpler regular expression would split a background
+	    // attribute containing a URL into two parts, whereas we want only one
+	    // part per attribute.
+	    //re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
+	    //FIXME: The next re leaves a ';' at the end of 1 match if there is 'data'.
+	    //ALMOST OK?
+	    re = /(background:.*?url\(.*?\).*?;)/ //|((?!background:.*?url\(.*?\).*?);)/;
+	    //re = /((?!background:.*?url\(.*?\).*?);)|/;
+	    //FIXME: This re mistakenly chops off the data URL at its ';'.
+	    //re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
+	    re = /;/;	    
+	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?);(.*?\))/,'$1#$2');
+	    ////console.debug("cssDecl => " + cssDecl);
+	    cssDeclParts = cssDecl.split(re).filter(function(el) {
+		return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
+		////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
+	    });
+	} else {
+	    cssDeclParts = [];
+	    for (i in cssDecl) {
+		cssDeclParts[j] = i + ":" + cssDecl[i] + "; ";
+	    }
+	}
+	////console.debug("cssDeclParts => " + cssDeclParts);
+	//console.group("cssDeclParts");
+	//console.dir(cssDeclParts);
+	//console.groupEnd();
+	len = cssDeclParts.length;
+	var foundBackgroundSpec = false;
+	for (i = 0; i < len; i++) {
+	    // Split out the style properties from the attribute, making sure
+	    // not to mistake the colon in 'data:' for a property deliminator.
+	    //FIXME: Search for single-quote character (') below?
+	    idx = cssDeclParts[i].indexOf(":");
+	    styleProp = cssDeclParts[i].slice(0, idx);
+	    styleValue = cssDeclParts[i].slice(idx + 1);
+	    ////console.debug("styleProp => " + styleProp + ", styleValue => " + styleValue);
+	    if (styleProp == "background") {
+		foundBackgroundSpec = true;
+		console.warn("##### Found background: cssDeclParts[i] => " + cssDeclParts[i]);
+		if (cssDeclParts[i].search(/\(\"data:/) < 0) {
+		    // A URL that starts with '//' is a protocol relative URL.
+		    // See http://paulirish.com/2010/the-protocol-relative-url/ .
+		    valueParts = styleValue.match('(url.*)(\".*)(\/\/.*)');
+		    ////console.debug("valueParts => " + valueParts);
+		    if (valueParts) {
+			// Convert protocol relative URL to absolute-path URL.
+			styleValue = valueParts[1] + '"' + scheme + valueParts[3].slice(2);
+		    } else if (styleValue.indexOf("url(") >= 0 && styleValue.indexOf("http://") < 0) {
+			// Convert a relative-path URL to an absolute-path URL.
+			////console.debug('styleValue.indexOf("http://") < 0');
+			idx = styleValue.indexOf('(') + 1;
+			console.debug("Get index of relative URL in style: idx => " + idx);
+			quoteUsed = styleValue.charAt(idx) == '"'? true : false;
+			if (quoteUsed) {
+			    idx += 1;
+			}
+			if (styleValue.charAt(idx) == '/') {
+			    console.debug("Incremented index by one for full path URL (which includes root /)");
+			    idx += 1;
+			}
+			styleValue = 'url(' + (quoteUsed? '"' : '') + scheme + (user? (user+'@') : '') + (password? (password+':') : '') +
+			    host + (port? (':'+port) : '') + '/' + styleValue.slice(idx);
+			console.debug("styleValue (with host, scheme, etc.) => " + styleValue);
+		    }			
+		} /* else {
+		    console.debug("##### Found data URL => cssDecl => " + cssDecl + ", cssDeclParts[i] => " + cssDeclParts[i]);
+		    //FIXME
+		} */
+		////console.debug("##### styleValue => " + styleValue);
+	    }
+	    cssDeclParts[i] = styleProp + ":" + styleValue;
+	    //console.debug("##### cssDeclParts[" + i + "] => " + cssDeclParts[i]);
+	}
+	if (foundBackgroundSpec) {
+	    //cssDeclParts.push(""); // Ensures a ";" at the end of the join. FIXME: Probably should not do this.
+	    cssDeclParts.push("");
+	    cssDecl = cssDeclParts.join(";");
+	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?)#(.*?\))/,'$1\;$2')
+	    //console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
+	    //		  ", cssDecl => " + cssDecl);
+	}
+	console.debug("Leaving zen.fixCssDeclUrl: cssDecl => " + cssDecl);
+	return cssDecl;
+    }
+
+    z.fixClassesURLs = function (doc) { // doc can be a document in an iframe.
+	// Method to adjust the URLs in a web page's stylesheets to work
+	// on a different domain.
+	// NOTE: We are not editing the styles of a DOM node here.
+	//
+	// Doing some reading in some good places turns up some possibly good code:
+	// http://archive.plugins.jquery.com/project/jquerycssrule allows you to
+	//   $.rule('.classname', 'style').append('font-size: 30px');
+	// http://archive.plugins.jquery.com/project/jquerycssrule allows you to
+	//   var cssRuleText = " \
+	//       body { font-size: 16px; } \
+	//       * html body { font-size: 100%; } \
+	//     ";
+	//   $.tocssRule(cssRuleText);
+	//
+	// There is also some bad code that ranks high in a Google query for
+	// "how to modify css rule":
+	// http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml
+	// http://www.rainbodesign.com/pub/css/css-javascript.html
+	//
+	// FIXME: Rename this something like rebaseStyleUrls or rebaseStylesheetUrls
+	// and see also fixCssDeclUrl.
+	// FIXME: The argument should be a stylesheet, not a document.
+	// FIXME: Replace globals with locals (and that goes for other functions, too).
+        styleSheets = doc.styleSheets;
+	console.group("zen.fixClassesURLS: styleSheets");
+	console.dir(styleSheets);
+	console.groupEnd();
+        if (styleSheets.length > 0) {
+	    console.debug("styleSheets.length");
+            styleSheetsLen = styleSheets.length;
+            isIEorSafari = typeof styleSheets[0].cssRules == "undefined" ? true : false;
+	    console.debug("isIEorSafari");
+            for (i=0; i<styleSheetsLen; i++) {
+		console.debug("zen.fixClassesURLs: i => " + i);
+                if (isIEorSafari) {
+	            new Error('not implemented'); //FIXME: For IE and Safari
+                } else {
+                    rulesLen = styleSheets[i].cssRules.length;
+		    console.warn("zen.fixClassesURLs: rulesLen => " + rulesLen);
+                    for (j=0; j<rulesLen; j++) {
+			console.debug("zen.fixClassesURLs: j => " + j);
+                        rule = styleSheets[i].cssRules[j];
+                        if (rule.type != 4) { // type 4 is for @media rules
+			    console.debug("rule => " + rule.selectorText +
+			    		  " { " + rule.style.cssText + " }");
+			    cssText = zen.fixCssDeclUrl(rule.style.cssText, zen.remoteHost);
+			    if (cssText != rule.style.cssText) {//FIXME: Bug: true even for inconsequential differences.
+				dojo.withDoc(doc,
+					     function() { dojox.html.insertCssRule(rule.selectorText, cssText); },
+					     window,
+					     null);
+			    }
+                        }
+                    }
+                }
+            }
+        }
+	console.debug("zen.fixClassesURLs: exiting");
+	console.group("zen.fixClassesURLS: styleSheets");
+	console.dir(styleSheets);
+	console.groupEnd();
     }
 
     console.warn("Define zen.getRemotePageHandle");
@@ -1059,46 +1070,6 @@ require(['dojo/_base/declare'], function(declare) {
     }
 
     z.dynStyleSheets = [];
-	    
-    dojo.addOnLoad(function() {
-        var components, c, rule, len;
-        for (rule in rulesTable) {
-            if (rulesTable.hasOwnProperty(rule)) {
-                components = rulesTable[rule];
-                len = components.length;
-                for (c = 0; c < len; c++) {
-                    invertedRulesTable[components[c]] = rule;
-                }
-            }
-        }
-
-        // These shortcuts make it easy to specify methods for
-        // creating various kinds of components. FIXME: it might be
-        // better to use a Dojo function to create a TextNode instead
-        // of using document.createTextNode() directly.  FIXME: This
-        // shortcutsTable used to be worth something, but it looks all
-        // messed up now: (1) Shouldn't it be possible to encapsulate
-        // any class-based widget from any JavaScript library in a Zen
-        // Compon container, without having a specific Zen class for
-        // it (like DomNodeCompon)? If this is indeed possible, I
-        // think this shortcutsTable should be useful by making it
-        // easier to hand-code the JSON specification of a chunk of a
-        // web page by providing shortcut references to anticipated
-        // types of components. (2) It looks like z.createElement
-        // could simply be replaced by createElement. (3) If we decide
-        // to use document.createTextNode as a value in this table, it
-        // is a perfect example of a method that needs a shortcut
-        // reference (simply 'createTextNode' or something
-        // similar). (4) An important idea about this shortcutsTable
-        // is that it should be extensible at run time. This run-time
-        // extension could be used to keep zen.js modular and lean.
-        z.shortcutsTable = {
-            createElement : z.createElement,
-	    createDummyElement : z.createDummyElement,
-            createTextNode : z.createTextNode,
-            createDijit : z.createDijit
-        };
-    });
 })(zen);
 
 zen.DomNodeCompon.domNodeCompons = [];

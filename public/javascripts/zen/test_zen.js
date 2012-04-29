@@ -2,47 +2,11 @@ dojo.provide("zen.test_zen");
 
 dojo.require("zen");
 
-//FIXME: Use locals, not globals.
 tests.register(
     "zen.test_zen",
     [
 	{
-	    name: "1. zen.createNew(zen.Compon) returns a Zen component represented as '[zen.Compon zen_Compon_0]'",
-	    runTest: function() {
-		var compon = zen.createNew(zen.Compon);
-		doh.assertTrue(compon instanceof zen.Compon);
-		doh.assertEqual("[zen.Compon zen_Compon_0]", compon.toString());
-	    }
-	},
-	{
-	    name: "2. zen.createNew(zen.Compon) returns a unique, new registered Zen component when called a second time",
-	    runTest: function() {
-		compon2 = zen.createNew(zen.Compon);
-		doh.assertEqual(compon2, zen.registry.Compon["zen_Compon_1"]);
-	    }
-	},
-	{
-	    name: "3. zen.createNew(zen.Compon, 'Jack') returns a registered Zen component represented as '[zen.Compon Jack]'",
-	    runTest: function() {
-		var compon3 = zen.createNew(zen.Compon, "Jack");
-		doh.assertEqual("[zen.Compon Jack]", zen.registry.Compon["Jack"]);
-		doh.assertEqual(compon3, zen.registry.Compon["Jack"]);
-	    }
-	},
-	{
-	    name: "4. zen.createNew(zen.Compon, 'Jack') throws an error when called a second time",
-	    runTest: function() {
-		var error = null;
-		try {
-		    var compon4 = zen.createNew(zen.Compon, "Jack");
-		} catch(err) {
-		    error = err;
-		}
-		doh.assertEqual("Error: trying to create a zen.Compon with an already-used ID Jack", error);
-	    }
-	},
-	{
-	    name: "5. zen.createNew(..., ...) passes an argument to the constructor",
+	    name: "1. zen.createNew(..., ...) passes an argument to the constructor",
 	    runTest: function() {
 		var Person = function(name) {
 		    this.name = name;
@@ -52,11 +16,67 @@ tests.register(
 	    }
 	},
 	{
-	    name: "6. zen.createNew(zen.DomNodeCompon) returns an empty Dom node component",
+	    name: "2. zen.createNew(zen.DomNodeCompon) returns an empty Dom node component",
 	    runTest: function() {
 		var domNodeCompon = zen.createNew(zen.DomNodeCompon);
 		doh.assertTrue(domNodeCompon instanceof zen.DomNodeCompon);
 		doh.assertEqual("null", domNodeCompon.toString());
+	    }
+	},
+	{
+	    name: "3. zen.createNew(zen.DomNodeCompon, null, dojo.body()) returns a unique DOM node component for the BODY element",
+	    runTest: function() {
+		dojo.withDoc(
+		    dojo.byId('testBody').contentDocument,
+		    function() {
+			//var domNodeCompon = zen.createNew(zen.DomNodeCompon, null, dojo.query("body")[0]);
+			var domNodeCompon = zen.createNew(zen.DomNodeCompon, null, dojo.body());
+			doh.assertTrue(domNodeCompon instanceof zen.DomNodeCompon);
+			doh.assertEqual("[HTML Compon HTMLBodyElement]", domNodeCompon.toString());
+			doh.assertEqual("[object HTMLBodyElement]", domNodeCompon.getDomNode());
+			doh.assertEqual(0, domNodeCompon.getId().indexOf("zen_DomNodeCompon_"));
+		    });
+	    }
+	},
+	{
+	    name: "4. zen.createNew(zen.DomNodeCompon, 'body1', dojo.query('body'))[0] returns a DOM node component for the BODY element and sets its id",
+	    runTest: function() {
+		dojo.withDoc(
+		    dojo.byId('testBody').contentDocument,
+		    function() {
+			var domNodeCompon = zen.createNew(zen.DomNodeCompon, "body1", dojo.query("body")[0]);
+			console.log("domNodeCompon.getDomNode() => " + domNodeCompon.getDomNode());
+			console.log("dojo.body() => " + dojo.body());
+			doh.assertTrue(domNodeCompon instanceof zen.DomNodeCompon);
+			doh.assertEqual("[HTML Compon HTMLBodyElement]", domNodeCompon.toString());
+			doh.assertEqual("[object HTMLBodyElement]", domNodeCompon.getDomNode());
+			doh.assertEqual("body1", domNodeCompon.getId());
+		    });
+	    }
+	},
+	{
+	    name: "5. zen.createElement('DIV', {width:'100px',height:'50px',backgroundColor:'red'}) creates a 100-by-50-pixel red DIV",
+	    runTest: function() {
+		dojo.withDoc(
+		    dojo.byId('testBody').contentDocument,
+		    function() {
+			var domNodeCompon = zen.createElement(
+			    "DIV", {width:"100px",height:"50px",backgroundColor:"red"});
+			console.log("dojo.body() => " + dojo.body());
+			console.log("doh => " + doh);
+			dojo.body().appendChild(domNodeCompon.getDomNode());
+			doh.assertEqual(1, dojo.query("div").length);
+		    });
+	    }
+	},
+	{
+	    name: "6. DOH does not remove elements from its test page at test tear-down time",
+	    runTest: function() {
+		dojo.withDoc(
+		    dojo.byId('testBody').contentDocument,
+		    function() {
+			doh.assertEqual(1, dojo.query("div").length); // Test whether test 4's DIV got torn down.	
+		    });
 	    }
 	}
     ]);

@@ -25,6 +25,7 @@
     http://dojotoolkit.org/documentation/tutorials/1.7/dojo_config/
     http://dojotoolkit.org/documentation/tutorials/1.7/cdn/
     -->
+    <script type="text/javascript" src="javascripts/cssParser.js"></script>
     <script type="text/javascript" src="javascripts/dojo/dojo/dojo.js"
 	    data-dojo-config="parseOnLoad: true, async: false, modulePaths:{zen:'../../zen', aop:'../../aop'}">
     </script>
@@ -70,14 +71,32 @@
 <br>
 -->
     <div id="zen"></div>
-    <!-- Use a simplified dojo.window.getBox() running in the
-         injected JavaScript to match the iframe size to
-         the original content that will be copied. -->
+    <!-- FIXME: Use a simplified dojo.window.getBox() running in the
+         injected JavaScript to match the iframe size to the original
+         content that will be copied. -->
+    <!-- The following odd script was learned from
+         http://www.javascriptkit.com/javatutors/createelementcheck.shtml
+         Its purpose is to allow elements (REBASE elements) that are
+         not recognized by the browser to be added to the DOM so that
+         they can be used to hold CSS styles until cross-domain URLs
+         in those styles can be rewritten to be local. -->
+    <button data-dojo-type="dijit.form.Button" type="button">Snapshot Remote Page 1
+    <script type="dojo/method" data-dojo-event="onClick" data-dojo-args="evt">
+      zen.copyRemotePage("jsonIframe1", "transclusion1");
+      //var targetIframe = dom.byId(targetIframe);
+      targetIframe = dojo.byId(targetIframe);
+      console.log("targetIframe => " + targetIframe);
+      dojo.attr(dojo.byId("transclusion1"), "style",
+                "width:" + remoteWidth + "px; height:" +
+	        remoteHeight + "px");
+    </script>
+    </button>
     <iframe id="transclusion1" src="iframed.html"
             style="width:100%; height:500px">
     </iframe>
-    <div id="jsonPage" data-dojo-type="dojox.layout.ContentPane"
-	 data-dojo-props='href:"web/facebook.com"'></div>
+    <iframe id="jsonIframe1" src="web/facebook.com"
+	    style="width:100%; height:500px">
+    </iframe>
     <div id="diagramPane" style="width:1px; height:1px;"></div>
     <script type="text/javascript" src="javascripts/zen/test.js">/</script>
   </body>

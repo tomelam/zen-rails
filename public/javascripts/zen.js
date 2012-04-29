@@ -1,108 +1,116 @@
 dojo.provide("zen");
 
-// NOTE: We can't just call dojo.require() in this file because that
-// messes up the loading of this module via
-// dojo.require("zen"). Instead, we make a call like
-// "dojo.require.apply(null, [klass]);".
+zen.registry = { DomNodeCompon : {} };
 
-zen.registry = { Compon : {}, DomNodeCompon : {} };
-
-//FIXME: zen.Compon is not necessary because all Zen components have a visible aspect.
-dojo.declare("zen.Compon", null, {
-    constructor: function (id) {
-        if (zen.registry.Compon[id]) {
-            throw "Error: trying to create a zen.Compon with an already-used ID " + id;
-        }
-	if (!id) {
-            this.id = zen.getUniqueId("zen_Compon");
-	} else {
-	    this.id = id;
-	}
-        zen.registry.Compon[this.id] = this;
-        this.children = [];
-    },
-    toString: function () { // Without this, we get '[object Object]'.
-        return "[zen.Compon " + this.id + "]";
-    }
-});
-
-//FIXME: Not sure much if anything belongs in a "zen.DisplayCompon".
-dojo.declare("zen.DisplayCompon", zen.Compon, {
-    getDomNode: function () {
-        return this.domNode;
-    },
-    toString: function () { // Without this, we get '[object Object]'.
-        return String(this.domNode).replace(/^\[object /, "[Display Compon ").replace(/\]$/, "]");
-    },
-    appendMyselfToParent: function () { throw("Missing subclass"); },
-    appendChild: function () { throw("Missing subclass"); },
-    getChildCompons: function () { throw("Missing subclass"); },
-    destroyCompon: function () { throw("Missing subclass"); }
-});
-
-dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
-    constructor: function (id, domNode) {
-        this.id = id || zen.getUniqueId("zen_DomNodeCompon");
-        zen.registry.DomNodeCompon[this.id] = this;
-        this.domNode = domNode || null; // "null" reads nicer than "undefined".
-        this.children = [];
-    },
-    toString: function () { // Without this, we get '[object Object]'.
-        var rep;
-        rep = String(this.domNode).replace(/^\[object /, "[HTML Compon ").replace(/\]$/, "]");
-        return rep;
-    },
-    appendMyselfToParent: function (parent) {
-        parent.appendChild(this);
-    },
-    appendChild: function (child) {
-        this.domNode.appendChild(child.getDomNode());
-        this.children.push(child);
-    },
-    getChildCompons: function () { //FIXME: WORKING ON THIS: WAS BROKEN!
-        return this.children;
-        /*
-          zen.log("DomNodeCompon.getChildCompons: domNode => %s", this.domNode);
-          return dojo.map(this.domNode.children,
-          function (c) {
-          var w = dijit.byNode(c);
-          //return w || c;
-          return w || DomNodeCompon.fromDomNode(c);
-          });
-        */
-    },
-    destroyCompon: function () {
-        var compon, index;
-        dojo.forEach(this.getChildCompons(),
-                     function (child) { child.destroyCompon(); });
-        dojo.destroy(this.domNode);
-        index = zen.DomNodeCompon.domNodeCompons.indexOf(this);
-        if (index >= 0) {
-            delete zen.DomNodeCompon.domNodeCompons[index];
-            compon = zen.DomNodeCompon.domNodeCompons.pop();
-            if (index !== zen.DomNodeCompon.domNodeCompons.length) {
-                zen.DomNodeCompon.domNodeCompons[index] = compon;
+require(['dojo/_base/declare'], function(declare) {
+    declare("zen.DomNodeCompon", null, {
+	////
+	//// ZEN DOM NODE COMPONENT - FOR CREATING TREE-COMPOSIBLE WEB PAGES
+	////
+	//// zen.DomNodeCompon - a Dojo class to create encapsulated DOM nodes
+	//// 
+	//// Like any ZEN COMPONENT, a zen.DomNodeCompon implements the
+	//// following interface:
+	////	constructor(id, domNode) - create the component and give it the
+	////       identifier 'id' or an automatically generated unique one
+	////       if 'id' is null or false; returns the new component or false
+	////       if 'id' was already used
+	////    getDomNode - returns 'domNode'; this is the DOM node used to
+	////       connect the component to some kinds of other components
+	////    getParent - get the parent Zen component
+	////    appendTo(parent) - appends the component to 'parent', a Zen
+	////       component
+	////    remove - removes the component and all its children
+	////    getChildCompons - get the child Zen components
+	////
+	constructor: function (id, domNode) {
+            this.id = id || zen.getUniqueId("zen_DomNodeCompon");
+            zen.registry.DomNodeCompon[this.id] = this;
+            this.domNode = domNode || null; // "null" reads nicer than "undefined".
+            this.children = [];
+	},
+	toString: function () { // Without this, we get '[object Object]'.
+            var rep;
+            rep = String(this.domNode).replace(/^\[object /, "[HTML Compon ").replace(/\]$/, "]");
+            return rep;
+	},
+	getId: function () {
+	    return this.id;
+	},
+	getDomNode: function () {
+	    return this.domNode;
+	},
+	appendMyselfToParent: function (parent) {
+	    var htmlElement, oldBody;
+	    if (this.getDomNode().nodeName == "BODY") {
+		console.log("Appending BODY element");
+		oldBody = dojo.body();
+		console.log("oldBody => " + oldBody);
+		if (parent.getDomNode().nodeName != "HTML") {
+		    console.log("parent.nodeName != 'HTML'");
+		    if (parent.getDomNode() == oldBody) { // Special case: replace the old body.
+			console.log("Replace old body");
+			htmlElement = oldBody.parentElement;
+			htmlElement.removeChild(oldBody);
+			console.log("Removed old body");
+			htmlElement.appendChild(this.getDomNode());
+			console.log("Appending new BODY element");
+			return this;
+		    } else {
+			new Error("Cannot append a BODY element to the specified parent");
+		    }
+		}
+	    }
+	    parent.appendChild(this);
+	    return this;
+	},
+	appendChild: function (child) {
+            this.domNode.appendChild(child.getDomNode());
+            this.children.push(child);
+	},
+	getChildCompons: function () { //FIXME: WORKING ON THIS: WAS BROKEN!
+            return this.children;
+            /*
+              zen.log("DomNodeCompon.getChildCompons: domNode => %s", this.domNode);
+              return dojo.map(this.domNode.children,
+              function (c) {
+              var w = dijit.byNode(c);
+              //return w || c;
+              return w || DomNodeCompon.fromDomNode(c);
+              });
+            */
+	},
+	destroyCompon: function () {
+            var compon, index;
+            dojo.forEach(this.getChildCompons(),
+			 function (child) { child.destroyCompon(); });
+            dojo.destroy(this.domNode);
+            index = zen.DomNodeCompon.domNodeCompons.indexOf(this);
+            if (index >= 0) {
+		delete zen.DomNodeCompon.domNodeCompons[index];
+		compon = zen.DomNodeCompon.domNodeCompons.pop();
+		if (index !== zen.DomNodeCompon.domNodeCompons.length) {
+                    zen.DomNodeCompon.domNodeCompons[index] = compon;
+		} else {
+                    console.warn("compon was last in the list; won't put it back!");
+		}
             } else {
-                console.warn("compon was last in the list; won't put it back!");
+		//FIXME: Remove this console output:
+		console.group("zen.DomNodeCompon.domNodeCompons");
+		console.dir(zen.DomNodeCompon.domNodeCompons);
+		console.groupEnd();
             }
-        } else {
-            //FIXME: Remove this console output:
-            console.group("zen.DomNodeCompon.domNodeCompons");
-            console.dir(zen.DomNodeCompon.domNodeCompons);
-            console.groupEnd();
-        }
-    }
+	}
+    });
 });
 
 //FIXME: Consider moving aside console.debug, console.info, etc. to implement
 //controllable debugging.
 (function (zen) {
+    console.warn("Do zen module preliminaries");
     var z = zen;
-    dojo.require("dijit.form.Button");
-    dojo.require("dijit.form.CheckBox");
-    dojo.require("dojo.parser");
-    //FIXME: Explore how to use dojox.lang.aspect for debugging.
     TraceArguments = {
+	//FIXME: Explore how to use dojox.lang.aspect for debugging.
         before: function(){
 	    var joinPoint = dojox.lang.aspect.getContext().joinPoint,
             args = Array.prototype.join.call(arguments, ", ");
@@ -110,6 +118,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         }
     };
     TraceReturns = {
+	//FIXME: Explore how to use dojox.lang.aspect for debugging.
         afterReturning: function(retVal){
             var joinPoint = dojox.lang.aspect.getContext().joinPoint;
             console.debug("<= " + joinPoint.targetName + " returns " +
@@ -120,59 +129,63 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             console.debug("<= " + joinPoint.targetName + " throws: " + excp);
         }
     };
+    dojo.require("dijit.form.Button");
+    dojo.require("dijit.form.CheckBox");
+    dojo.require("dojo.parser");
 
-    /* Simplification and consolidation of a simulated "new"
-       operator as given in Chapter 5 of _JavaScript: The Good
-       Parts_, by Douglas Crockford. Courtesy of Eric Bréchemier
-       (on stackoverflow.com; see http: bit.ly/9PiU5W). I have
-       made significant corrections and added arguments to the
-       constructor.
-       
-       This function is not just for educational purposes: it allows
-       any kind of object to be created in a more functional way than
-       the 'new' operator allows, because it allows the object's
-       constructor to be passed to a function and then called there to
-       create the new object. FIXME: Explain this, and the problem of
-       trying to use the 'new' operator in declarative, structured
-       data, in detail.
-    */
-
-    z.sayHello = function () {
-	alert("Greetings from Zen!");
-    }
-
+    console.warn("Define zen.createNew");
     var hiddenLink = function () {};
     z.createNew = function () {
-        // A function to explain (and replace) the "new" operator.
-        //   var object = createNew(...);
-        //     is equivalent to
-        //   var object = new constructor(...);
-        //
-        // arguments: constructor function, followed by its arguments
-        // return: a new instance of the "constructor" kind of objects
-        //
+	////
+	//// DECLARATIVE OBJECT CREATOR
+	////
+	//// zen.createNew - a function to create objects, based upon
+	//// a similar function by Douglas Crockford. Thanks to Eric
+	//// Bréchemier (see bit.ly/9PiU5W) for some
+	//// clarification. This function allows an object's
+	//// instantiation to be described in a declarative way; the
+	//// not-so-good alternative is to describe the instantiation
+	//// by putting the 'new' operator in a string and instantiate
+	//// the object by evaluating the string.
+	//
+	// Arguments: constructor function, followed by its arguments
+	// Return: a new instance of the "constructor" kind of objects
+	//
+	// Example usage:
+	//   var object = createNew(...);
+	//     is equivalent to
+	//   var object = new constructor(...);
+	//
         // Preliminaries: convert arguments to a real array, get the
         //                constructor, and get the arguments to the
         //                constructor.
-        var args = Array.prototype.slice.call(arguments);
+	try {
+	    //console.warn("Trying to get args");
+            var args = Array.prototype.slice.call(arguments);
+	} catch (e) {
+	    console.error("Error in Array.prototype.slice.call(" + arguments + "): " + e);
+	}
         var constructor = args[0];
         var constructorArgs = args.slice(1);
         // Step 1: Create a new empty object instance linked to the
         //         prototype of provided constructor.
         hiddenLink.prototype = constructor.prototype;
-        // CORRECTED: 'object' was 'instance'.
         var object = new hiddenLink(); // cheat: use new to implement new
         // Step 2: Apply the constructor to the new instance and get
         //         the result.
-        // CORRECTED: 'instance' was 'result'.
-        // ADDED: arguments.slice(1))
-        //var instance = constructor.apply(object, args);
-        var instance = constructor.apply(object, constructorArgs);
+	try {
+            var instance = constructor.apply(object, constructorArgs);
+	} catch (e) {
+	    console.error("Error in constructor.apply(object, constructorArgs): " + e);
+	}
+
+
         // Step 3: Check the result, and choose whether to return it
         //         or the created instance.
         return typeof instance === "object" ? instance : object;
     };
 
+    console.warn("Define zen.createElement");
     var _instanceCounters = {};
     z.getUniqueId = function (objectType) { // objectType is a string
         var count;
@@ -187,62 +200,55 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         }
         return objectType + "_" + count;
     };
-
-    //// zen.createElement
-    //// zen.createTextNode
-    //// Create a component that refers to an HTML text node or HTML
-    //// element. This avoids some conflict with Dojo that results
-    //// when trying to use prototype.js to add methods to an
-    //// element. It also is more future proof since an element can be
-    //// handled in a clean way.
-
-    // FIXME: Consider using dojo.fromJSON here for safety.
-    // FIXME: Replace zen.info, etc. with z.info, etc.?
-    // This method handles inline attributes (like style).
     z.createElement = function (kind, attributes) {
+	// FIXME: Fix non-absolute href URLs for <a> tags.
+	new Error("zen.createElement");
         var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
-        // FIXME: Use dojo.create. FIXME: Styles applied to the body won't work!
-	if (kind == "BODY") { // Fake this so it can be embedded anywhere.
-	    domNode = document.createElement("div");
+	// FIXME: Use dojo.create. FIXME: Styles applied to the body won't work!
+	if (kind.toLowerCase() == "style") {
+	    console.error("Error: STYLE element being created");
+	}
+	if (kind == "BODY") {
+	    // Reuse the old body if it exists.
+	    domNode = dojo.body() || dojo.create(kind);
 	} else {
-	    domNode = document.createElement(kind);
+	    domNode = dojo.create(kind);
 	}
-	if (kind == "STYLE") {
-	    console.debug("@@@@@ STYLE: attributes => " + dojo.toJson(attributes));
-	}
-        zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
-        attributes = attributes || {};
-
+	zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+	attributes = attributes || {};
 	if (kind == "IMG" && attributes.src) { // Turn a relative URL into an absolute one.
 	    src_split = attributes.src.split("http://");
 	    if (src_split.length < 2) { // No match: must be relative.
-		//console.debug("zen.remoteHost => " + zen.remoteHost +
-		//	      ", attributes.src => " + attributes.src);
-		attributes.src = "http://" + dojo.byId("remoteHost").textContent + src_split;
-		console.debug("fixed new IMG URL: attributes.src => " + attributes.src);
+		console.info("Going to make IMG URL absolute");
+		attributes.src = "http://" + host + src_split;
+		console.info("fixed new IMG URL: attributes.src => " + attributes.src);
 	    }
 	}
-	////console.debug("@@@@@ " + kind + ", attributes => " + dojo.toJson(attributes));
-
 	if (attributes.style) {
-	    ////console.debug("************************************************");
-	    ////console.debug("Calling zen.fixCssDeclUrl");
-	    attributes.style = zen.fixCssDeclUrl(attributes.style, dojo.byId("remoteHost").textContent);
-	    ////console.debug("Returned from zen.fixCssDeclUrl");
+	    if (typeof attributes.style == "object") {
+		x = "";
+		for (i in attributes.style) { x += attributes.style[i]; }
+	    } else {
+		x = attributes.style;
+	    }
+	    //console.log("Calling zen.fixCssDeclUrl: attributes.style => " + x + ", host => " + host +
+	    //		  ", typeof attributes.style => " + typeof attributes.style);
+	    attributes.style = zen.fixCssDeclUrl(attributes.style, host);
+	    //console.log("zen.fixCssDeclUrl returned " + attributes.style);
 	}
-
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
             delete attributes.klass;
         }
         dojo.attr(domNode, attributes || {}); //FIXME: Check this.
         domNodeCompon.domNode = domNode;
+	////console.log("zen.createElement returning " + domNodeCompon);
         return domNodeCompon;
     };
 
+    console.warn("Define zen.createTextNode");
     z.createTextNode = function (kind, text) {
         var domNodeCompon = zen.createNew(zen.DomNodeCompon);
-	////console.debug("zen.createTextNode: text => " + text);
         // FIXME: Use dojo.create, if appropriate.
         var domNode = document.createTextNode(text);
         zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
@@ -250,45 +256,97 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         return domNodeCompon;
     };
 
-    //// createDummyElement
-    //// Convert troublesome elements to NOSCRIPT elements.
-
+    console.warn("Define zen.createDummyElement");
     z.createDummyElement = function (kind, attributes) {
-	console.debug("zen.createDummyElement: kind => " + kind + ", attributes => " + attributes);
+	console.warn("zen.createDummyElement: kind => " + kind + ", attributes => " + attributes);
         var domNodeCompon = zen.createNew(zen.DomNodeCompon);
         // FIXME: Use dojo.create.
-        var domNode = document.createElement("NOSCRIPT");
+	var domNode;
+	/*
+	if (attributes.style) {
+	    if (typeof attributes.style == "object") {
+		x = "";
+		for (i in attributes.style) { x += attributes.style[i]; }
+	    } else {
+		x = attributes.style;
+	    }
+	}
+	console.log("zen.createDummyElement: attributes.style => " + x +
+		    ", typeof attributes.style => " + (typeof attributes.style));
+	*/
+	if (kind == "STYLE") {
+	    domNode = document.createElement("textarea");
+	    dojo.style(domNode, "display", "none");
+	} else {
+            domNode = document.createElement("noscript");
+	}
         zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
         attributes = attributes || {};
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
             delete attributes.klass;
         }
-        dojo.attr(domNode, attributes || {}); //FIXME: Check this.
+	if (kind == "STYLE") {
+	    dojo.addClass(domNode, "zenStyle"); // Don't add "type='text/css'" attribute.
+	} else {
+            dojo.attr(domNode, attributes || {}); //FIXME: Check this.
+	}
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
     };
 
+    console.warn("Define zen.createSubtree");
     z.createSubtree = function (treeSpec) {
-        var i, rule, parentCompon, compon, len, constructor;
+        var i, rule, parentCompon, compon, len, constructor, element;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
+	//console.warn("zen.createSubtree: componKind => " + componKind + ", initParms => " + initParms);
+	if (componKind == "CANVAS") {
+	    alert("CANVAS");
+	}
         rule = invertedRulesTable[componKind];
         constructor = z.rule2ref(rule);
         parentCompon = constructor.call(document, componKind, initParms);
         len = subtree.length;
         for (i = 0; i < len; i++) {
             compon = z.createSubtree(subtree[i]);
-            compon.appendMyselfToParent(parentCompon);
+	    //if (compon.domNode.nodeName != "STYLE") {
+		compon.appendMyselfToParent(parentCompon);
+	    /*
+	    } else {
+		console.warn("Appending STYLE tag to unrendered element");
+		try {
+		    compon.appendMyselfToParent(unrendered); // This and its children won't be added to the DOM.
+		} catch(e) {
+		    console.error("Could not append to 'unrendered' node: " + e);
+		}
+		console.warn("Creating NOSCRIPT Zen component");
+		try {
+		    element = zen.createElement("NOSCRIPT");
+		} catch (e) {
+		    console.error("Could not create NOSCRIPT Zen element: " + e);
+		}
+		console.warn("Appending NOSCRIPT component to parent");
+		try {
+		    element.appendMyselfToParent(parentCompon); // Substitution to make createSubtree work.
+		} catch (e) {
+		    console.error("Could not append NOSCRIPT element: " + e);
+		}
+		console.warn("Appended NOSCRIPT component to parent");
+	    }
+	    */
         }
         return parentCompon;
     };
 
-    // Each property of rulesTable is the name of a rule
-    // (i.e. method) for creating a kind of component. The value
-    // of each property is the set (an array) of the kinds of
-    // component that can be created using the rule.
-    // FIXME: Should not have to include upper case tag names.
+    console.warn("Define rulesTable and invertedRulesTable");
     rulesTable = {
+	// Each property of rulesTable is the name of a rule
+	// (i.e. function) for creating a kind of component. The value
+	// of each property is the set (an array) of the kinds of
+	// component that can be created using the rule.  FIXME:
+	// Should not have to include upper case tag names.  FIXME:
+	// Check the categorizations of the elements given by the
+	// comments.
         createElement : [ 
 	    // Head elements (nodes?)
 	    "META", "TITLE", "LINK",
@@ -296,7 +354,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    "A", "ABBR", "ACRONYM", "B", "BDO", "BIG", "BR", "CITE", "CODE",
 	    "DFN", "EM", "I", "IMG", "INPUT", "KBD", "LABEL", "Q", "SAMP",
 	    "SELECT", "SMALL", "SPAN", "STRONG", "SUB", "TEXTAREA", "TT",
-	    "VAR", "LEGEND", "U", "NOBR", "OPTION", "BDI", "NOSCRIPT",
+	    "VAR", "LEGEND", "U", "NOBR", "OPTION", "BDI", "NOSCRIPT", // "STYLE",
+	    "CANVAS",
 	    // Block elements
 	    "BODY",
 	    "IFRAME", "DIV", "P", "CENTER", "HR", "EMBED", "FONT",
@@ -326,17 +385,18 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
                         ],
         createTextNode : [ "text" ]
     };
+    var invertedRulesTable = {
+	// This is a table for looking up a rule given a component
+	// name as a key.
+    };
 
-    // This is a table for looking up a rule given a component
-    // name as a key.
-    var invertedRulesTable = {};
-
-    // Note: the eval method is not used here because it can be
-    // unsafe. FaceBook and MySpace, for example, won't allow it in
-    // included JavaScript. See
-    // http://www.dojotoolkit.org/reference-guide/dojo/_base/json.html
-    // for a safe way to evaluate JSON strings.
+    console.warn("Define zen.rule2ref");
     z.rule2ref = function (rule) {
+	// Note: the eval method is not used here because it can be
+	// unsafe. FaceBook and MySpace, for example, won't allow it
+	// in included JavaScript. See
+	// http://www.dojotoolkit.org/reference-guide/dojo/_base/json.html
+	// for a safe way to evaluate JSON strings.
         var s, ref = null;
         for (s in zen.shortcutsTable) {
             if (zen.shortcutsTable.hasOwnProperty(s)) {
@@ -359,12 +419,17 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         subtree = treeSpec[2];
         rule = invertedRulesTable[componKind];
         if (rule === "createDijit") {
+	    // NOTE: We can't just call dojo.require() in this file because that
+	    // messes up the loading of this module via "dojo.require('zen')".
+	    // Instead, we make a call like "dojo.require.apply(null, [klass]);".
+	    // FIXME: Try to use Dojo 1.7's require() API.
             dojo.require.apply(null, [componKind]);
         };
     };
 
-    z.headNode = null;
-    z.filterHeadNodesAndRender = function (treeSpec, head) {
+    //z.headNode = null;
+    //FIXME: Check whether a STYLE node could contain more than one TEXT nodes.
+    /*z.filterHeadNodesAndRender = function (treeSpec, head) {
 	var kind = treeSpec[0], attributes = treeSpec[1];
 	//console.debug("zen.filterHeadNodesAndRender: kind => " +
 	//	      kind + ", attributes => " + attributes);
@@ -384,83 +449,75 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    z.headNode = null;
 	}
 	//console.debug("Exiting zen.filterHeadNodesAndRender");
-    }
+    }*/
 
-    // As per Douglas Crockford.
+    console.warn("Define walkTheDOM, walkZen, and zen.walkZenSpec");
     var walkTheDOM = function (node, func) {
+	// As per Douglas Crockford.
         func(node); 
         node = node.firstChild; 
         while (node) { 
-            z.walkTheDOM(node, func); 
+            z.walkTheDOM(node, func);
             node = node.nextSibling; 
         } 
     } 
-
-    //FIXME: Use this function where useful.
     var walkZen = function (compon, func) {
+	//FIXME: Use this function where useful.
         func(compon);
         dojo.forEach(compon.getChildCompons(),
                      function (child) { z.walkZen(child, func); });
     };
-
     z.walkZenSpec = function (treeSpec, func) {
-	//console.group("treeSpec");
-	//console.dir(treeSpec);
-	//console.groupEnd();
+	//z.walkZenSpec(z.toolbox, console.info); // Example usage.
         func(treeSpec);
         dojo.forEach(treeSpec[2],
                      function (subtree) { z.walkZenSpec(subtree, func); });
     };
-    //z.walkZenSpec(z.toolbox, console.info); // Example usage.
 
-    //FIXME: Try to use walkTheDOM.
+    console.warn("Define zen.nodeToObject, zen.nodeToJson, and zen.browserCollectionToArray");
     z.nodeToObject = function (node) {
-	    if (node.nodeType == 3) {
-	        return ["text", node.textContent, []];
-	    } else if (node.nodeType == 1) {
-                if (node.tagName == "SCRIPT") {
-                    return null;
-                }
-	        var i = 0, attr = node.attributes, len, attributes = {};
-	        if (attr) {
-		    var len = attr.length;
-		    for (i ; i < len; i++) {
-                        var name = attr[i].name;
-		        if (attr[i].name == "class") {
-			    attributes.klass = attr[i].value;
-		        } else if (attr[i].name.slice(0,2) == "on") {
-                            attributes[name] = "";
-                        } else if (attr[i].name != '"') {//Test for malformed attribute (as at yahoo.com)
-			    attributes[name] = attr[i].value;
-		        }
-		    }
-	        }
-	        var children = []; //FIXME: Incl. text nodes, so use better name.
-	        var i = 0, j = 0, len = node.childNodes.length;
-	        for (i; i < len; i++) {
-		    var child = node.childNodes[i];
-		    //children[i] = z.nodeToObject(child);
-		    var obj = z.nodeToObject(child);
-                    if (obj) {
-                        children[j] = obj;
-                        j += 1;
-                    }
-	        }
-	        return [node.tagName, attributes, children];
-	    } else {
+	//FIXME: Try to use walkTheDOM.
+	if (node.nodeType == 3) {
+	    return ["text", node.textContent, []];
+	} else if (node.nodeType == 1) {
+            if (node.tagName == "SCRIPT") {
                 return null;
             }
+	    var i = 0, attr = node.attributes, len, attributes = {};
+	    if (attr) {
+		var len = attr.length;
+		for (i ; i < len; i++) {
+                    var name = attr[i].name;
+		    if (attr[i].name == "class") {
+			attributes.klass = attr[i].value;
+		    } else if (attr[i].name.slice(0,2) == "on") {
+                        attributes[name] = "";
+                    } else if (attr[i].name != '"') {//Test for malformed attribute (as at yahoo.com)
+			attributes[name] = attr[i].value;
+		    }
+		}
+	    }
+	    var children = []; //FIXME: Incl. text nodes, so use better name.
+	    var i = 0, j = 0, len = node.childNodes.length;
+	    for (i; i < len; i++) {
+		var child = node.childNodes[i];
+		//children[i] = z.nodeToObject(child);
+		var obj = z.nodeToObject(child);
+                if (obj) {
+                    children[j] = obj;
+                    j += 1;
+                }
+	    }
+	    return [node.tagName, attributes, children];
+	} else {
+            return null;
+        }
     }
-
     z.nodeToJson = function (obj) {
 	return dojo.toJson(z.nodeToObject(obj));
     }
-
-    //FIXME: Unused.
     z.browserCollectionToArray = function (collection) {
-	console.debug("++++++++++ Entering zen.browserCollectionToArray");
-	console.debug("collection => " + collection);
-	console.debug("collection[0] => " + collection[0]);
+	//FIXME: Unused.
 	ary = [];
 	//FIXME: Maybe there is a more functional way of doing this.
 	for (i = 0; i < collection.length; i++) {
@@ -470,15 +527,40 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	return ary;
     }
 
+    console.warn("Define zen.renderTree, zen.renderTreeDeferred and zen.renderForest");
     z.renderTree = function (tree, parent) {
         var newComponent;
 	//dojox.lang.aspect.advise(zen, "createSubtree", [TraceReturns, TraceArguments]);
         newComponent = z.createSubtree(tree);
+	saveNewComponent = newComponent;
+	console.log("zen.renderTree: returned from zen.createSubtree; parent => " + parent);
         newComponent.appendMyselfToParent(parent);
+	console.log("zen.renderTree: appended newComponent to parent; calling zen.startup");
         z.startup();
+	console.log("zen.renderTree: exiting");
         return newComponent;
     };
-
+    z.renderTreeDeferred = function (tree, parent, deferred) {
+	// Asynchonous Ajax requests will be made to retrieve
+	// JavaScript modules that will handle some rendering.
+        var newComponent;
+        z.walkZenSpec(
+            tree,
+            function(tree) {
+		//console.debug("zen.walkZenSpec: tree => " + tree);
+                requireSubtreeCompon(tree);
+            });
+        dojo.addOnLoad(function() {
+	    //console.debug("zen.renderTreeDeferred: loaded, now calling createSubtree");
+            newComponent = z.createSubtree(tree);
+	    //console.debug("zen.renderTreeDeferred: newComponent => " +
+	    //		    newComponent);
+            newComponent.appendMyselfToParent(parent);
+            z.startup();
+	    //console.debug("zen.renderTreeDeferred: calling deferred.resolve()");
+            //deferred.resolve(newComponent);
+        });
+    };
     z.renderForest = function (forest, parent) {
 	var i, len = forest.length;
 	//dojox.lang.aspect.advise(z, "createSubtree", [TraceReturns, TraceArguments]);
@@ -487,44 +569,53 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	}
     }
 
-    // THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION ABSOLUTE
-    // so that an image file can be loaded from a different website.
-    // FIXME: Rename this something like rebaseStyleUrl and provide it with
-    // the new base. Typically this would be used to convert a relative
-    // path to an absolute path.
-    // FIXME: For convenience in zen.fixClassURLs, return null if the
-    // cssDecl is unchanged.
-    // FIXME: See fixClassesURLs for more FIXMEs.
+    console.warn("Define zen.fixCssDeclUrl and zen.fixClassesURLs");
     z.fixCssDeclUrl = function (cssDecl, host, options) {
+	// THIS METHOD MAKES A RELATIVE URL IN A CSS DECLARATION
+	// ABSOLUTE so that an image file can be loaded from a
+	// different website.  FIXME: Rename this something like
+	// rebaseStyleUrl and provide it with the new base. Typically
+	// this would be used to convert a relative path to an
+	// absolute path.  FIXME: For convenience in zen.fixClassURLs,
+	// return null if the cssDecl is unchanged.  FIXME: See
+	// fixClassesURLs for more FIXMEs.
+	i = null;
+	j = 0;
 	opt = options || {};
 	scheme = opt.scheme || 'http://';
 	port = opt.port || '';
 	user = opt.user || '';
 	password = opt.password || '';
-	//////console.debug("Entering zen.fixCssDeclUrl: cssDecl => " + cssDecl + ", host => " + host);
+	console.log("Entering zen.fixCssDeclUrl: cssDecl => " + cssDecl + ", host => " + host +
+		    ", typeof cssDecl => " + typeof cssDecl);
 	var cssDeclParts, len, i;
-	// Use a regular expression to split out the attributes from a CSS declaration.
-	// Two patterns are used to match attributes: (1) a background attribute
-	// with a URL -- something like 'url(...);' and (2) any other kind of
-	// attribute. A simpler regular expression would split a background
-	// attribute containing a URL into two parts, whereas we want only one
-	// part per attribute.
-	//re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
-	//FIXME: The next re leaves a ';' at the end of 1 match if there is 'data'.
-	//ALMOST OK?
-	re = /(background:.*?url\(.*?\).*?;)/ //|((?!background:.*?url\(.*?\).*?);)/;
-	//re = /((?!background:.*?url\(.*?\).*?);)|/;
-	//FIXME: This re mistakenly chops off the data URL at its ';'.
-	//re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
-	re = /;/;
-
-	cssDecl = cssDecl.replace(/(background.*?url\("data:.*?);(.*?\))/,'$1#$2');
-	////console.debug("cssDecl => " + cssDecl);
-
-	cssDeclParts = cssDecl.split(re).filter(function(el) {
-	    return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
-	    ////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
-	});
+	if (typeof cssDecl == "string") {
+	    // Use a regular expression to split out the attributes from a CSS declaration.
+	    // Two patterns are used to match attributes: (1) a background attribute
+	    // with a URL -- something like 'url(...);' and (2) any other kind of
+	    // attribute. A simpler regular expression would split a background
+	    // attribute containing a URL into two parts, whereas we want only one
+	    // part per attribute.
+	    //re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
+	    //FIXME: The next re leaves a ';' at the end of 1 match if there is 'data'.
+	    //ALMOST OK?
+	    re = /(background:.*?url\(.*?\).*?;)/ //|((?!background:.*?url\(.*?\).*?);)/;
+	    //re = /((?!background:.*?url\(.*?\).*?);)|/;
+	    //FIXME: This re mistakenly chops off the data URL at its ';'.
+	    //re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
+	    re = /;/;	    
+	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?);(.*?\))/,'$1#$2');
+	    ////console.debug("cssDecl => " + cssDecl);
+	    cssDeclParts = cssDecl.split(re).filter(function(el) {
+		return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
+		////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
+	    });
+	} else {
+	    cssDeclParts = [];
+	    for (i in cssDecl) {
+		cssDeclParts[j] = i + ":" + cssDecl[i] + "; ";
+	    }
+	}
 	////console.debug("cssDeclParts => " + cssDeclParts);
 	//console.group("cssDeclParts");
 	//console.dir(cssDeclParts);
@@ -541,7 +632,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    ////console.debug("styleProp => " + styleProp + ", styleValue => " + styleValue);
 	    if (styleProp == "background") {
 		foundBackgroundSpec = true;
-		console.debug("##### Found background: cssDeclParts[i] => " + cssDeclParts[i]);
+		console.warn("##### Found background: cssDeclParts[i] => " + cssDeclParts[i]);
 		if (cssDeclParts[i].search(/\(\"data:/) < 0) {
 		    // A URL that starts with '//' is a protocol relative URL.
 		    // See http://paulirish.com/2010/the-protocol-relative-url/ .
@@ -566,8 +657,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 			styleValue = 'url(' + (quoteUsed? '"' : '') + scheme + (user? (user+'@') : '') + (password? (password+':') : '') +
 			    host + (port? (':'+port) : '') + '/' + styleValue.slice(idx);
 			console.debug("styleValue (with host, scheme, etc.) => " + styleValue);
-		    }
-			
+		    }			
 		} /* else {
 		    console.debug("##### Found data URL => cssDecl => " + cssDecl + ", cssDeclParts[i] => " + cssDeclParts[i]);
 		    //FIXME
@@ -585,44 +675,33 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	    //console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
 	    //		  ", cssDecl => " + cssDecl);
 	}
-	//////console.debug("Leaving zen.fixCssDeclUrl: cssDecl => " + cssDecl);
+	console.debug("Leaving zen.fixCssDeclUrl: cssDecl => " + cssDecl);
 	return cssDecl;
     }
-
-    //FIXME: Unused. Maybe use for body-embedded styles.
-    z.addClasses = function (styleRules) {
-	var i, stylesLen = styleRules.length, rule;
-	for (i=0; i<stylesLen; i++) {
-	    rule = styleRules[i];
-	    console.debug("zen.addClasses: selector => " + rule[0] + ", declaration => " + rule[1]);
-	    dojox.html.insertCssRule(rule[0], rule[1])
-	}
-    }
-
-    // Method to adjust the URLs in a web page's stylesheets to work
-    // on a different domain.
-    // NOTE: We are not editing the styles of a DOM node here.
-    //
-    // Doing some reading in some good places turns up some possibly good code:
-    // http://archive.plugins.jquery.com/project/jquerycssrule allows you to
-    //   $.rule('.classname', 'style').append('font-size: 30px');
-    // http://archive.plugins.jquery.com/project/jquerycssrule allows you to
-    //   var cssRuleText = " \
-    //       body { font-size: 16px; } \
-    //       * html body { font-size: 100%; } \
-    //     ";
-    //   $.tocssRule(cssRuleText);
-    //
-    // There is also some bad code that ranks high in a Google query for
-    // "how to modify css rule":
-    // http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml
-    // http://www.rainbodesign.com/pub/css/css-javascript.html
-    //
-    // FIXME: Rename this something like rebaseStyleUrls or rebaseStylesheetUrls
-    // and see also fixCssDeclUrl.
-    // FIXME: The argument should be a stylesheet, not a document.
-    // FIXME: Replace globals with locals (and that goes for other functions, too).
     z.fixClassesURLs = function (doc) { // doc can be a document in an iframe.
+	// Method to adjust the URLs in a web page's stylesheets to work
+	// on a different domain.
+	// NOTE: We are not editing the styles of a DOM node here.
+	//
+	// Doing some reading in some good places turns up some possibly good code:
+	// http://archive.plugins.jquery.com/project/jquerycssrule allows you to
+	//   $.rule('.classname', 'style').append('font-size: 30px');
+	// http://archive.plugins.jquery.com/project/jquerycssrule allows you to
+	//   var cssRuleText = " \
+	//       body { font-size: 16px; } \
+	//       * html body { font-size: 100%; } \
+	//     ";
+	//   $.tocssRule(cssRuleText);
+	//
+	// There is also some bad code that ranks high in a Google query for
+	// "how to modify css rule":
+	// http://www.javascriptkit.com/dhtmltutors/externalcss3.shtml
+	// http://www.rainbodesign.com/pub/css/css-javascript.html
+	//
+	// FIXME: Rename this something like rebaseStyleUrls or rebaseStylesheetUrls
+	// and see also fixCssDeclUrl.
+	// FIXME: The argument should be a stylesheet, not a document.
+	// FIXME: Replace globals with locals (and that goes for other functions, too).
         styleSheets = doc.styleSheets;
 	console.group("zen.fixClassesURLS: styleSheets");
 	console.dir(styleSheets);
@@ -638,25 +717,15 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	            new Error('not implemented'); //FIXME: For IE and Safari
                 } else {
                     rulesLen = styleSheets[i].cssRules.length;
+		    console.warn("zen.fixClassesURLs: rulesLen => " + rulesLen);
                     for (j=0; j<rulesLen; j++) {
 			console.debug("zen.fixClassesURLs: j => " + j);
                         rule = styleSheets[i].cssRules[j];
                         if (rule.type != 4) { // type 4 is for @media rules
 			    console.debug("rule => " + rule.selectorText +
 			    		  " { " + rule.style.cssText + " }");
-			    if (rule.cssText.indexOf("pmolnk") >= 0) {
-				console.debug("********************* Found 'pmolnk' in cssText");
-				console.debug("rule.style.cssText => " + rule.style.cssText +
-					      ", rule.selectorText => " + rule.selectorText);
-			    }
 			    cssText = zen.fixCssDeclUrl(rule.style.cssText, zen.remoteHost);
 			    if (cssText != rule.style.cssText) {//FIXME: Bug: true even for inconsequential differences.
-				console.debug("????? Will insert CSS rule: cssText => " + cssText +
-					      "rule.style.cssText => " + rule.style.cssText +
-					      "lengths: " + cssText.length + ", " + rule.style.cssText.length +
-					      "rule.selectorText => " + rule.selectorText);
-				console.debug("..............................................................");
-				console.debug("????? index of similarity: " + rule.style.cssText.indexOf(cssText));
 				dojo.withDoc(doc,
 					     function() { dojox.html.insertCssRule(rule.selectorText, cssText); },
 					     window,
@@ -673,30 +742,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	console.groupEnd();
     }
 
-    // Asynchonous Ajax requests will be made to retrieve JavaScript
-    // modules that will handle some rendering.
-    z.renderTreeDeferred = function (tree, parent, deferred) {
-        var newComponent;
-        z.walkZenSpec(
-            tree,
-            function(tree) {
-		//console.debug("zen.walkZenSpec: tree => " + tree);
-                requireSubtreeCompon(tree);
-            });
-        dojo.addOnLoad(function() {
-	    //console.debug("zen.renderTreeDeferred: loaded, now calling createSubtree");
-            newComponent = z.createSubtree(tree);
-	    //console.debug("zen.renderTreeDeferred: newComponent => " +
-	    //		    newComponent);
-            newComponent.appendMyselfToParent(parent);
-            z.startup();
-	    //console.debug("zen.renderTreeDeferred: calling deferred.resolve()");
-            //deferred.resolve(newComponent);
-        });
-    };
-
-    //FIXME: Use dojo.create.
+    console.warn("Define diagramming functions");
     var boxCompon = function (component, tbl) {
+	//FIXME: Use dojo.create.
         var row = z.createElement("tr");
         var cell = z.createElement("td", {klass: "boxTD1"});
         var div = z.createElement("div", {klass: "visualRep"});
@@ -730,9 +778,8 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         div.appendChild(text);
         return row;
     };
-
-    // FIXME: Use dojo.create.
     var boxTable = function (componList, tbl) {
+	// FIXME: Use dojo.create.
         var tbl1, i, len = componList.length, compon, children, row, cell;
         for (i = 0; i < len; i++) {
             compon = componList[i];
@@ -747,10 +794,9 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             }
         }
     };
-
-    //FIXME: Maybe we could think up a good scheme for which components to
-    //save and which to destroy.
     z.clearTheCanvas = function (componsToDestroy, componsToSave) {
+	//FIXME: Maybe we could think up a good scheme for which
+	//components to save and which to destroy.
         if (typeof componsToSave === "undefined" || !componsToSave) {
             componsToSave = null;
         }
@@ -766,7 +812,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
             }
         );
     };
-
     z.makeHierarchyDiagram = function(newComponent) {
         //var tblCompon, contentBox, floatingPaneContent;
         //diagramPaneCompon, floatingPane;
@@ -779,6 +824,10 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 					  {id:"componTbl"});
 	}
         diagramPaneCompon = zen.createNew(zen.DomNodeCompon, "diagramPane", dojo.byId("diagramPane"));
+	// NOTE: We can't just call dojo.require() in this file because that
+	// messes up the loading of this module via "dojo.require('zen')".
+	// Instead, we make a call like "dojo.require.apply(null, [klass]);".
+	// FIXME: Try to use Dojo 1.7's require() API.
         dojo.require.apply(null, ["dijit._base"]);
         floatingPane = dijit.byId("diagramPane");
         if (!floatingPane) {
@@ -801,7 +850,6 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
         dojo.addClass(floatingPaneContent,"zenDiagramFloatingPaneContent");
         return floatingPane;
     };
-
     z.clearTheHierarchyDiagram = function () {
         //var diagramPaneElement, diagramPaneCompon;
         diagramPaneElement = dojo.byId("diagramPane");
@@ -835,6 +883,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	*/
     };
 
+    console.warn("Define zen.loadToolbox");
     z.loadToolbox = function () {
 	//console.debug("Entered zen.loadToolbox");
         var deferred = new dojo.Deferred();
@@ -871,6 +920,7 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	//console.debug("Called dojo.io.iframe.send");
     };
 
+    console.warn("Define zen.init");
     z.init = function () {
 	/*
 	  FIXME
@@ -883,70 +933,133 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 	});
 	*/
 	z.zenDiv = z.createNew(zen.DomNodeCompon, null, dojo.query("#zen")[0]);
-	z.transclusion1 = dojo.byId("transclusion1");
-	z.head1 = z.createNew(zen.DomNodeCompon, null,
-			      z.transclusion1.contentDocument.head);
-	z.body1 = z.createNew(zen.DomNodeCompon, null,
-			      z.transclusion1.contentDocument.body);
+	parser = new CSSParser();
+	// NOTE: We can't just call dojo.require() in this file because that
+	// messes up the loading of this module via "dojo.require('zen')".
+	// Instead, we make a call like "dojo.require.apply(null, [klass]);".
+	// FIXME: Try to use Dojo 1.7's require() API.
         dojo.require.apply(null, ["dojo.io.iframe"]); // This is for dojo.io.iframe.send only!
 	//console.debug("Calling dojo.addOnLoad(zen.loadToolbox)");
 	//dojo.aspect.advise(console, "debug", [zen.TraceReturns, zen.TraceArguments]);
         dojo.addOnLoad(z.loadToolbox);
+	//E.g.: targetBody = zen.createNew(zen.DomNodeCompon, "targetBody", win.body());
+	// Arguments to zen.createNew here are zen.DomNodeCompon, an id, and a node to append to.
+	unrendered = zen.createNew(zen.DomNodeCompon, "unrendered", dojo.create("div"));
+    }
 
-	var jp = dijit.byId("jsonPage");
-	jp.render = zen.makeDocumentRenderer(dojo.byId("transclusion1").contentDocument);	      
-	if (jp) {
-	    jp.onLoad = function() {
-		console.debug("Greetings from the remote web page!");
-		jsonFromWatir = dojo.byId("jsonFromWatir").textContent;
-		remoteData = dojo.fromJson(jsonFromWatir);
-		remoteHead = remoteData.theHead;
-		remoteBody = remoteData.theBody;
+    console.warn("Define zen.getRemotePageHandle");
+    z.getRemotePageHandle = function (jsonIframe) {
+	require(["dojo/dom", "dojo/_base/window"], function(dom, win) {
+	    ifr = dom.byId(jsonIframe);
+	    console.log("ifr => " + ifr);
+	    jsonGlobal = ifr.contentWindow; // Get the global scope object from the frame.
+	});
+	return jsonGlobal;
+    }
+
+    console.warn("Define zen.copyRemotePage");
+    z.copyRemotePage = function (jsonIframe, targetIframe) {
+	// Make a copy of a snapshot of a remote page. 'jsonIframe' is
+	// the id of an IFRAME holding a JSON representation of a
+	// remote page's content.  FIXME: Maybe use
+	// zen.getRemotePageHandle.
+	require(["dojo/dom", "dojo/_base/window"], function(dom, win) {
+	    jp = dom.byId("jsonIframe1"); //FIXME: Make this unnecessary.
+	    console.log("jp => " + jp);
+	    ifr = dom.byId(jsonIframe);
+	    console.log("ifr => " + ifr);
+	    jsonGlobal = ifr.contentWindow; // Get the global scope object from the frame.
+	    targetIframe = dom.byId(targetIframe);
+	    //var targetIframe = dojo.byId(targetIframe);
+	    console.log("targetIframe => " + targetIframe);
+	    targetGlobal = targetIframe.contentWindow; // Get the global scope object from the frame.
+	    // Call a callback with different 'global' values and context. FIXME: Use only one DIV.
+	    win.withGlobal(jsonGlobal,  function() {
+		console.log("The current win.global is: ", win.global);
+		console.log("The current win.doc is: ", win.doc);
+		console.log("The current scope is: ", this);
+		host = jp.contentDocument.getElementById("remoteHost").textContent;
+		z.remoteHost = host;
+		console.debug("host => " + host);
+		options = {};
+		//options.user = dojo.byId("remoteUser").textContent;
+		//options.password = dojo.byId("remotePassword").textContent;
+		options.scheme = dojo.byId("remoteScheme").textContent;
+		console.log(dojo.byId("remoteScheme"));
+		options.path = dojo.byId("remotePath").textContent;
+		console.log(dojo.byId("remotePath"));
+		options.port = dojo.byId("remotePort").textContent;
+		console.log(dojo.byId("remotePort"));
+		jsonForCssFiles = dojo.byId("remoteCssFiles").textContent;
+		remoteCssFiles = dojo.fromJson(jsonForCssFiles);
+		console.debug("options => " + options.toString());
+		console.debug(dom.byId("jsonFromWatir"));
+		remoteData = dojo.fromJson(dom.byId("jsonFromWatir").textContent);
+		console.group("remoteData");
+		console.dir(remoteData);
+		console.groupEnd();
+		remoteHeadContent = remoteData.theHeadContent;
+		remoteBodyContent = remoteData.theBodyContent;
 		remoteWidth = remoteData.theWidth + 20;
 		remoteHeight = remoteData.theHeight + 15;
-		jp.render();
-	    }
-	}
-    }
-    
-    z.makeDocumentRenderer = function (document) {
-	return function() {
-	    var options = {}, host = dojo.byId("remoteHost").textContent;
-	    options.scheme = dojo.byId("remoteScheme").textContent;
-	    options.path = dojo.byId("remotePath").textContent;
-	    options.port = dojo.byId("remotePort").textContent;
-	    //options.user = dojo.byId("remoteUser").textContent;
-	    //options.password = dojo.byId("remotePassword").textContent;
-	    console.group("document.styleSheets");
-	    console.dir(document.styleSheets);
-	    console.groupEnd();
-	    
-	    dojo.withDoc(
-		document,
-		function() {
-		    var cssSelector, cssDeclaration;
-		    for (i = 0; i < remoteData.theCssRules.length; i++) {
-			cssSelector = remoteData.theCssRules[i][0];
-			cssDeclaration = remoteData.theCssRules[i][1];
-			cssDeclFixed = z.fixCssDeclUrl(cssDeclaration, host, options);
-       	 		dojox.html.insertCssRule(cssSelector, cssDeclFixed);
+	    }, this); // win.withGlobal
+	    // Call a callback with different 'global' values and context.
+	    win.withGlobal(targetGlobal,  function() {
+		console.log("The current win.global is: ", win.global);
+		console.log("The current win.doc is: ", win.doc);
+		console.log("The current scope is: ", this);
+		//FIXME: Generalize this.
+		targetBody = zen.createNew(zen.DomNodeCompon, "targetBody", win.body());
+		zen.renderTree(remoteBodyContent, targetBody);
+		console.log("Returned from zen.renderTree");
+		//remoteCssFiles.pop();
+		//remoteCssFiles.pop();
+		dojo.query(".zenStyle").forEach(
+		    function(cssElement) {
+			console.warn("Pushing embedded CSS onto array");
+			remoteCssFiles.push(cssElement.innerHTML);
 		    }
-		},
-		window,
-		null
-	    );
-	    
-	    // zen.renderTree will call zen.createElement
-	    // for STYLE nodes in the body. One of those
-	    // nodes contains the style selector #pmolnk .
-	    zen.renderTree(remoteBody, zen.body1);
-	    
-	    dojo.attr(zen.transclusion1, "style",
-		      "width:" + remoteWidth + "px; height:" +
-		      remoteHeight + "px");
-	}
+		);
+		remoteCssFiles.forEach(
+		    function(cssFile) {
+			console.info("/////////////////////// next cssFile");
+			parsedCss=parser.parse(cssFile);
+			//console.group("parsedCss");
+			//console.dir(parsedCss);
+			    //console.groupEnd();
+			cssRules = parsedCss.cssRules;
+			console.warn("zen.copyRemotePage: cssRules.length => " + cssRules.length);
+			cssRules.forEach(
+			    function(cssRule) {
+				decls = dojo.map(
+				    cssRule.declarations,
+				    function(decl) {
+					return decl.parsedCssText;
+				    }
+				).join(" ");
+				/*
+				  if (cssRule.declarations.length > 1) {
+				  console.debug("decls => " + decls);
+				  }
+				*/
+				selectorText = cssRule.mSelectorText;
+				//console.debug("selectorText => " + selectorText +
+				//		  ", decls => " + decls);
+				try {
+				    dojox.html.insertCssRule(selectorText, decls);
+				} catch(err) {
+				    console.error("Failed CSS rule insertion: " + selectorText + " " + decls);
+				}
+			    }
+			);
+		    }
+		);
+	    }, this); // win.withGlobal
+	}); // require
     }
 
+    z.dynStyleSheets = [];
+	    
     dojo.addOnLoad(function() {
         var components, c, rule, len;
         for (rule in rulesTable) {
@@ -989,28 +1102,3 @@ dojo.declare("zen.DomNodeCompon", zen.DisplayCompon, {
 })(zen);
 
 zen.DomNodeCompon.domNodeCompons = [];
-
-//dojo.require.apply(null, ["zen.debug"]);
-//dojo.require.apply(null, ["zen.dojo"]);
-
-// FIXME: Use the following function or delete it.
-/*
-  DomNodeCompon.fromDomNode: function (node) {
-  //DomNodeCompon.fromDomNode = function (node) {
-  var i = 0;
-  var len = domNodeCompons.length;
-  var compon;
-  zen.log("DomNodeCompon.fromDomNode: len => %s, node => %s", len, node);
-  for (i; i<len; i++) {
-  compon = domNodeCompons[i];
-  //zen.log("...fromDomNode: i => %s, compon => %s, domNodeCompons.length => %s",
-  //i, compon, domNodeCompons.length);
-  if (compon.this.domNode == node) {
-  zen.log("...fromDomNode: returning compon %s", compon);
-  return compon;
-  }
-  }
-  zen.error("...fromDomNode: returning null, node => %s, i => %s", node, i);
-  return null;
-  }
-*/

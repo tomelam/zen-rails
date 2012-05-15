@@ -84,7 +84,8 @@
     <script type="dojo/method" data-dojo-event="onClick" data-dojo-args="evt">
       zen.copyRemotePage("jsonIframe1", "transclusion1");
       //var targetIframe = dom.byId(targetIframe);
-      targetIframe = dojo.byId(targetIframe);
+      //targetIframe = dojo.byId(targetIframe); //FIXME: How did this ever "work"?
+      targetIframe = dojo.byId("transclusion1");
       console.log("targetIframe => " + targetIframe);
       dojo.attr(dojo.byId("transclusion1"), "style",
                 "width:" + remoteWidth + "px; height:" +

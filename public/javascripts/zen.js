@@ -24,14 +24,22 @@ require(['dojo/_base/declare'], function(declare) {
 	////    getChildCompons - get the child Zen components
 	////
 	constructor: function (id, domNode) {
+	    console.debug("constructor: id => " + id + ", domNode => " + domNode);
             this.id = id || zen.getUniqueId("zen_DomNodeCompon");
             zen.registry.DomNodeCompon[this.id] = this;
-            this.domNode = domNode || null; // "null" reads nicer than "undefined".
+            this.domNode = domNode;
             this.children = [];
+	    zen.DomNodeCompon.domNodeCompons.push(this);
 	},
 	toString: function () { // Without this, we get '[object Object]'.
             var rep;
-            rep = String(this.domNode).replace(/^\[object /, "[HTML Compon ").replace(/\]$/, "]");
+	    console.debug("toString: this.domNode => " + this.domNode);
+	    if (this.domNode) {
+		rep = String(this.domNode).replace(/^\[object /,
+						   "[HTML Compon ").replace(/\]$/, "]");
+	    } else {
+		rep = "[empty DomNodeCompon]";
+	    }
             return rep;
 	},
 	getId: function () {
@@ -48,7 +56,7 @@ require(['dojo/_base/declare'], function(declare) {
 		console.log("oldBody => " + oldBody);
 		if (parent.getDomNode().nodeName != "HTML") {
 		    console.log("parent.nodeName != 'HTML'");
-		    if (parent.getDomNode() == oldBody) { // Special case: replace the old body.
+		    if (parent.getDomNode() == oldBody) { // Special case: replace old body.
 			console.log("Replace old body");
 			htmlElement = oldBody.parentElement;
 			htmlElement.removeChild(oldBody);
@@ -96,9 +104,7 @@ require(['dojo/_base/declare'], function(declare) {
 		}
             } else {
 		//FIXME: Remove this console output:
-		console.group("zen.DomNodeCompon.domNodeCompons");
-		console.dir(zen.DomNodeCompon.domNodeCompons);
-		console.groupEnd();
+		zen.dir_domNodeCompons();
             }
 	}
     });
@@ -171,6 +177,7 @@ require(['dojo/_base/declare'], function(declare) {
         // Step 2: Apply the constructor to the new instance and get
         //         the result.
 	try {
+	    console.debug("createNew: constructorArgs => " + constructorArgs);
             var instance = constructor.apply(object, constructorArgs);
 	} catch (e) {
 	    console.error("Error in constructor.apply(object, constructorArgs): " + e);
@@ -195,6 +202,11 @@ require(['dojo/_base/declare'], function(declare) {
         }
         return objectType + "_" + count;
     };
+    z.dir_domNodeCompons = function () {
+	console.group("zen.DomNodeCompon.domNodeCompons");
+	console.dir(zen.DomNodeCompon.domNodeCompons);
+	console.groupEnd();
+    };
     z.createElement = function (kind, attributes) {
 	// FIXME: Fix non-absolute href URLs for <a> tags.
 	new Error("zen.createElement");
@@ -209,7 +221,8 @@ require(['dojo/_base/declare'], function(declare) {
 	} else {
 	    domNode = dojo.create(kind);
 	}
-	zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+	//zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+	zen.dir_domNodeCompons();
 	attributes = attributes || {};
 	if (kind == "IMG" && attributes.src) { // Turn a relative URL into an absolute one.
 	    src_split = attributes.src.split("http://");
@@ -244,7 +257,8 @@ require(['dojo/_base/declare'], function(declare) {
         var domNodeCompon = zen.createNew(zen.DomNodeCompon);
         // FIXME: Use dojo.create, if appropriate.
         var domNode = document.createTextNode(text);
-        zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+        //zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+	zen.dir_domNodeCompons();
         domNodeCompon.domNode = domNode;
         return domNodeCompon;
     };
@@ -271,7 +285,8 @@ require(['dojo/_base/declare'], function(declare) {
 	} else {
             domNode = document.createElement("noscript");
 	}
-        zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+        //zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
+	zen.dir_domNodeCompons();
         attributes = attributes || {};
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
@@ -294,7 +309,12 @@ require(['dojo/_base/declare'], function(declare) {
 	}
         rule = invertedRulesTable[componKind];
         constructor = z.rule2ref(rule);
-        parentCompon = constructor.call(document, componKind, initParms);
+	try {
+            parentCompon = constructor.call(document, componKind, initParms);
+	} catch(e) {
+	    console.error("Could not create componKind " + componKind +
+			  " in zen.createTree");
+	}
         len = subtree.length;
         for (i = 0; i < len; i++) {
             compon = z.createSubtree(subtree[i]);
@@ -427,8 +447,8 @@ require(['dojo/_base/declare'], function(declare) {
 	} else if (treeSpec[0] == "text" && zen.headNode) {
 	    node = document.createTextNode(attributes);
 	    z.headNode.appendChild(node);
-	    console.debug("Added text under style or title => " + z.headNode + ", attributes => " +
-			 attributes);
+	    console.debug("Added text under style or title => " + z.headNode +
+			  ", attributes => " + attributes);
 	    z.headNode = null;
 	}
 	//console.debug("Exiting zen.filterHeadNodesAndRender");
@@ -471,7 +491,7 @@ require(['dojo/_base/declare'], function(declare) {
 			attributes.klass = attr[i].value;
 		    } else if (attr[i].name.slice(0,2) == "on") {
                         attributes[name] = "";
-                    } else if (attr[i].name != '"') {//Test for malformed attribute (as at yahoo.com)
+                    } else if (attr[i].name != '"') {//Malformed attribute (as at yahoo.com)
 			attributes[name] = attr[i].value;
 		    }
 		}
@@ -625,7 +645,8 @@ require(['dojo/_base/declare'], function(declare) {
             tblCompon = zen.createElement("table",
 					  {id:"componTbl"});
 	}
-        diagramPaneCompon = zen.createNew(zen.DomNodeCompon, "diagramPane", dojo.byId("diagramPane"));
+        diagramPaneCompon = zen.createNew(zen.DomNodeCompon, "diagramPane",
+					  dojo.byId("diagramPane"));
 	// NOTE: We can't just call dojo.require() in this file because that
 	// messes up the loading of this module via "dojo.require('zen')".
 	// Instead, we make a call like "dojo.require.apply(null, [klass]);".
@@ -801,40 +822,25 @@ require(['dojo/_base/declare'], function(declare) {
 	port = opt.port || '';
 	user = opt.user || '';
 	password = opt.password || '';
-	console.log("Entering zen.fixCssDeclUrl: cssDecl => " + cssDecl + ", host => " + host +
-		    ", typeof cssDecl => " + typeof cssDecl);
+	/*
+	console.log("Entering zen.fixCssDeclUrl: cssDecl => " + cssDecl + ", host => " +
+		    host + ", typeof cssDecl => " + typeof cssDecl);
+	*/
 	var cssDeclParts, len, i;
 	if (typeof cssDecl == "string") {
-	    // Use a regular expression to split out the attributes from a CSS declaration.
-	    // Two patterns are used to match attributes: (1) a background attribute
-	    // with a URL -- something like 'url(...);' and (2) any other kind of
-	    // attribute. A simpler regular expression would split a background
-	    // attribute containing a URL into two parts, whereas we want only one
-	    // part per attribute.
-	    //re = /(background: url\(.*?\).*?;)|((?!background: url\(.*?\).*?);)/;
-	    //FIXME: The next re leaves a ';' at the end of 1 match if there is 'data'.
-	    //ALMOST OK?
-	    re = /(background:.*?url\(.*?\).*?;)/ //|((?!background:.*?url\(.*?\).*?);)/;
-	    //re = /((?!background:.*?url\(.*?\).*?);)|/;
-	    //FIXME: This re mistakenly chops off the data URL at its ';'.
-	    //re = /((background:.*?url\(.*?\).*?)(?:;))|((?!background:.*?url\(.*?\).*?);)/;
-	    re = /;/;	    
+	    // Replace one inconvenient ';' character with '#' as A marker.
 	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?);(.*?\))/,'$1#$2');
-	    ////console.debug("cssDecl => " + cssDecl);
+	    // Use a regular expression to split out the attributes from a CSS declaration.
+	    re = /;/;
 	    cssDeclParts = cssDecl.split(re).filter(function(el) {
 		return (el != ';' && el != ' ' && el != '' && typeof el != 'undefined');
-		////FIXME: Delete this. return (el != ';' && el != '' && typeof el != 'undefined');
 	    });
-	} else {
+	} else /* if (typeof cssDecl == "object") */ {
 	    cssDeclParts = [];
 	    for (i in cssDecl) {
 		cssDeclParts[j] = i + ":" + cssDecl[i] + "; ";
 	    }
 	}
-	////console.debug("cssDeclParts => " + cssDeclParts);
-	//console.group("cssDeclParts");
-	//console.dir(cssDeclParts);
-	//console.groupEnd();
 	len = cssDeclParts.length;
 	var foundBackgroundSpec = false;
 	for (i = 0; i < len; i++) {
@@ -844,21 +850,18 @@ require(['dojo/_base/declare'], function(declare) {
 	    idx = cssDeclParts[i].indexOf(":");
 	    styleProp = cssDeclParts[i].slice(0, idx);
 	    styleValue = cssDeclParts[i].slice(idx + 1);
-	    ////console.debug("styleProp => " + styleProp + ", styleValue => " + styleValue);
 	    if (styleProp == "background") {
 		foundBackgroundSpec = true;
-		console.warn("##### Found background: cssDeclParts[i] => " + cssDeclParts[i]);
 		if (cssDeclParts[i].search(/\(\"data:/) < 0) {
 		    // A URL that starts with '//' is a protocol relative URL.
 		    // See http://paulirish.com/2010/the-protocol-relative-url/ .
 		    valueParts = styleValue.match('(url.*)(\".*)(\/\/.*)');
-		    ////console.debug("valueParts => " + valueParts);
 		    if (valueParts) {
 			// Convert protocol relative URL to absolute-path URL.
 			styleValue = valueParts[1] + '"' + scheme + valueParts[3].slice(2);
-		    } else if (styleValue.indexOf("url(") >= 0 && styleValue.indexOf("http://") < 0) {
+		    } else if (styleValue.indexOf("url(") >= 0 &&
+			       styleValue.indexOf("http://") < 0) {
 			// Convert a relative-path URL to an absolute-path URL.
-			////console.debug('styleValue.indexOf("http://") < 0');
 			idx = styleValue.indexOf('(') + 1;
 			console.debug("Get index of relative URL in style: idx => " + idx);
 			quoteUsed = styleValue.charAt(idx) == '"'? true : false;
@@ -869,28 +872,20 @@ require(['dojo/_base/declare'], function(declare) {
 			    console.debug("Incremented index by one for full path URL (which includes root /)");
 			    idx += 1;
 			}
-			styleValue = 'url(' + (quoteUsed? '"' : '') + scheme + (user? (user+'@') : '') + (password? (password+':') : '') +
+			styleValue = 'url(' + (quoteUsed? '"' : '') + scheme +
+			    (user? (user+'@') : '') + (password? (password+':') : '') +
 			    host + (port? (':'+port) : '') + '/' + styleValue.slice(idx);
-			console.debug("styleValue (with host, scheme, etc.) => " + styleValue);
 		    }			
-		} /* else {
-		    console.debug("##### Found data URL => cssDecl => " + cssDecl + ", cssDeclParts[i] => " + cssDeclParts[i]);
-		    //FIXME
-		} */
-		////console.debug("##### styleValue => " + styleValue);
+		}
 	    }
 	    cssDeclParts[i] = styleProp + ":" + styleValue;
-	    //console.debug("##### cssDeclParts[" + i + "] => " + cssDeclParts[i]);
 	}
 	if (foundBackgroundSpec) {
-	    //cssDeclParts.push(""); // Ensures a ";" at the end of the join. FIXME: Probably should not do this.
-	    cssDeclParts.push("");
+	    cssDeclParts.push(""); // Ensures a ";" at the end of the join. FIXME: Probably should not do this.
 	    cssDecl = cssDeclParts.join(";");
 	    cssDecl = cssDecl.replace(/(background.*?url\("data:.*?)#(.*?\))/,'$1\;$2')
-	    //console.debug("##### Joined: cssDeclParts => " + cssDeclParts +
-	    //		  ", cssDecl => " + cssDecl);
 	}
-	console.debug("Leaving zen.fixCssDeclUrl: cssDecl => " + cssDecl);
+	//console.debug("Leaving zen.fixCssDeclUrl: cssDecl => " + cssDecl);
 	return cssDecl;
     }
 
@@ -919,9 +914,9 @@ require(['dojo/_base/declare'], function(declare) {
 	// FIXME: The argument should be a stylesheet, not a document.
 	// FIXME: Replace globals with locals (and that goes for other functions, too).
         styleSheets = doc.styleSheets;
-	console.group("zen.fixClassesURLS: styleSheets");
-	console.dir(styleSheets);
-	console.groupEnd();
+	//console.group("zen.fixClassesURLs: styleSheets");
+	//console.dir(styleSheets);
+	//console.groupEnd();
         if (styleSheets.length > 0) {
 	    console.debug("styleSheets.length");
             styleSheetsLen = styleSheets.length;
@@ -941,11 +936,14 @@ require(['dojo/_base/declare'], function(declare) {
 			    console.debug("rule => " + rule.selectorText +
 			    		  " { " + rule.style.cssText + " }");
 			    cssText = zen.fixCssDeclUrl(rule.style.cssText, zen.remoteHost);
-			    if (cssText != rule.style.cssText) {//FIXME: Bug: true even for inconsequential differences.
-				dojo.withDoc(doc,
-					     function() { dojox.html.insertCssRule(rule.selectorText, cssText); },
-					     window,
-					     null);
+			    if (cssText != rule.style.cssText) {
+				dojo.withDoc(
+				    doc,
+				    function() {
+					dojox.html.insertCssRule(rule.selectorText,cssText);
+				    },
+				    window,
+				    null);
 			    }
                         }
                     }
@@ -953,9 +951,9 @@ require(['dojo/_base/declare'], function(declare) {
             }
         }
 	console.debug("zen.fixClassesURLs: exiting");
-	console.group("zen.fixClassesURLS: styleSheets");
-	console.dir(styleSheets);
-	console.groupEnd();
+	//console.group("zen.fixClassesURLS: styleSheets");
+	//console.dir(styleSheets);
+	//console.groupEnd();
     }
 
     console.warn("Define zen.getRemotePageHandle");
@@ -1073,3 +1071,28 @@ require(['dojo/_base/declare'], function(declare) {
 })(zen);
 
 zen.DomNodeCompon.domNodeCompons = [];
+
+zen.DomNodeCompon.getCount = function() {
+    //zen.DomNodeCompon.domNodeCompons.push("junk");
+    return zen.DomNodeCompon.domNodeCompons.length;
+}
+
+zen.testWithDoc = function() {
+    require(["dojo/dom", "dojo/_base/window"], function(dom, win) {
+	var iframeDoc = dom.byId("testBody").contentWindow.document;
+	console.debug("iframeDoc => " + iframeDoc + ", win => " + win);
+	win.withDoc(iframeDoc, function() {
+	    console.debug("win.body() => " + win.body());
+	});
+    });
+
+    console.debug("win.body() => " + win.body());
+    
+    require(["dojo/dom", "dojo/_base/window"], function(dom, win) {
+	var iframeDoc2 = dom.byId("testBody").contentWindow.document;
+	console.debug("iframeDoc2 => " + iframeDoc2 + ", win => " + win);
+	win.withDoc(iframeDoc2, function() {
+	    console.debug("win.body() => " + win.body());
+	}, this);
+    });
+}

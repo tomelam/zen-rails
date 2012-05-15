@@ -6,8 +6,8 @@ class ProxyController < ApplicationController
   
   def open
     require 'watir-webdriver'
-    browser = Watir::Browser.new :firefox
-    #browser = Watir::Browser.new :chrome
+    #browser = Watir::Browser.new :firefox
+    browser = Watir::Browser.new :chrome
     #logger.debug "browser.methods are #{browser.methods}"
     #logger.debug "--------------------------------------------------"
     #logger.debug "browser.class.methods are #{browser.class.methods}"

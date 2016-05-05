@@ -7,9 +7,9 @@ ZenRails::Application.routes.draw do
   # Keep in mind you can assign values other than :controller and :action
 
   # FIXME: Turn this back on!
-  match "/web/:url" => 'proxy#open', :constraints => { :url => /[\/:.-_a-zA-Z0-9]*/ }
+  #match "/web/:url" => 'proxy#open', :constraints => { :url => /[\/:.-_a-zA-Z0-9]*/ }
 
-  match '/config/:config' => 'proxy#config'
+  #match '/config/:config' => 'proxy#config'
 
   # Sample of named route:
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase

@@ -43,7 +43,7 @@ tests.register(
 		    test4objects.dom = dom;
 		    test4objects.win = win;
 		    test4objects.query = query;
-		    test4objects.iframeDoc = iframeDoc2;
+		    test4objects.iframeDoc = iframeDoc;
 		    console.debug("iframeDoc => " + iframeDoc + ", win => " + win);
 		    console.group("Test 4: iframeDoc");
 		    console.dir(iframeDoc);

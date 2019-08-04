@@ -29,7 +29,7 @@ gem 'sqlite3', :require => 'sqlite3'
 #   gem 'webrat'
 # end
 
-gem 'heroku'
+#gem 'heroku'
 
 # Required for couchrest:
 gem 'couchrest'
@@ -40,4 +40,4 @@ gem 'json'
 gem 'rspec'
 
 gem 'open-uri-cached'
-gem 'watir-webdriver'
+gem 'watir', '~> 6.0'

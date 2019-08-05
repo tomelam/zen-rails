@@ -155,7 +155,7 @@ DEPENDENCIES
   json
   open-uri-cached
   pg
-  rails
+  rails (~> 5.2)
   rspec
   sqlite3
   validatable

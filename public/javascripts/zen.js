@@ -209,8 +209,12 @@ require(['dojo/_base/declare'], function(declare) {
     };
     z.createElement = function (kind, attributes) {
 	// FIXME: Fix non-absolute href URLs for <a> tags.
-	new Error("zen.createElement");
+	console.log("zen.createElement: kind => " + kind +
+                    ", attributes => " + attributes);
+	//new Error("zen.createElement");
         var domNodeCompon = zen.createNew(zen.DomNodeCompon), domNode;
+	console.log("zen.createElement: domNodeCompon => " + domNodeCompon + ", domNode => " +
+	            domNode);
 	// FIXME: Use dojo.create. FIXME: Styles applied to the body won't work!
 	if (kind.toLowerCase() == "style") {
 	    console.error("Error: STYLE element being created");
@@ -224,25 +228,49 @@ require(['dojo/_base/declare'], function(declare) {
 	//zen.DomNodeCompon.domNodeCompons.push(domNodeCompon);
 	zen.dir_domNodeCompons();
 	attributes = attributes || {};
-	if (kind == "IMG" && attributes.src) { // Turn a relative URL into an absolute one.
+	/*
+	if (typeof attributes.src == "undefined") {
+	    attributes.src = "";
+	}
+	*/
+	if (kind == "IMG" && attributes.src) {
+	    // Turn a relative URL into an absolute one.
 	    src_split = attributes.src.split("http://");
 	    if (src_split.length < 2) { // No match: must be relative.
 		console.info("Going to make IMG URL absolute");
 		attributes.src = "http://" + host + src_split;
-		console.info("fixed new IMG URL: attributes.src => " + attributes.src);
+		console.info("fixed new IMG URL: attributes.src => " +
+			     attributes.src);
 	    }
 	}
+	console.log("zen.createElement: attributes.src => " + attributes.src);
 	if (attributes.style) {
+	    console.warn("zen.createElement: translating style");
 	    if (typeof attributes.style == "object") {
+		console.log("zen.createElement: attributes.style is object");
+		console.group("attributes.style");
+		console.dir(attributes.style);
+		console.groupEnd();
 		x = "";
-		for (i in attributes.style) { x += attributes.style[i]; }
+		for (i in attributes.style) { x += attributes.style[i] + ";"; }
+		console.log("zen.createElement: x => " + x);
 	    } else {
+		console.log("zen.createElement: attributes.style not object");
+		console.log("typeof attributes.style => " +
+			    typeof attributes.style);
 		x = attributes.style;
 	    }
-	    //console.log("Calling zen.fixCssDeclUrl: attributes.style => " + x + ", host => " + host +
-	    //		  ", typeof attributes.style => " + typeof attributes.style);
-	    attributes.style = zen.fixCssDeclUrl(attributes.style, host);
-	    //console.log("zen.fixCssDeclUrl returned " + attributes.style);
+	    //console.log("host => " + host);
+	    console.log("typeof attributes.style => " + attributes.style);
+	    /*
+	    console.log("Calling zen.fixCssDeclUrl: attributes.style => " +
+			x + ", host => " + host +
+			", typeof attributes.style => " +
+			typeof attributes.style);
+	    */
+	    //attributes.style = zen.fixCssDeclUrl(attributes.style, host);
+	    attributes.style = zen.fixCssDeclUrl(x, "");
+	    console.log("zen.fixCssDeclUrl returned " + attributes.style);
 	}
         if (typeof attributes.klass !== "undefined") {
             dojo.addClass(domNode, attributes.klass);
@@ -250,7 +278,7 @@ require(['dojo/_base/declare'], function(declare) {
         }
         dojo.attr(domNode, attributes || {}); //FIXME: Check this.
         domNodeCompon.domNode = domNode;
-	////console.log("zen.createElement returning " + domNodeCompon);
+	console.log("zen.createElement returning " + domNodeCompon);
         return domNodeCompon;
     };
     z.createTextNode = function (kind, text) {
@@ -303,12 +331,24 @@ require(['dojo/_base/declare'], function(declare) {
     z.createSubtree = function (treeSpec) {
         var i, rule, parentCompon, compon, len, constructor, element;
         var componKind = treeSpec[0], initParms = treeSpec[1], subtree = treeSpec[2];
-	//console.warn("zen.createSubtree: componKind => " + componKind + ", initParms => " + initParms);
+	console.warn("zen.createSubtree: componKind => " + componKind + ", initParms => " + initParms);
+	console.group("initParms");
+	console.dir(initParms);
+	console.groupEnd();
 	if (componKind == "CANVAS") {
 	    alert("CANVAS");
 	}
         rule = invertedRulesTable[componKind];
+	console.log("rule => " + rule);
         constructor = z.rule2ref(rule);
+	console.group("constructor");
+	console.dir(constructor);
+	console.groupEnd();
+	console.log("document => " + document + ", componKind => " +
+		    componKind);
+	console.group("initParms");
+	console.dir(initParms);
+	console.groupEnd();
 	try {
             parentCompon = constructor.call(document, componKind, initParms);
 	} catch(e) {

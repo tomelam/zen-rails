@@ -6,6 +6,10 @@ rendered, but the handy facilities for composing Zen web pages provided by the
 Zen Composer are not part of those pages.
 
 The last version I debugged (in 2012) is stored in '/Volumes/Ad hoc/Tom/__Zen'.
+
+To install the present version, install Dojo Toolkit release 1.15.0 in
+public/javascripts/dojo-release-1.15.0-src/ .
+
 -Tom Elam
 
 

@@ -36,69 +36,69 @@ sayHello = function() { alert("Hi!"); }
 //testObjectCreator();
 
 var textTree1 =
-    ["DIV", {style:{width:"180px",height:"180px",backgroundColor:"red"},
+    ["DIV", {style:"width:180px;height:180px;background-color:red",
 	     id:"workingNode",title:"Title"},
      [["text", "This is text!", []]]];
 var tree1 =
-    ["DIV", {style:{width:"180px",height:"180px",backgroundColor:"red"},
+    ["DIV", {style:"width:180px;height:180px;background-color:red",
 	     id:"workingNode",title:"Title"}, []];
 var tree2 =
-    ["div", {id:"workingNode",
-	     style:{width:"200px",height:"200px",backgroundColor:"red"}},
-     [["div", {id:"workingNode",
-	       style:{width:"180px",height:"180px",backgroundColor:"orange"},
+    ["DIV", {style:"width:180px;height:180px;background-color:red",
+	     id:"workingNode",title:"Title"},
+     [["DIV", {id:"workingNode2",
+	       style:"width:180px;height:180px;background-color:orange",
 	       title:"Title 1"}, []]]];
 var tree3 =
-    ["div", {id:"workingNode",
-	     style:{width:"200px",height:"250px",backgroundColor:"red"}},
-     [["div",
+    ["DIV", {style:"width:180px;height:180px;background-color:red",
+	     id:"workingNode",title:"Title"},
+     [["DIV",
        {}, []],
-      ["table",
+      ["TABLE",
        {style:{backgroundColor:"yellow"}, title:"Title 3"},
-       [["tr",
+       [["TR",
 	 {style:{height:"50px"}},
-	 [["td", {style:{width:"50px"}}, []],
-	  ["td", {style:{width:"50px"}}, []]]],
-	["tr",
+	 [["TD", {style:{width:"50px"}}, []],
+	  ["TD", {style:{width:"50px"}}, []]]],
+	["TR",
 	 {style:{height:"60px"}},
-	 [["td", {style:{width:"50px"}}, []],
-	  ["td", {style:{width:"50px"}}, []]]],
-	["tr",
+	 [["TD", {style:{width:"50px"}}, []],
+	  ["TD", {style:{width:"50px"}}, []]]],
+	["TR",
 	 {style:{height:"50px"}},
-	 [["td", {style:{width:"50px"}}, []],
-	  ["td", {style:{width:"50px"}}, []]]]]],
-      ["p", {}, [["span", {}, [["div", {}, []], ["div", {}, []]]],
-		 ["div", {}, []]]]]];
+	 [["TD", {style:{width:"50px"}}, []],
+	  ["TD", {style:{width:"50px"}}, []]]]]],
+      ["P", {}, [["SPAN", {}, [["DIV", {}, []], ["DIV", {}, []]]],
+		 ["DIV", {}, []]]]]];
 var tree4 =
-    ["div", {id:"workingNode"},
-     [["p", {}, []],
+    ["DIV", {id:"workingNode"},
+     [["P", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"300px",backgroundColor:"red"}},
        []]]];
 var tree5 =
-    ["div", {id:"workingNode"},
-     [["p", {}, []],
+    ["DIV", {id:"workingNode"},
+     [["P", {}, []],
       ["dijit.layout.ContentPane",
        {"class":"box"},
        []]]];
 var tree6 =
-    ["div", {id:"workingNode"},
-     [["p", {}, []],
+    ["DIV", {id:"workingNode"},
+     [["P", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"140px",backgroundColor:"red"}},
-       [["div", {},
+       [["DIV", {},
 	 [["dijit.layout.ContentPane",
 	   {"class":"box"},
-	   [["div", {}, []]]]]]]]]];
+	   [["DIV", {}, []]]]]]]]]];
 // tree6b does not work: ContentPane has no 'addChild' method.
 var tree6b =
-    ["div", {id:"workingNode"},
-     [["p", {}, []],
+    ["DIV", {id:"workingNode"},
+     [["P", {}, []],
       ["dijit.layout.ContentPane",
        {style:{width:"300px",height:"140px",backgroundColor:"red"}},
        [["dijit.layout.ContentPane",
 	 {"class":"box"},
-	 [["div", {}, []]]]]]]];
+	 [["DIV", {}, []]]]]]]];
 var tree7 =
     ["dijit.layout.AccordionContainer",
      {id:"workingNode",
@@ -117,55 +117,55 @@ var tree8 =
        {title:"pane 1"},
        []]]];
 var tree9 =
-    ["div", {id:"workingNode"},
+    ["DIV", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
        [["dijit.layout.AccordionPane",
 	 {title:"pane 1"},
-	 [["div", {style:{width:"100%",height:"140px",
+	 [["DIV", {style:{width:"100%",height:"140px",
 			  backgroundColor:"orange"}}, []]]],
 	["dijit.layout.AccordionPane",
 	 {title:"pane 2"},
-	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
+	 [["DIV", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
  var tree10 =
-    ["div", {id:"workingNode"},
+    ["DIV", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
        [["dijit.layout.ContentPane",
 	 {title:"pane 1"},
-	 [["div", {style:{width:"100%",height:"140px",
+	 [["DIV", {style:{width:"100%",height:"140px",
 			  backgroundColor:"orange"}}, []]]],
 	["dijit.layout.ContentPane",
 	 {title:"pane 2"},
-	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
+	 [["DIV", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
 var tree11 =
-    ["iframe", {id:"iframe", src:"jquery.com", width:"100%", height:"400px"},
+    ["IFRAME", {id:"iframe", src:"http://tomelam.com", width:"100%", height:"200px"},
      []];
 var tree12 =
-    ["div", {id:"workingNode"},
+    ["DIV", {id:"workingNode"},
      [["dijit.layout.AccordionContainer",
        {id:"ac0",style:{width:"100%",height:"400px",backgroundColor:"yellow"}},
        [["dijit.layout.ContentPane",
 	 {id:"cp00",title:"pane 1"},
-	 [["div", {id:"d000",style:{width:"100%",height:"140px",
+	 [["DIV", {id:"d000",style:{width:"100%",height:"140px",
 				    backgroundColor:"orange"}},
 	   [["dijit.layout.AccordionContainer",
 	     {id:"ac0000",
 	      style:{width:"100%",height:"160px",backgroundColor:"yellow"}},
 	     [["dijit.layout.ContentPane",
 	       {id:"cp00000",title:"pane 1"},
-	       [["div", {id:"cp000000",style:{width:"100%",height:"140px",
+	       [["DIV", {id:"cp000000",style:{width:"100%",height:"140px",
 					      backgroundColor:"orange"}}, []]]],
 	      ["dijit.layout.ContentPane",
 	       {id:"cp00001",title:"pane 2"},
-	       [["div", {id:"d000000",style:{width:"100%",height:"140px",
+	       [["DIV", {id:"d000000",style:{width:"100%",height:"140px",
 					     backgroundColor:"red"}},
 		 []]]]]]]]]],
 	["dijit.layout.ContentPane",
 	 {id:"cp01",title:"pane 2"},
-	 [["div", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
+	 [["DIV", {style:{width:"100%",height:"140px",backgroundColor:"red"}},
 	   []]]]]]]];
 var tree13 =
     ["dijit.layout.AccordionContainer",
@@ -255,7 +255,10 @@ var pane =
 //another using the same id would be a good test.
 test = function(tree) {
     var newComponent, diagram, deferred = new dojo.Deferred();
-    //zen.log("*** Testing creation and diagramming of a tree");
+    console.log("*** Testing creation and diagramming of a tree");
+    //console.group("tree");
+    //console.dir(tree);
+    //console.groupEnd();
     deferred.then(function(compon) {
 	topComponents.push(compon);
 	newComponent = compon;
@@ -269,6 +272,27 @@ test = function(tree) {
 	console.error("Error in test()");
     });
     console.log("*** test.js: Rendering test tree under zen.zenDiv");
+    console.debug("zen.zenDiv => " + zen.zenDiv);
+    console.group("tree");
+    console.dir(tree);
+    console.groupEnd();
     newComponent = zen.renderTreeDeferred(tree, zen.zenDiv, deferred);
     //zen.log("*** Done testing creation and rendering of a tree");
+};
+
+addHandlerToIframe = function() {
+    var ifr = dojo.query("iframe#iframe");
+    console.log("ifr => " + ifr);
+    console.log("ifr.length => " + ifr.length);
+    console.log("ifr.contentDocument => " + ifr.contentDocument);
+    console.group("ifr");
+    console.dir(ifr);
+    console.groupEnd();
+    var ibody = dojo.query("iframe#iframe").contentDocument.body;
+    console.log("ibody => " + ibody);
+    dojo.connect(
+	ibody,
+	"onclick",
+	function(ev) { alert('clicked on body'); }
+    );
 };
